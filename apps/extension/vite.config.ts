@@ -24,6 +24,14 @@ export default defineConfig(({ mode }) => {
 	return {
 		root: __dirname,
 		envDir: repoRoot,
+		build: {
+			rollupOptions: {
+				input: {
+					// Ensure the dashboard HTML is processed by Vite/CRXJS in production builds
+					dashboard: path.resolve(__dirname, "pages/dashboard.html"),
+				},
+			},
+		},
 		resolve: {
 			alias: {
 				"@": `${path.resolve(__dirname, "src")}`,

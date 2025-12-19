@@ -18,7 +18,7 @@ export default defineManifest({
 	host_permissions: ["http://localhost:8787/*"],
 	web_accessible_resources: [
 		{
-			resources: ["src/pages/dashboard/index.html"],
+			resources: ["pages/dashboard.html"],
 			matches: ["<all_urls>"],
 		},
 	],

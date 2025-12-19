@@ -40,8 +40,8 @@ export default function App() {
 
 	const openDashboard = (options?: { openAuth?: boolean }) => {
 		const baseUrl = ChromeService.isExtension()
-			? chrome.runtime.getURL("src/pages/dashboard/index.html")
-			: "http://localhost:5173/src/pages/dashboard/index.html";
+			? chrome.runtime.getURL("pages/dashboard.html")
+			: "http://localhost:5173/pages/dashboard.html";
 
 		const dashboardUrl = options?.openAuth ? `${baseUrl}?auth=1` : baseUrl;
 
