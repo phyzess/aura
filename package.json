@@ -1,0 +1,28 @@
+{
+	"name": "aura",
+	"type": "module",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "pnpm --filter @aura/extension dev",
+		"build": "pnpm --filter @aura/extension build",
+		"preview": "pnpm --filter @aura/extension preview",
+		"dev:extension": "pnpm --filter @aura/extension dev",
+		"build:extension": "pnpm --filter @aura/extension build",
+		"preview:extension": "pnpm --filter @aura/extension preview",
+		"dev:api": "pnpm --filter @aura/api dev",
+		"dev:api:prod": "pnpm --filter @aura/api dev:prod",
+		"deploy:api": "pnpm --filter @aura/api deploy",
+		"db:migrate:local": "pnpm --filter @aura/api db:migrate:local",
+		"db:migrate:remote": "pnpm --filter @aura/api db:migrate:remote",
+		"lint": "biome check",
+		"format": "biome fmt",
+		"check": "pnpm lint && pnpm format"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.3.9"
+	},
+	"dependencies": {
+		"valibot": "^1.2.0"
+	}
+}

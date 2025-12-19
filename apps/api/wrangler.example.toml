@@ -1,0 +1,33 @@
+name = "aura-api"
+main = "./src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_als"]
+
+# Example wrangler config for aura API
+# Copy this file to `wrangler.toml` and fill in real values.
+# Do NOT commit `wrangler.toml` (see .gitignore).
+
+[vars]
+BETTER_AUTH_URL = "http://localhost:8787"
+BETTER_AUTH_TRUSTED_ORIGINS = "http://localhost:5173,chrome-extension://*"
+
+[env.production]
+
+# Production-specific environment variables
+[env.production.vars]
+BETTER_AUTH_URL = "https://your-api.example.com"
+# Update trusted origins for your production dashboard + Chrome Web Store extension ID
+BETTER_AUTH_TRUSTED_ORIGINS = "https://your-dashboard.example.com,chrome-extension://YOUR_PROD_EXTENSION_ID"
+
+# Optional: use a separate D1 database for production
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "aura-db"
+database_id = "YOUR_PRODUCTION_D1_DATABASE_ID"
+migrations_dir = "drizzle"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "aura-db-dev"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "drizzle"

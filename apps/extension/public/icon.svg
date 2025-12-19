@@ -1,0 +1,32 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Ethereal Dark Background -->
+    <rect width="512" height="512" rx="128" fill="#0A0C0D"/>
+    
+    <g transform="translate(256, 256)">
+        <!-- The Main Arch (Stronger Stroke for visibility) -->
+        <path d="M-120 160 C-120 40 -60 -120 0 -120 C60 -120 120 40 120 160" 
+              stroke="#D1D7D7" 
+              stroke-width="14" 
+              stroke-linecap="round"
+              opacity="0.9"/>
+        
+        <!-- Subtle Glow Layer -->
+        <path d="M-120 160 C-120 40 -60 -120 0 -120 C60 -120 120 40 120 160" 
+              stroke="#A7C4BC" 
+              stroke-width="20" 
+              stroke-linecap="round"
+              opacity="0.15"
+              style="filter: blur(8px);"/>
+
+        {/* The Celadon Focus Point - The eye of the workspace */}
+        <circle cx="0" cy="-20" r="50" stroke="#D1D7D7" stroke-width="3" opacity="0.3" />
+        <circle cx="0" cy="-20" r="16" fill="#A7C4BC" />
+        
+        <!-- Foundation Line -->
+        <path d="M-50 60 H50" 
+              stroke="#D1D7D7" 
+              stroke-width="3" 
+              stroke-linecap="round"
+              opacity="0.2"/>
+    </g>
+</svg>

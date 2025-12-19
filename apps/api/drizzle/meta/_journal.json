@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1765943971172,
+      "tag": "0000_sudden_mysterio",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1765947824296,
+      "tag": "0001_productive_maria_hill",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1765949709022,
+      "tag": "0002_tense_avengers",
+      "breakpoints": true
+    }
+  ]
+}

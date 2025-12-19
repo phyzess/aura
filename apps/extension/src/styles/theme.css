@@ -1,0 +1,179 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 在此定义所有主题扩展 */
+@theme {
+  /* ========== 颜色系统 ========== */
+  /* Slate 色系 - 覆盖默认值 */
+    --color-slate-50: oklch(98.42% 0.0034 247.86);
+    --color-slate-100: oklch(96.83% 0.0069 247.9);
+    --color-slate-200: oklch(92.88% 0.0126 255.51);
+    --color-slate-300: oklch(86.9% 0.0198 252.89);
+    --color-slate-400: oklch(71.07% 0.0351 256.79);
+    --color-slate-500: oklch(55.44% 0.0407 257.42);
+    --color-slate-600: oklch(44.55% 0.0374 257.28);
+    --color-slate-700: oklch(27.39% 0.0055 286.03); /* 边框色 */
+    --color-slate-800: oklch(21.03% 0.0059 285.89); /* 卡片/表面浅色 */
+    --color-slate-900: oklch(14.08% 0.0044 285.82); /* 侧边栏/表面深色 */
+    --color-slate-950: oklch(0% 0 0); /* 主背景色 */
+
+  /* Lavender 色系 - 品牌色 */
+    --color-lavender-50: oklch(96.91% 0.0161 293.76);
+    --color-lavender-100: oklch(94.33% 0.0284 294.59);
+    --color-lavender-200: oklch(89.43% 0.0549 293.28);
+    --color-lavender-300: oklch(81.12% 0.1013 293.57);
+    --color-lavender-400: oklch(70.9% 0.1592 293.54);
+    --color-lavender-500: oklch(65.41% 0.1678 287.14); /* 主品牌色 */
+    --color-lavender-600: oklch(54.13% 0.2466 293.01);
+    --color-lavender-900: oklch(37.96% 0.1783 293.74);
+
+  /* Sunny 色系 */
+    --color-sunny-300: oklch(90.52% 0.1657 98.11);
+    --color-sunny-400: oklch(86.06% 0.1731 91.94);
+    --color-sunny-500: oklch(79.52% 0.1617 86.05);
+
+  /* Coral 色系 */
+    --color-coral-300: oklch(80.97% 0.1061 11.64);
+    --color-coral-400: oklch(71.92% 0.169 13.43);
+
+  /* ========================================
+     BUTTON & INTERACTIVE COLOR SYSTEM
+     按钮与交互元素色彩系统
+     ======================================== */
+
+	  /* Primary - 主要操作 (珊瑚橙 rgb(255 95 64)) */
+    --color-primary: oklch(68% 0.21 25);
+    --color-primary-hover: oklch(72% 0.21 25);
+    --color-primary-active: oklch(64% 0.21 25);
+    --color-on-primary: oklch(100% 0 0);
+
+	  /* Secondary - 次要操作 (紫色) */
+    --color-secondary: oklch(65% 0.17 290);
+    --color-secondary-hover: oklch(70% 0.17 290);
+    --color-secondary-active: oklch(60% 0.17 290);
+    --color-on-secondary: oklch(100% 0 0);
+
+		  /* Ghost - 幽灵按钮（轻量，同层级；hover/active 叠一层薄色）*/
+		    --color-ghost: var(--color-surface-elevated);
+		    --color-ghost-hover: oklch(0% 0 0 / 0.03);
+		    --color-ghost-active: oklch(0% 0 0 / 0.06);
+		    --color-on-ghost: var(--color-text-secondary);
+
+  /* Outline - 描边按钮 */
+    --color-outline: transparent;
+    --color-outline-border: var(--color-surface-border);
+    --color-outline-hover: oklch(0% 0 0 / 0.03);
+    --color-outline-active: oklch(0% 0 0 / 0.06);
+    --color-on-outline: var(--color-text-primary);
+
+  /* Destructive - 危险操作 */
+    --color-destructive: oklch(60% 0.22 25);
+    --color-destructive-hover: oklch(64% 0.22 25);
+    --color-destructive-active: oklch(56% 0.22 25);
+    --color-on-destructive: oklch(100% 0 0);
+
+	  /* Cloud 色系 */
+	    --color-cloud-50: oklch(99.43% 0.0013 286.38); /* 主背景 */
+	    --color-cloud-100: oklch(96.75% 0.0054 274.97);
+	    --color-cloud-200: oklch(93.72% 0.0084 271.33);
+
+	  /* 基础黑白色 */
+	    --color-white: oklch(100% 0 89.88);
+	    --color-black: oklch(0% 0 0);
+
+	  /* 语义 Surface 颜色 */
+	    --color-surface: var(--color-cloud-50);
+	    --color-surface-elevated: var(--color-white);
+	    --color-surface-muted: var(--color-cloud-100);
+	    --color-surface-border: var(--color-slate-900); /* 改为深色描边 */
+	    --color-surface-border-strong: var(--color-black);
+	    --color-surface-overlay: oklch(14.08% 0.0044 285.82 / 0.2);
+	    --color-surface-glass: oklch(100% 0 89.88 / 0.6);
+		
+		  /* 语义文本颜色 */
+		    --color-text-primary: var(--color-black);
+		    --color-text-secondary: var(--color-slate-600);
+		    --color-text-muted: var(--color-slate-400);
+		    --color-text-on-accent: var(--color-white);
+		
+		  /* 语义强调色 - 用于图标、徽章等小元素 */
+		    --color-accent: var(--color-secondary);
+		    --color-accent-soft: oklch(65% 0.17 290 / 0.15);
+		    --color-accent-cyan: oklch(75% 0.12 200);
+
+		  /* 状态颜色 */
+		    --color-success: oklch(65% 0.15 145);
+		    --color-success-soft: oklch(65% 0.15 145 / 0.15);
+		    --color-danger: var(--color-destructive);
+		    --color-danger-soft: oklch(60% 0.22 25 / 0.15);
+		    --color-warning: oklch(75% 0.15 85);
+		    --color-warning-soft: oklch(75% 0.15 85 / 0.15);
+		    --color-info: oklch(65% 0.12 240);
+		    --color-info-soft: oklch(65% 0.12 240 / 0.15);
+		
+		  /* 语义渐变 */
+		    --gradient-accent: linear-gradient(135deg, var(--color-lavender-500), var(--color-lavender-600));
+		    --gradient-accent-soft: linear-gradient(135deg, var(--color-lavender-400), var(--color-coral-400));
+
+	  /* Logo 专用色（从现有色板中抽取/扩展） */
+	    --color-logo-glass: var(--color-white);
+	    --color-logo-highlight: var(--color-sunny-300);
+	    --color-logo-soft-1: oklch(99.46% 0.0026 286.35);
+	    --color-logo-soft-2: var(--color-cloud-100);
+	    --color-logo-accent-1: oklch(60.56% 0.2189 292.72);
+	    --color-logo-accent-2: oklch(65.59% 0.2118 354.31);
+
+	  /* ========== 阴影系统 ========== */
+	    --shadow-soft: 0 4px 20px -2px oklch(65.41% 0.1678 287.14 / 0.1);
+	    --shadow-soft-hover: 0 10px 25px -3px oklch(65.41% 0.1678 287.14 / 0.15), 0 4px 6px -2px oklch(65.41% 0.1678 287.14 / 0.05);
+	    --shadow-glow: 0 0 15px oklch(65.41% 0.1678 287.14 / 0.3);
+
+	  /* ========== 字体系统 ========== */
+	  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	  --font-size-heading: 1.125rem;
+	  --font-line-height-heading: 1.4;
+	  --font-weight-heading: 700;
+	  --font-size-body: 0.875rem;
+	  --font-line-height-body: 1.5;
+	  --font-weight-body: 500;
+	  --font-size-base: 1rem;
+	  --font-line-height-base: 1.5;
+	  --font-size-small: 0.75rem;
+	  --font-line-height-small: 1.4;
+	  --font-size-label: 0.625rem;
+	  --font-line-height-label: 1.4;
+	  --font-weight-label: 700;
+	}
+
+		/* ========== 深色模式变量 ========== */
+		/* 当 <html class="dark"> 时，这些变量会覆盖上方的默认值 */
+		:root:has(.dark, .dark *),
+		.dark {
+			    --color-slate-950: oklch(10% 0 89.88);
+			    --color-surface: var(--color-slate-950);
+			    --color-surface-elevated: var(--color-slate-900);
+			    --color-surface-muted: oklch(14.08% 0.0044 285.82 / 0.6);
+			    --color-surface-border: var(--color-slate-600);
+			    --color-surface-border-strong: var(--color-slate-300);
+			    --color-surface-overlay: oklch(10% 0 89.88 / 0.6);
+			    --color-surface-glass: oklch(14.08% 0.0044 285.82 / 0.6);
+			    --color-text-primary: var(--color-white);
+			    --color-text-secondary: var(--color-slate-300);
+			    --color-text-muted: var(--color-slate-500);
+			    --color-text-on-accent: var(--color-black);
+		
+			  /* 深色模式按钮颜色调整 */
+			    --color-ghost: var(--color-surface-elevated);
+			    --color-ghost-hover: oklch(100% 0 0 / 0.06);
+			    --color-ghost-active: oklch(100% 0 0 / 0.10);
+			    --color-outline-hover: oklch(100% 0 0 / 0.05);
+			    --color-outline-active: oklch(100% 0 0 / 0.08);
+		
+			    --color-accent: var(--color-secondary);
+			    --color-accent-soft: oklch(32% 0.13 290 / 0.55);
+			    --gradient-accent: linear-gradient(135deg, var(--color-lavender-400), var(--color-lavender-600));
+			    --gradient-accent-soft: linear-gradient(135deg, var(--color-lavender-400), var(--color-coral-400));
+		    --shadow-soft: 0 4px 20px -2px oklch(0% 0 0 / 0.3);
+		    --shadow-glow: 0 0 20px oklch(65.41% 0.1678 287.14 / 0.2);
+		}

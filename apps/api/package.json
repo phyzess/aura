@@ -1,0 +1,28 @@
+{
+	"name": "@aura/api",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"main": "src/index.ts",
+	"scripts": {
+		"dev": "wrangler dev",
+		"dev:prod": "wrangler dev --env production",
+		"deploy": "wrangler deploy --env production",
+		"db:generate": "drizzle-kit generate --config=drizzle.config.ts",
+		"db:migrate:local": "wrangler d1 migrations apply aura-db --env production --local",
+		"db:migrate:remote": "wrangler d1 migrations apply aura-db --env production --remote"
+	},
+	"dependencies": {
+		"@aura/config": "workspace:*",
+		"better-auth": "^1.4.7",
+		"better-auth-cloudflare": "^0.2.9",
+		"drizzle-orm": "^0.45.1",
+		"hono": "^4.11.1"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20251217.0",
+		"@types/node": "^25.0.2",
+		"drizzle-kit": "^0.31.8",
+		"wrangler": "^4.55.0"
+	}
+}

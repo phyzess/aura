@@ -1,0 +1,11 @@
+{
+	"name": "@aura/config",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"main": "src/index.ts",
+	"types": "src/index.ts",
+	"dependencies": {
+		"valibot": "^1.2.0"
+	}
+}
