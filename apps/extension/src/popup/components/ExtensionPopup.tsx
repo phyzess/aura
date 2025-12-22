@@ -1,10 +1,14 @@
+import { useSetAtom } from "jotai";
 import { ExternalLink } from "lucide-react";
 import type React from "react";
 import { useMemo, useRef, useState } from "react";
 import { useTabSearch } from "@/hooks/useTabSearch";
+import { clearLocalDataAtom, signOutAtom } from "@/store/actions";
 import { ChromeService } from "../../services/chrome";
 import type { Collection, TabItem, User, Workspace } from "../../types";
+import { ExtensionPopupAuthDrawer } from "./ExtensionPopupAuthDrawer";
 import { ExtensionPopupHeader } from "./ExtensionPopupHeader";
+import { ExtensionPopupLogoutDrawer } from "./ExtensionPopupLogoutDrawer";
 import { ExtensionPopupMainContent } from "./ExtensionPopupMainContent";
 import { ExtensionPopupSaveDrawer } from "./ExtensionPopupSaveDrawer";
 
@@ -15,7 +19,6 @@ interface ExtensionPopupProps {
 	currentUser: User | null;
 	onCapture: (payload: any) => void;
 	onClose: () => void;
-	onOpenAuth: () => void;
 }
 
 type ViewLevel = "workspaces" | "collections" | "tabs";
@@ -27,7 +30,6 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 	currentUser,
 	onCapture,
 	onClose,
-	onOpenAuth,
 }) => {
 	const [viewLevel, setViewLevel] = useState<ViewLevel>("workspaces");
 	const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(
@@ -45,9 +47,13 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 		clear: clearSearch,
 	} = useTabSearch({ tabs });
 	const inputRef = useRef<HTMLInputElement>(null);
+	const signOut = useSetAtom(signOutAtom);
+	const clearLocalData = useSetAtom(clearLocalDataAtom);
 
 	// --- SAVE SESSION DRAWER STATE ---
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+	const [isAuthDrawerOpen, setIsAuthDrawerOpen] = useState(false);
+	const [isLogoutDrawerOpen, setIsLogoutDrawerOpen] = useState(false);
 	const [sessionTabs, setSessionTabs] = useState<Partial<TabItem>[]>([]);
 	const [checkedTabs, setCheckedTabs] = useState<Set<number>>(new Set());
 
@@ -133,6 +139,27 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			newCollectionName: targetColId === "new" ? newColName : undefined,
 		});
 		setIsDrawerOpen(false);
+	};
+
+	const handleOpenAuthDrawer = () => {
+		setIsAuthDrawerOpen(true);
+	};
+
+	const handleOpenLogoutDrawer = () => {
+		setIsLogoutDrawerOpen(true);
+	};
+
+	const handleConfirmLogout = async ({
+		clearLocalData: shouldClear,
+	}: {
+		clearLocalData: boolean;
+	}) => {
+		const ok = await signOut();
+		if (!ok) return;
+		if (shouldClear) {
+			await clearLocalData();
+		}
+		setIsLogoutDrawerOpen(false);
 	};
 
 	// Options for Drawer Selects
@@ -229,8 +256,9 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			<ExtensionPopupHeader
 				searchQuery={searchQuery}
 				breadcrumbs={breadcrumbs}
-				showLoginButton={!currentUser}
-				onLoginClick={onOpenAuth}
+				currentUserEmail={currentUser?.email}
+				onOpenAuth={handleOpenAuthDrawer}
+				onSignOut={handleOpenLogoutDrawer}
 				onOpenSaveDrawer={handleOpenSaveDrawer}
 				onSearchChange={setSearchQuery}
 				onClearSearch={handleClearSearch}
@@ -289,6 +317,15 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 				onChangeNewWorkspaceName={setNewWsName}
 				onChangeNewCollectionName={setNewColName}
 				onConfirmSave={handleConfirmSave}
+			/>
+			<ExtensionPopupAuthDrawer
+				isOpen={isAuthDrawerOpen}
+				onClose={() => setIsAuthDrawerOpen(false)}
+			/>
+			<ExtensionPopupLogoutDrawer
+				isOpen={isLogoutDrawerOpen}
+				onClose={() => setIsLogoutDrawerOpen(false)}
+				onConfirm={handleConfirmLogout}
 			/>
 		</div>
 	);

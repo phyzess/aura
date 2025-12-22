@@ -1,15 +1,24 @@
 import { useAtomValue } from "jotai";
+import { X } from "lucide-react";
+import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Dialog } from "@/components/ui/Dialog";
+import { Drawer } from "@/components/ui/Drawer";
+import { IconButton } from "@/components/ui/IconButton";
 import { authErrorAtom, authStatusAtom } from "@/store/atoms";
 
-interface LogoutConfirmBaseProps {
+interface ExtensionPopupLogoutDrawerProps {
+	isOpen: boolean;
 	onClose: () => void;
-	onConfirm: (options: { clearLocalData: boolean }) => void;
+	onConfirm: (options: { clearLocalData: boolean }) => void | Promise<void>;
 }
 
-export const LogoutConfirmContent: React.FC<LogoutConfirmBaseProps> = ({
+interface PopupLogoutContentProps {
+	onClose: () => void;
+	onConfirm: (options: { clearLocalData: boolean }) => void | Promise<void>;
+}
+
+const PopupLogoutContent: React.FC<PopupLogoutContentProps> = ({
 	onClose,
 	onConfirm,
 }) => {
@@ -31,17 +40,30 @@ export const LogoutConfirmContent: React.FC<LogoutConfirmBaseProps> = ({
 		"border-surface-border/80 bg-surface-muted/60 hover:bg-surface-muted/80 hover:border-accent/60";
 
 	return (
-		<div className="flex flex-col gap-5">
-			<div className="flex flex-col gap-2 max-w-md mx-auto w-full">
-				<h3 className="text-xl font-bold text-primary tracking-tight">
-					Log out
-				</h3>
-				<p className="mt-1 text-[13px] text-secondary leading-relaxed">
-					You can choose whether to clear the spaces, collections, and tabs
-					saved on this device.
-				</p>
+		<div className="flex flex-col max-w-md mx-auto w-full">
+			<div className="px-5 pt-4 pb-2 shrink-0 flex items-start justify-between">
+				<div className="pr-4">
+					<h2 className="text-base font-semibold text-primary tracking-tight">
+						Log out
+					</h2>
+					<p className="mt-1 text-[11px] text-secondary leading-snug">
+						You can choose whether to clear the spaces, collections, and tabs
+						saved on this device.
+					</p>
+				</div>
+				<IconButton
+					type="button"
+					variant="subtle"
+					size="sm"
+					aria-label="Close logout drawer"
+					onClick={onClose}
+					className="w-7 h-7 bg-surface-muted text-muted hover:text-secondary hover:bg-surface-elevated"
+				>
+					<X size={14} />
+				</IconButton>
 			</div>
-			<div className="space-y-3 text-xs max-w-md mx-auto w-full">
+
+			<div className="px-5 pt-1 pb-2 space-y-3 text-xs">
 				<button
 					type="button"
 					onClick={() => setChoice("keep")}
@@ -72,10 +94,10 @@ export const LogoutConfirmContent: React.FC<LogoutConfirmBaseProps> = ({
 					</p>
 				</button>
 			</div>
-			{error && (
-				<p className="text-xs text-red-500 max-w-md mx-auto w-full">{error}</p>
-			)}
-			<div className="flex gap-3 w-full mt-1 max-w-md mx-auto">
+
+			{error && <p className="px-5 pb-1 text-[11px] text-red-500">{error}</p>}
+
+			<div className="px-5 py-3 border-t border-surface-border bg-surface-elevated flex gap-2 mt-1">
 				<Button
 					variant="ghost"
 					onClick={onClose}
@@ -97,23 +119,16 @@ export const LogoutConfirmContent: React.FC<LogoutConfirmBaseProps> = ({
 	);
 };
 
-interface LogoutConfirmDialogProps extends LogoutConfirmBaseProps {
-	isOpen: boolean;
-}
-
-export const LogoutConfirmDialog: React.FC<LogoutConfirmDialogProps> = ({
-	isOpen,
-	onClose,
-	onConfirm,
-}) => {
+export const ExtensionPopupLogoutDrawer: React.FC<
+	ExtensionPopupLogoutDrawerProps
+> = ({ isOpen, onClose, onConfirm }) => {
 	return (
-		<Dialog
+		<Drawer
 			isOpen={isOpen}
 			onClose={onClose}
-			size="md"
-			className="shadow-soft border border-surface px-7 py-6 animate-in fade-in zoom-in-95 duration-200"
+			className="bg-surface-elevated rounded-t-4xl shadow-soft flex flex-col border-t border-surface"
 		>
-			<LogoutConfirmContent onClose={onClose} onConfirm={onConfirm} />
-		</Dialog>
+			<PopupLogoutContent onClose={onClose} onConfirm={onConfirm} />
+		</Drawer>
 	);
 };

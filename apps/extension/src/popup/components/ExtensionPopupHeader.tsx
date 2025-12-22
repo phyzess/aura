@@ -1,4 +1,4 @@
-import { LogIn, Save } from "lucide-react";
+import { DoorOpen, LogIn, Save } from "lucide-react";
 import type React from "react";
 import { Button } from "@/components/ui/Button";
 import { SearchInput } from "@/components/ui/SearchInput";
@@ -7,8 +7,9 @@ import { AuraLogo } from "../../components/AuraLogo";
 interface ExtensionPopupHeaderProps {
 	searchQuery: string;
 	breadcrumbs: { label: string; onClick?: () => void; isCurrent?: boolean }[];
-	showLoginButton?: boolean;
-	onLoginClick?: () => void;
+	currentUserEmail?: string | null;
+	onOpenAuth?: () => void;
+	onSignOut?: () => void;
 	onOpenSaveDrawer: () => void;
 	onSearchChange: (value: string) => void;
 	onClearSearch: () => void;
@@ -18,8 +19,9 @@ interface ExtensionPopupHeaderProps {
 export const ExtensionPopupHeader: React.FC<ExtensionPopupHeaderProps> = ({
 	searchQuery,
 	breadcrumbs,
-	showLoginButton = false,
-	onLoginClick,
+	currentUserEmail,
+	onOpenAuth,
+	onSignOut,
 	onOpenSaveDrawer,
 	onSearchChange,
 	onClearSearch,
@@ -47,17 +49,29 @@ export const ExtensionPopupHeader: React.FC<ExtensionPopupHeaderProps> = ({
 							Save tabs
 						</span>
 					</Button>
-					{showLoginButton && (
+					{!currentUserEmail ? (
 						<Button
 							type="button"
-							onClick={onLoginClick}
+							onClick={onOpenAuth}
 							variant="ghost"
 							iconOnly
 							className="w-8 h-8 rounded-lg"
-							aria-label="Log in to sync"
-							title="Log in to sync"
+							aria-label="Log in / Sign up"
+							title="Log in / Sign up"
 						>
 							<LogIn size={14} />
+						</Button>
+					) : (
+						<Button
+							type="button"
+							onClick={onSignOut}
+							variant="ghost"
+							iconOnly
+							className="w-8 h-8 rounded-lg"
+							aria-label="Log out"
+							title="Log out"
+						>
+							<DoorOpen size={14} />
 						</Button>
 					)}
 				</div>

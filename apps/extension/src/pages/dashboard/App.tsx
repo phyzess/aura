@@ -93,14 +93,14 @@ export default function App() {
 				collections={collections}
 				tabs={tabs}
 				activeWorkspaceId={activeWorkspaceId}
+				currentUserEmail={currentUser?.email ?? null}
+				onOpenAuth={() => setIsAuthOpen(true)}
+				onSignOut={() => setIsLogoutDialogOpen(true)}
 			/>
 			<div className="flex flex-1 flex-col">
 				<Header
 					workspaceName={activeWorkspace?.name || "Dashboard"}
 					onOpenSearch={() => setIsSearchOpen(true)}
-					currentUserEmail={currentUser?.email ?? null}
-					onOpenAuth={() => setIsAuthOpen(true)}
-					onSignOut={() => setIsLogoutDialogOpen(true)}
 				/>
 				<WorkspaceView
 					workspaceId={activeWorkspaceId}

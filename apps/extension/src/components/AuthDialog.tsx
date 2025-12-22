@@ -8,12 +8,12 @@ import { IconButton } from "@/components/ui/IconButton";
 import { TextField } from "@/components/ui/TextField";
 import { signInAtom, signUpAtom } from "@/store/actions";
 
-interface AuthDialogProps {
-	isOpen: boolean;
+interface AuthFormProps {
+	onSuccess: () => void;
 	onClose: () => void;
 }
 
-export const AuthDialog: React.FC<AuthDialogProps> = ({ isOpen, onClose }) => {
+export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 	const [mode, setMode] = useState<"login" | "register">("login");
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
@@ -42,7 +42,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ isOpen, onClose }) => {
 					password: password.trim(),
 				});
 			}
-			onClose();
+			onSuccess();
 		} catch (err) {
 			setError(
 				err instanceof Error
@@ -55,12 +55,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ isOpen, onClose }) => {
 	};
 
 	return (
-		<Dialog
-			isOpen={isOpen}
-			onClose={onClose}
-			size="md"
-			className="shadow-2xl ring-1 ring-white/50 dark:ring-slate-800 overflow-hidden"
-		>
+		<div className="relative overflow-hidden">
 			<div className="absolute inset-x-0 top-0 h-20 bg-gradient-accent-soft/20" />
 
 			<div className="relative p-6">
@@ -164,6 +159,24 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ isOpen, onClose }) => {
 					</Button>
 				</form>
 			</div>
+		</div>
+	);
+};
+
+interface AuthDialogProps {
+	isOpen: boolean;
+	onClose: () => void;
+}
+
+export const AuthDialog: React.FC<AuthDialogProps> = ({ isOpen, onClose }) => {
+	return (
+		<Dialog
+			isOpen={isOpen}
+			onClose={onClose}
+			size="md"
+			className="shadow-2xl ring-1 ring-white/50 dark:ring-slate-800 overflow-hidden"
+		>
+			<AuthForm onSuccess={onClose} onClose={onClose} />
 		</Dialog>
 	);
 };

@@ -56,10 +56,6 @@ export default function App() {
 		openDashboard();
 	};
 
-	const handleOpenAuth = () => {
-		openDashboard({ openAuth: true });
-	};
-
 	if (isLoading) {
 		return (
 			<div className="w-100 h-150 flex items-center justify-center bg-cloud-50 dark:bg-cloud-950">
@@ -76,7 +72,6 @@ export default function App() {
 			currentUser={currentUser}
 			onCapture={handleCapture}
 			onClose={handleClose}
-			onOpenAuth={handleOpenAuth}
 		/>
 	);
 }

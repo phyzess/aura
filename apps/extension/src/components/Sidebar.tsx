@@ -1,5 +1,12 @@
 import { useSetAtom } from "jotai";
-import { Pencil, Plus, RotateCw, Trash2, UploadCloud } from "lucide-react";
+import {
+	LogIn,
+	Pencil,
+	Plus,
+	RotateCw,
+	Trash2,
+	UploadCloud,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/IconButton";
@@ -16,12 +23,16 @@ import type { Collection, TabItem, Workspace } from "@/types";
 import { AuraLogo } from "./AuraLogo";
 import { ConfirmModal } from "./ConfirmModal";
 import { ImportModal } from "./ImportModal";
+import { UserMenu } from "./UserMenu";
 
 interface SidebarProps {
 	workspaces: Workspace[];
 	collections: Collection[];
 	tabs: TabItem[];
 	activeWorkspaceId: string | null;
+	currentUserEmail?: string | null;
+	onOpenAuth?: () => void;
+	onSignOut?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -29,6 +40,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 	collections,
 	/* tabs, */
 	activeWorkspaceId,
+	currentUserEmail,
+	onOpenAuth,
+	onSignOut,
 }) => {
 	const setActiveWorkspaceId = useSetAtom(activeWorkspaceIdAtom);
 	const createWorkspace = useSetAtom(createWorkspaceAtom);
@@ -220,7 +234,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 								type="button"
 								onClick={() => setIsImportModalOpen(true)}
 								title="Import Data"
-								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated/90 hover:shadow-sm rounded-xl transition-all"
+								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated/90 hover:shadow-sm rounded-tl-2xl transition-all cursor-pointer"
 							>
 								<UploadCloud size={14} />
 								<span>Import</span>
@@ -228,11 +242,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
 							<button
 								type="button"
 								title="Sync Data"
-								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated/90 hover:shadow-sm rounded-xl transition-all"
+								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated/90 hover:shadow-sm rounded-tr-2xl transition-all cursor-pointer"
 							>
 								<RotateCw size={14} />
 								<span>Sync</span>
 							</button>
+						</div>
+						<div className="mt-px rounded-b-2xl bg-surface-elevated hover:shadow-sm transition-shadow">
+							{!currentUserEmail ? (
+								<button
+									type="button"
+									onClick={() => onOpenAuth?.()}
+									title="Log in"
+									className="flex h-8 w-full items-center justify-center gap-2 px-3 text-xs font-semibold text-secondary hover:bg-surface-elevated/90 hover:shadow-sm rounded-b-2xl transition-all cursor-pointer"
+								>
+									<LogIn size={14} />
+									<span>Log in</span>
+								</button>
+							) : (
+								<UserMenu
+									currentUserEmail={currentUserEmail}
+									onOpenAuth={onOpenAuth}
+									onSignOut={onSignOut}
+								/>
+							)}
 						</div>
 					</div>
 				</div>
