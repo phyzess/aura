@@ -15,7 +15,10 @@ export default defineManifest({
 		default_popup: "src/popup/index.html",
 	},
 	permissions: ["tabs"],
-	host_permissions: ["http://localhost:8787/*"],
+	host_permissions: [
+		"http://localhost:8787/*",
+		"https://aura-api.phyzess.me/*",
+	],
 	web_accessible_resources: [
 		{
 			resources: ["pages/dashboard.html"],

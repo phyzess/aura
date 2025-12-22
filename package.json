@@ -12,7 +12,7 @@
 		"preview:extension": "pnpm --filter @aura/extension preview",
 		"dev:api": "pnpm --filter @aura/api dev",
 		"dev:api:prod": "pnpm --filter @aura/api dev:prod",
-		"deploy:api": "pnpm --filter @aura/api deploy",
+		"deploy:api": "pnpm --filter @aura/api run deploy",
 		"db:migrate:local": "pnpm --filter @aura/api db:migrate:local",
 		"db:migrate:remote": "pnpm --filter @aura/api db:migrate:remote",
 		"lint": "biome check",
