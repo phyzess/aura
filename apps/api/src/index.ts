@@ -310,10 +310,16 @@ app.post("/api/app/sync/push", async (c) => {
 				)
 			: [];
 
+		const hasWorkspaceItems =
+			Array.isArray(payload.workspaces) && payload.workspaces.length > 0;
+		const hasCollectionItems =
+			Array.isArray(payload.collections) && payload.collections.length > 0;
+		const hasTabItems = Array.isArray(payload.tabs) && payload.tabs.length > 0;
+
 		if (
-			(payload.workspaces && workspacesInput.length === 0) ||
-			(payload.collections && collectionsInput.length === 0) ||
-			(payload.tabs && tabsInput.length === 0)
+			(hasWorkspaceItems && workspacesInput.length === 0) ||
+			(hasCollectionItems && collectionsInput.length === 0) ||
+			(hasTabItems && tabsInput.length === 0)
 		) {
 			return c.json({ error: "Invalid payload items" }, 400);
 		}
