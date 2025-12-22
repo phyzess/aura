@@ -1,6 +1,8 @@
+import { useAtomValue } from "jotai";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import { authErrorAtom, authStatusAtom } from "@/store/atoms";
 
 interface LogoutConfirmDialogProps {
 	isOpen: boolean;
@@ -14,8 +16,12 @@ export const LogoutConfirmDialog: React.FC<LogoutConfirmDialogProps> = ({
 	onConfirm,
 }) => {
 	const [choice, setChoice] = useState<"keep" | "clear">("keep");
+	const status = useAtomValue(authStatusAtom);
+	const error = useAtomValue(authErrorAtom);
+	const isSigningOut = status === "signingOut";
 
 	const handleConfirm = () => {
+		if (isSigningOut) return;
 		onConfirm({ clearLocalData: choice === "clear" });
 	};
 
@@ -74,12 +80,27 @@ export const LogoutConfirmDialog: React.FC<LogoutConfirmDialogProps> = ({
 						</p>
 					</button>
 				</div>
+				{error && (
+					<p className="text-xs text-red-500 max-w-md mx-auto w-full">
+						{error}
+					</p>
+				)}
 				<div className="flex gap-3 w-full mt-1 max-w-md mx-auto">
-					<Button variant="ghost" onClick={onClose} className="flex-1">
+					<Button
+						variant="ghost"
+						onClick={onClose}
+						className="flex-1"
+						disabled={isSigningOut}
+					>
 						Cancel
 					</Button>
-					<Button variant="primary" onClick={handleConfirm} className="flex-1">
-						Continue
+					<Button
+						variant="primary"
+						onClick={handleConfirm}
+						className="flex-1"
+						disabled={isSigningOut}
+					>
+						{isSigningOut ? "Logging out..." : "Continue"}
 					</Button>
 				</div>
 			</div>

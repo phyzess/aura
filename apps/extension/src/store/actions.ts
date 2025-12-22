@@ -11,6 +11,8 @@ import type {
 } from "@/types";
 import {
 	activeWorkspaceIdAtom,
+	authErrorAtom,
+	authStatusAtom,
 	collectionsAtom,
 	currentUserAtom,
 	isLoadingAtom,
@@ -462,9 +464,30 @@ export const signInAtom = atom(
 	},
 );
 
-export const signOutAtom = atom(null, async (_get, set) => {
-	await authClient.signOut();
-	set(currentUserAtom, null);
+export const signOutAtom = atom(null, async (get, set) => {
+	set(authStatusAtom, "signingOut");
+	set(authErrorAtom, null);
+
+	try {
+		await authClient.signOut();
+		await set(loadCurrentUserAtom);
+
+		const user = get(currentUserAtom);
+		const ok = !user;
+		if (!ok) {
+			set(authErrorAtom, "Failed to sign out. Please try again.");
+		}
+		return ok;
+	} catch (err) {
+		console.error("Sign out failed", err);
+		set(
+			authErrorAtom,
+			"Failed to sign out. Please check your connection and try again.",
+		);
+		return false;
+	} finally {
+		set(authStatusAtom, "idle");
+	}
 });
 
 export const clearLocalDataAtom = atom(null, async (_get, set) => {

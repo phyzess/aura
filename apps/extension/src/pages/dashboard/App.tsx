@@ -114,7 +114,10 @@ export default function App() {
 					isOpen={isLogoutDialogOpen}
 					onClose={() => setIsLogoutDialogOpen(false)}
 					onConfirm={async ({ clearLocalData: shouldClear }) => {
-						await signOut();
+						const ok = await signOut();
+						if (!ok) {
+							return;
+						}
 						if (shouldClear) {
 							await clearLocalData();
 						}
