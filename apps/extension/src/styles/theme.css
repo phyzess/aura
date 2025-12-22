@@ -152,8 +152,8 @@
 		.dark {
 			    --color-slate-950: oklch(10% 0 89.88);
 			    --color-surface: var(--color-slate-950);
-			    --color-surface-elevated: var(--color-slate-900);
-			    --color-surface-muted: oklch(14.08% 0.0044 285.82 / 0.6);
+				    --color-surface-elevated: var(--color-slate-900);
+				    --color-surface-muted: var(--color-slate-800);
 			    --color-surface-border: var(--color-slate-600);
 			    --color-surface-border-strong: var(--color-slate-300);
 			    --color-surface-overlay: oklch(10% 0 89.88 / 0.6);
