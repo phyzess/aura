@@ -251,12 +251,16 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 		selectedCollectionId,
 	]);
 
+	const userLabel = currentUser
+		? (currentUser.name ?? currentUser.email)
+		: undefined;
+
 	return (
 		<div className="w-90 h-130 bg-surface flex flex-col overflow-hidden relative font-sans shadow-soft">
 			<ExtensionPopupHeader
 				searchQuery={searchQuery}
 				breadcrumbs={breadcrumbs}
-				currentUserEmail={currentUser?.email}
+				currentUserEmail={userLabel}
 				onOpenAuth={handleOpenAuthDrawer}
 				onSignOut={handleOpenLogoutDrawer}
 				onOpenSaveDrawer={handleOpenSaveDrawer}

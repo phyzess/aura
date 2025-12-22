@@ -63,6 +63,7 @@ app.get("/api/app/me", async (c) => {
 	const user: DomainUser = {
 		id: session.user.id,
 		email: session.user.email,
+		name: session.user.name ?? session.user.email,
 		createdAt: toMillis(session.user.createdAt),
 		updatedAt: toMillis(session.user.updatedAt),
 	};

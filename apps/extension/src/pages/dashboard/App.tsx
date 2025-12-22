@@ -86,6 +86,10 @@ export default function App() {
 		);
 	}
 
+	const userLabel = currentUser
+		? (currentUser.name ?? currentUser.email)
+		: null;
+
 	return (
 		<div className="relative flex h-screen bg-cloud-50 dark:bg-slate-950 overflow-hidden">
 			<Sidebar
@@ -93,7 +97,7 @@ export default function App() {
 				collections={collections}
 				tabs={tabs}
 				activeWorkspaceId={activeWorkspaceId}
-				currentUserEmail={currentUser?.email ?? null}
+				currentUserEmail={userLabel}
 				onOpenAuth={() => setIsAuthOpen(true)}
 				onSignOut={() => setIsLogoutDialogOpen(true)}
 			/>

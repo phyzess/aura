@@ -63,9 +63,12 @@ export const UserMenu: React.FC<UserMenuProps> = ({
 				size="md"
 				onClick={() => setIsAccountMenuOpen((open) => !open)}
 				aria-label="Open account menu"
-				className="rounded-full bg-surface-elevated border-surface-border w-full"
+				className="rounded-full bg-surface-elevated border-surface-border w-full justify-center gap-2 px-3"
 			>
 				<User size={16} />
+				{currentUserEmail && (
+					<span className="text-xs truncate">{currentUserEmail}</span>
+				)}
 			</IconButton>
 			{isAccountMenuOpen && (
 				<div className="absolute inset-x-0 bottom-full mb-1 w-full rounded-t-2xl bg-surface shadow-soft z-50 overflow-hidden">
