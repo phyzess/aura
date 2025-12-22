@@ -1,5 +1,6 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
+import * as m from "@/paraglide/messages";
 import { ChromeService } from "@/services/chrome";
 import {
 	captureSessionAtom,
@@ -59,7 +60,9 @@ export default function App() {
 	if (isLoading) {
 		return (
 			<div className="w-100 h-150 flex items-center justify-center bg-cloud-50 dark:bg-cloud-950">
-				<div className="text-cloud-600 dark:text-cloud-400">Loading...</div>
+				<div className="text-cloud-600 dark:text-cloud-400">
+					{m.popup_loading()}
+				</div>
 			</div>
 		);
 	}

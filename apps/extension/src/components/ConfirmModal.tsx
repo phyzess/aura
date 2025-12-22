@@ -1,6 +1,7 @@
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import * as m from "@/paraglide/messages";
 
 interface ConfirmModalProps {
 	isOpen: boolean;
@@ -38,7 +39,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 				</div>
 				<div className="flex gap-3 w-full mt-4">
 					<Button variant="ghost" onClick={onClose} className="flex-1">
-						Cancel
+						{m.common_cancel()}
 					</Button>
 					<Button
 						variant="destructive"
@@ -48,7 +49,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 						}}
 						className="flex-1"
 					>
-						Delete
+						{m.common_delete()}
 					</Button>
 				</div>
 			</div>

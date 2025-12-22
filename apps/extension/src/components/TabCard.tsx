@@ -1,5 +1,6 @@
 import { ExternalLink, Globe, Pin, X } from "lucide-react";
 import { IconButton } from "@/components/ui/IconButton";
+import * as m from "@/paraglide/messages";
 import type { TabItem } from "@/types";
 
 interface TabCardProps {
@@ -53,8 +54,8 @@ export const TabCard: React.FC<TabCardProps> = ({
 					onClick={() => window.open(tab.url, "_blank")}
 					variant="subtle"
 					size="sm"
-					title="Open link"
-					aria-label="Open link"
+					title={m.tab_card_open_link_title()}
+					aria-label={m.tab_card_open_link_title()}
 					className="w-6 h-6 md:w-7 md:h-7 text-muted hover:bg-surface-muted hover:text-primary"
 				>
 					<ExternalLink size={14} />
@@ -67,8 +68,8 @@ export const TabCard: React.FC<TabCardProps> = ({
 					}}
 					variant="danger"
 					size="sm"
-					title="Delete tab"
-					aria-label="Delete tab"
+					title={m.tab_card_delete_tab_title()}
+					aria-label={m.tab_card_delete_tab_title()}
 					className="w-6 h-6 md:w-7 md:h-7 text-muted hover:bg-danger-soft hover:text-danger"
 				>
 					<X size={14} />

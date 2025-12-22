@@ -6,6 +6,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { ShortcutHint } from "@/components/ui/ShortcutHint";
 import { useTabSearch } from "@/hooks/useTabSearch";
+import * as m from "@/paraglide/messages";
 import { ChromeService } from "@/services/chrome";
 import type { Collection, TabItem, Workspace } from "@/types";
 import { TabSearchResultList } from "./TabSearchResultList";
@@ -65,10 +66,10 @@ export const GlobalTabSearchModal: React.FC<GlobalTabSearchModalProps> = ({
 						</div>
 						<div className="flex flex-col">
 							<span className="text-xs font-semibold text-primary">
-								Global Search
+								{m.global_search_title()}
 							</span>
 							<span className="text-[11px] text-secondary">
-								Search across all saved tabs
+								{m.global_search_subtitle()}
 							</span>
 						</div>
 					</div>
@@ -76,7 +77,7 @@ export const GlobalTabSearchModal: React.FC<GlobalTabSearchModalProps> = ({
 						type="button"
 						variant="subtle"
 						size="sm"
-						aria-label="Close search"
+						aria-label={m.global_search_close_aria()}
 						onClick={handleClose}
 						className="mr-2 h-7 w-7 text-muted hover:text-secondary hover:bg-surface-muted"
 					>
@@ -88,7 +89,7 @@ export const GlobalTabSearchModal: React.FC<GlobalTabSearchModalProps> = ({
 						value={query}
 						onChange={setQuery}
 						inputRef={inputRef}
-						placeholder="Search tabs by title or URL..."
+						placeholder={m.global_search_input_placeholder()}
 						shortcutHint={
 							<ShortcutHint
 								keys={["\u2318", "K"]}
@@ -102,21 +103,25 @@ export const GlobalTabSearchModal: React.FC<GlobalTabSearchModalProps> = ({
 				{showIntro && (
 					<div className="py-10 text-center text-xs text-muted">
 						<div className="mb-2 font-semibold text-secondary">
-							Type to search your saved tabs
+							{m.global_search_intro_title()}
 						</div>
 						<div className="opacity-80">
-							You have {tabs.length} tabs in {collections.length} collections
-							across {""}
-							{workspaces.length} spaces
+							{m.global_search_intro_stats({
+								tabCount: tabs.length,
+								collectionCount: collections.length,
+								workspaceCount: workspaces.length,
+							})}
 						</div>
 					</div>
 				)}
 				{showNoResults && (
 					<div className="py-10 text-center text-xs text-muted">
 						<div className="mb-2 font-semibold text-secondary">
-							No matches found
+							{m.global_search_no_results_title()}
 						</div>
-						<div className="opacity-80">Try a different keyword</div>
+						<div className="opacity-80">
+							{m.global_search_no_results_subtitle()}
+						</div>
 					</div>
 				)}
 				{!showIntro && !showNoResults && (

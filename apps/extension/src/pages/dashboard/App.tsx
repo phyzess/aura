@@ -7,6 +7,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { GlobalTabSearchModal } from "@/components/tab-search";
 import { WorkspaceView } from "@/components/WorkspaceView";
 import { useHotkey } from "@/hooks/useHotkey";
+import * as m from "@/paraglide/messages";
 import {
 	clearLocalDataAtom,
 	initDataAtom,
@@ -20,12 +21,16 @@ import {
 	collectionsAtom,
 	currentUserAtom,
 	isLoadingAtom,
+	localeAtom,
 	tabsAtom,
 	workspacesAtom,
 } from "@/store/atoms";
 import { activeWorkspaceAtom } from "@/store/selectors";
 
 export default function App() {
+	// subscribe to locale changes so the whole tree re-renders when language changes
+	useAtomValue(localeAtom);
+
 	const isLoading = useAtomValue(isLoadingAtom);
 	const workspaces = useAtomValue(workspacesAtom);
 	const collections = useAtomValue(collectionsAtom);
@@ -80,7 +85,7 @@ export default function App() {
 		return (
 			<div className="flex h-screen items-center justify-center bg-cloud-50 dark:bg-cloud-950">
 				<div className="text-cloud-600 dark:text-cloud-400">
-					Loading Aura...
+					{m.dashboard_loading()}
 				</div>
 			</div>
 		);
@@ -103,7 +108,7 @@ export default function App() {
 			/>
 			<div className="flex flex-1 flex-col">
 				<Header
-					workspaceName={activeWorkspace?.name || "Dashboard"}
+					workspaceName={activeWorkspace?.name || ""}
 					onOpenSearch={() => setIsSearchOpen(true)}
 				/>
 				<WorkspaceView

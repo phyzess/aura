@@ -3,8 +3,11 @@ import { Moon, Search as SearchIcon, Sun } from "lucide-react";
 import type React from "react";
 import { IconButton } from "@/components/ui/IconButton";
 import { ShortcutHint } from "@/components/ui/ShortcutHint";
+import { changeLocale } from "@/config/locale";
+import * as m from "@/paraglide/messages";
 import { toggleThemeAtom } from "@/store/actions";
-import { themeModeAtom } from "@/store/atoms";
+import { localeAtom, themeModeAtom } from "@/store/atoms";
+import type { Locale } from "@/types/paraglide";
 
 interface HeaderProps {
 	workspaceName: string;
@@ -17,6 +20,13 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
 	const theme = useAtomValue(themeModeAtom);
 	const toggleTheme = useSetAtom(toggleThemeAtom);
+	const locale = useAtomValue(localeAtom);
+	const setLocale = useSetAtom(localeAtom);
+
+	const handleLocaleChange = (next: Locale) => {
+		setLocale(next);
+		changeLocale(next);
+	};
 
 	return (
 		<header className="h-16 sm:h-20 flex items-center px-4 sm:px-6 md:px-8 justify-between shrink-0 z-10">
@@ -35,10 +45,10 @@ export const Header: React.FC<HeaderProps> = ({
 								type="button"
 								onClick={onOpenSearch}
 								className="relative z-10 inline-flex items-center gap-2 px-3 py-1.5 bg-surface-elevated rounded-xl border-2 border-surface-border text-xs font-semibold text-secondary transition-colors hover:border-vibrant-cyan focus:outline-none"
-								aria-label="Search saved tabs (⌘K)"
+								aria-label={m.header_search_button_aria_full()}
 							>
 								<SearchIcon size={14} className="text-muted" />
-								<span>Search</span>
+								<span>{m.header_search_button_label()}</span>
 								<ShortcutHint
 									keys={["\u2318", "K"]}
 									className="hidden sm:inline-flex"
@@ -51,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
 							variant="subtle"
 							size="md"
 							onClick={onOpenSearch}
-							aria-label="Search saved tabs"
+							aria-label={m.header_search_icon_aria()}
 							className="inline-flex md:hidden"
 						>
 							<SearchIcon size={16} className="text-muted" />
@@ -59,14 +69,23 @@ export const Header: React.FC<HeaderProps> = ({
 					</>
 				)}
 
+				<button
+					type="button"
+					onClick={() => handleLocaleChange(locale === "en" ? "zh-CN" : "en")}
+					className="hidden sm:inline-flex items-center rounded-full bg-surface-elevated border-2 border-surface-border px-3 py-1 text-[11px] font-medium text-secondary transition-colors hover:border-vibrant-cyan hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vibrant-cyan"
+					aria-label={m.user_menu_language_label()}
+				>
+					<span>{locale === "en" ? "中文" : "English"}</span>
+				</button>
+
 				<IconButton
 					type="button"
 					variant="subtle"
 					size="md"
 					onClick={toggleTheme}
-					aria-label="Toggle theme"
+					aria-label={m.header_theme_toggle_aria()}
 					className="w-10 h-10 rounded-full bg-surface-elevated border-2 border-surface-border shadow-sm text-secondary hover:text-black dark:hover:text-white hover:bg-vibrant-yellow transition-all hover:scale-105 active:scale-95"
-					title="Toggle Theme"
+					title={m.header_theme_toggle_title()}
 				>
 					{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
 				</IconButton>

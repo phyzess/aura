@@ -9,6 +9,7 @@
 		"baseUrl": ".",
 		"module": "ESNext",
 		"moduleResolution": "bundler",
+		"allowJs": true,
 		"paths": {
 			"@/*": ["src/*"],
 			"@aura/domain": ["../../packages/domain/src"]

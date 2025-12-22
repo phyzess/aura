@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/IconButton";
 import { Input } from "@/components/ui/Input";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import * as m from "@/paraglide/messages";
 import {
 	createWorkspaceAtom,
 	deleteWorkspaceAtom,
@@ -82,10 +83,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 	};
 
 	const handleCreateWorkspace = async () => {
-		const newWorkspace = await createWorkspace("New Space");
+		const defaultName = m.sidebar_new_workspace_default_name();
+		const newWorkspace = await createWorkspace(defaultName);
 		if (newWorkspace) {
 			setEditingId(newWorkspace.id);
-			setEditName("New Space");
+			setEditName(defaultName);
 		}
 	};
 
@@ -151,14 +153,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 					</div>
 
 					<SectionHeader
-						title="My Spaces"
+						title={m.sidebar_my_spaces_title()}
 						action={
 							<div className="flex items-center gap-2">
 								<IconButton
 									onClick={handleCreateWorkspace}
 									variant="accent"
 									size="sm"
-									aria-label="Create new space"
+									aria-label={m.sidebar_create_space_aria()}
 								>
 									<Plus size={14} />
 								</IconButton>
@@ -203,8 +205,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 												onClick={() => startEditing(ws)}
 												variant="subtle"
 												size="sm"
-												title="Rename"
-												aria-label="Rename space"
+												title={m.sidebar_workspace_rename_title()}
+												aria-label={m.sidebar_workspace_rename_aria()}
 												className="text-current"
 											>
 												<Pencil size={12} />
@@ -214,8 +216,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 												onClick={() => handleDeleteClick(ws.id)}
 												variant="danger"
 												size="sm"
-												title="Delete"
-												aria-label="Delete space"
+												title={m.sidebar_workspace_delete_title()}
+												aria-label={m.sidebar_workspace_delete_aria()}
 											>
 												<Trash2 size={12} />
 											</IconButton>
@@ -233,19 +235,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
 							<button
 								type="button"
 								onClick={() => setIsImportModalOpen(true)}
-								title="Import Data"
+								title={m.sidebar_import_button_title()}
 								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated/90 hover:shadow-sm rounded-tl-2xl transition-all cursor-pointer"
 							>
 								<UploadCloud size={14} />
-								<span>Import</span>
+								<span>{m.sidebar_import_button_label()}</span>
 							</button>
 							<button
 								type="button"
-								title="Sync Data"
+								title={m.sidebar_sync_button_title()}
 								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated/90 hover:shadow-sm rounded-tr-2xl transition-all cursor-pointer"
 							>
 								<RotateCw size={14} />
-								<span>Sync</span>
+								<span>{m.sidebar_sync_button_label()}</span>
 							</button>
 						</div>
 						<div className="mt-px rounded-b-2xl bg-surface-elevated hover:shadow-sm transition-shadow">
@@ -253,11 +255,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 								<button
 									type="button"
 									onClick={() => onOpenAuth?.()}
-									title="Log in"
+									title={m.sidebar_login_button_title()}
 									className="flex h-8 w-full items-center justify-center gap-2 px-3 text-xs font-semibold text-secondary hover:bg-surface-elevated/90 hover:shadow-sm rounded-b-2xl transition-all cursor-pointer"
 								>
 									<LogIn size={14} />
-									<span>Log in</span>
+									<span>{m.sidebar_login_button_label()}</span>
 								</button>
 							) : (
 								<UserMenu
@@ -273,8 +275,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 			<ConfirmModal
 				isOpen={deleteConfirmation.isOpen}
-				title="Delete Space?"
-				message="This will permanently delete this space and all its collections. This action cannot be undone."
+				title={m.sidebar_delete_space_modal_title()}
+				message={m.sidebar_delete_space_modal_message()}
 				onConfirm={handleConfirmDelete}
 				onClose={() =>
 					setDeleteConfirmation({ ...deleteConfirmation, isOpen: false })

@@ -2,6 +2,7 @@ import { useAtomValue } from "jotai";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import * as m from "@/paraglide/messages";
 import { authErrorAtom, authStatusAtom } from "@/store/atoms";
 
 interface LogoutConfirmBaseProps {
@@ -34,11 +35,10 @@ export const LogoutConfirmContent: React.FC<LogoutConfirmBaseProps> = ({
 		<div className="flex flex-col gap-5">
 			<div className="flex flex-col gap-2 max-w-md mx-auto w-full">
 				<h3 className="text-xl font-bold text-primary tracking-tight">
-					Log out
+					{m.user_menu_logout()}
 				</h3>
 				<p className="mt-1 text-[13px] text-secondary leading-relaxed">
-					You can choose whether to clear the spaces, collections, and tabs
-					saved on this device.
+					{m.logout_dialog_description()}
 				</p>
 			</div>
 			<div className="space-y-3 text-xs max-w-md mx-auto w-full">
@@ -50,10 +50,10 @@ export const LogoutConfirmContent: React.FC<LogoutConfirmBaseProps> = ({
 					}`}
 				>
 					<div className="text-sm font-semibold text-primary">
-						Only log out, keep local data (recommended)
+						{m.logout_dialog_option_keep_title()}
 					</div>
 					<p className="mt-1 text-[11px] leading-snug text-secondary">
-						Your spaces will stay on this device and remain available offline.
+						{m.logout_dialog_option_keep_body()}
 					</p>
 				</button>
 				<button
@@ -64,11 +64,10 @@ export const LogoutConfirmContent: React.FC<LogoutConfirmBaseProps> = ({
 					}`}
 				>
 					<div className="text-sm font-semibold text-primary">
-						Log out and clear local data
+						{m.logout_dialog_option_clear_title()}
 					</div>
 					<p className="mt-1 text-[11px] leading-snug text-secondary">
-						Best for shared or public devices. This removes your spaces from
-						this browser.
+						{m.logout_dialog_option_clear_body()}
 					</p>
 				</button>
 			</div>
@@ -82,7 +81,7 @@ export const LogoutConfirmContent: React.FC<LogoutConfirmBaseProps> = ({
 					className="flex-1"
 					disabled={isSigningOut}
 				>
-					Cancel
+					{m.common_cancel()}
 				</Button>
 				<Button
 					variant="primary"
@@ -90,7 +89,9 @@ export const LogoutConfirmContent: React.FC<LogoutConfirmBaseProps> = ({
 					className="flex-1"
 					disabled={isSigningOut}
 				>
-					{isSigningOut ? "Logging out..." : "Continue"}
+					{isSigningOut
+						? m.logout_dialog_button_logging_out()
+						: m.logout_dialog_button_continue()}
 				</Button>
 			</div>
 		</div>

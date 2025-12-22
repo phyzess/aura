@@ -1,6 +1,7 @@
 import { ExternalLink, Globe } from "lucide-react";
 import type React from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import * as m from "@/paraglide/messages";
 import { ChromeService } from "../../services/chrome";
 import type { TabItem } from "../../types";
 
@@ -10,7 +11,7 @@ interface TabListProps {
 
 export const TabList: React.FC<TabListProps> = ({ tabs }) => {
 	if (tabs.length === 0) {
-		return <EmptyState title="No tabs in this collection" />;
+		return <EmptyState title={m.popup_tab_list_empty_title()} />;
 	}
 	return (
 		<div className="space-y-1 animate-in slide-in-from-right-4 duration-300">

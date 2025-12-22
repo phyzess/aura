@@ -3,6 +3,7 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
+import * as m from "@/paraglide/messages";
 
 interface UserMenuProps {
 	currentUserEmail?: string | null;
@@ -42,8 +43,8 @@ export const UserMenu: React.FC<UserMenuProps> = ({
 				variant="ghost"
 				iconOnly
 				className="w-8 h-8 rounded-lg"
-				aria-label="Log in / Sign up"
-				title="Log in / Sign up"
+				aria-label={m.user_menu_login_signup_button_label()}
+				title={m.user_menu_login_signup_button_label()}
 			>
 				<LogIn size={14} />
 			</Button>
@@ -62,7 +63,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
 				variant="subtle"
 				size="md"
 				onClick={() => setIsAccountMenuOpen((open) => !open)}
-				aria-label="Open account menu"
+				aria-label={m.user_menu_open_account_menu_aria()}
 				className="rounded-full bg-surface-elevated border-surface-border w-full justify-center gap-2 px-3"
 			>
 				<User size={16} />
@@ -86,7 +87,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
 						}}
 						className="w-full px-3 py-2 text-left text-xs text-secondary hover:bg-surface-muted"
 					>
-						Log out
+						{m.user_menu_logout()}
 					</button>
 				</div>
 			)}

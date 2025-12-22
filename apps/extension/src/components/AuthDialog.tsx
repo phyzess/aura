@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
 import { TextField } from "@/components/ui/TextField";
+import * as m from "@/paraglide/messages";
 import { signInAtom, signUpAtom } from "@/store/actions";
 
 interface AuthFormProps {
@@ -63,19 +64,18 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 					<div>
 						<h2 className="text-xl font-bold text-primary tracking-tight">
 							{mode === "login"
-								? "Sign in to Aura"
-								: "Create your Aura account"}
+								? m.auth_dialog_title_login()
+								: m.auth_dialog_title_register()}
 						</h2>
 						<p className="mt-1 text-body text-secondary font-medium">
-							Sign in to sync your spaces across devices. Local data still works
-							offline.
+							{m.auth_dialog_subtitle()}
 						</p>
 					</div>
 					<IconButton
 						type="button"
 						variant="subtle"
 						size="sm"
-						aria-label="Close auth dialog"
+						aria-label={m.auth_dialog_close_aria()}
 						onClick={onClose}
 					>
 						<X size={18} />
@@ -88,46 +88,46 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 						onClick={() => setMode("login")}
 						className={`flex-1 py-1.5 rounded-full transition-all ${mode === "login" ? "bg-surface-elevated text-primary shadow-sm" : "text-muted"}`}
 					>
-						Log in
+						{m.auth_dialog_tab_login()}
 					</button>
 					<button
 						type="button"
 						onClick={() => setMode("register")}
 						className={`flex-1 py-1.5 rounded-full transition-all ${mode === "register" ? "bg-surface-elevated text-primary shadow-sm" : "text-muted"}`}
 					>
-						Sign up
+						{m.auth_dialog_tab_register()}
 					</button>
 				</div>
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					{mode === "register" && (
 						<TextField
-							label="Name"
+							label={m.auth_dialog_name_label()}
 							type="text"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							placeholder="Your name"
+							placeholder={m.auth_dialog_name_placeholder()}
 							size="md"
 							prefix={<User size={16} />}
 						/>
 					)}
 
 					<TextField
-						label="Email"
+						label={m.auth_dialog_email_label()}
 						type="email"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
-						placeholder="you@example.com"
+						placeholder={m.auth_dialog_email_placeholder()}
 						size="md"
 						prefix={<Mail size={16} />}
 					/>
 
 					<TextField
-						label="Password"
+						label={m.auth_dialog_password_label()}
 						type="password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
-						placeholder="At least 8 characters"
+						placeholder={m.auth_dialog_password_placeholder()}
 						size="md"
 						prefix={<Lock size={16} />}
 					/>
@@ -151,11 +151,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 					>
 						{isSubmitting
 							? mode === "login"
-								? "Signing in..."
-								: "Creating account..."
+								? m.auth_dialog_button_signing_in()
+								: m.auth_dialog_button_creating_account()
 							: mode === "login"
-								? "Sign in"
-								: "Sign up"}
+								? m.auth_dialog_button_sign_in()
+								: m.auth_dialog_button_sign_up()}
 					</Button>
 				</form>
 			</div>

@@ -14,6 +14,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
 import { Select, type SelectOption } from "@/components/ui/Select";
 import { TextField } from "@/components/ui/TextField";
+import * as m from "@/paraglide/messages";
 import type { Collection, Workspace } from "@/types";
 
 interface ImportModalProps {
@@ -45,11 +46,14 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const [targetWorkspaceId, setTargetWorkspaceId] = useState<string>("new");
-	const [newWorkspaceName, setNewWorkspaceName] = useState("Imported Space");
+	const [newWorkspaceName, setNewWorkspaceName] = useState<string>(
+		m.import_modal_default_workspace_name(),
+	);
 
 	const [targetCollectionId, setTargetCollectionId] = useState<string>("new");
-	const [newCollectionName, setNewCollectionName] =
-		useState("My Imported Tabs");
+	const [newCollectionName, setNewCollectionName] = useState<string>(
+		m.import_modal_default_collection_name(),
+	);
 
 	const [destinationMode, setDestinationMode] = useState<
 		| "NEW_SPACE_NEW_COLLECTION"
@@ -66,9 +70,9 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 				setError(null);
 				setIsImporting(false);
 				setTargetWorkspaceId("new");
-				setNewWorkspaceName("Imported Space");
+				setNewWorkspaceName(m.import_modal_default_workspace_name());
 				setTargetCollectionId("new");
-				setNewCollectionName("My Imported Tabs");
+				setNewCollectionName(m.import_modal_default_collection_name());
 				setDestinationMode("NEW_SPACE_NEW_COLLECTION");
 			}, 300);
 			return () => clearTimeout(timer);
@@ -82,7 +86,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 				selectedFile.type !== "application/json" &&
 				!selectedFile.name.endsWith(".json")
 			) {
-				setError("Please select a valid JSON file.");
+				setError(m.import_modal_error_invalid_file_type());
 				return;
 			}
 			setFile(selectedFile);
@@ -94,13 +98,14 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 					const content = event.target?.result as string;
 					const parsed = JSON.parse(content);
 					if (!parsed.lists && !Array.isArray(parsed.lists)) {
-						setError('Invalid Toby backup format. Could not find "lists".');
+						setError(m.import_modal_error_invalid_format());
 						return;
 					}
 					setFileContent(content);
 
 					let defaultName =
-						selectedFile.name.replace(/\.json$/i, "") || "My Imported Tabs";
+						selectedFile.name.replace(/\.json$/i, "") ||
+						m.import_modal_default_collection_name();
 
 					if (parsed.lists.length === 1 && parsed.lists[0].title) {
 						defaultName = parsed.lists[0].title;
@@ -111,7 +116,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
 					setStep(2);
 				} catch (_err) {
-					setError("Failed to parse JSON file.");
+					setError(m.import_modal_error_parse_failed());
 				}
 			};
 			reader.readAsText(selectedFile);
@@ -133,7 +138,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 			onClose();
 		} catch (e) {
 			console.error(e);
-			setError("Import failed. Please try again.");
+			setError(m.import_modal_error_import_failed());
 			setIsImporting(false);
 		}
 	};
@@ -170,16 +175,18 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 		>
 			<div className="p-6 border-b border-surface flex justify-between items-center bg-surface-elevated z-10">
 				<div>
-					<h3 className="text-xl font-bold text-primary">Import from Toby</h3>
+					<h3 className="text-xl font-bold text-primary">
+						{m.import_modal_title()}
+					</h3>
 					<p className="text-body text-secondary">
-						Restore your tabs from backup
+						{m.import_modal_subtitle()}
 					</p>
 				</div>
 				<IconButton
 					type="button"
 					variant="subtle"
 					size="sm"
-					aria-label="Close import modal"
+					aria-label={m.import_modal_close_aria()}
 					onClick={onClose}
 				>
 					<X size={20} />
@@ -209,9 +216,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 						<div className="w-16 h-16 rounded-full bg-accent-soft text-accent flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-accent group-hover:text-on-accent transition-all">
 							<UploadCloud size={32} />
 						</div>
-						<p className="font-bold text-primary">Click to upload JSON</p>
+						<p className="font-bold text-primary">
+							{m.import_modal_upload_cta()}
+						</p>
 						<p className="text-xs text-muted mt-2">
-							Support Toby export format (.json)
+							{m.import_modal_upload_hint()}
 						</p>
 					</div>
 				)}
@@ -225,7 +234,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 							<div className="flex-1 min-w-0">
 								<p className="font-bold text-primary truncate">{file?.name}</p>
 								<p className="text-xs text-success flex items-center gap-1">
-									<Check size={12} /> Ready to parse
+									<Check size={12} /> {m.import_modal_ready_to_parse()}
 								</p>
 							</div>
 							<Button
@@ -238,14 +247,14 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 								}}
 								className="text-xs font-bold"
 							>
-								Change
+								{m.import_modal_change_file_button()}
 							</Button>
 						</div>
 
 						<div className="space-y-5">
 							<div className="space-y-3">
 								<label className="block text-xs font-bold text-muted uppercase tracking-wider">
-									1. Where to import
+									{m.import_modal_step1_heading()}
 								</label>
 
 								<div className="space-y-3">
@@ -267,11 +276,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 										>
 											<div>
 												<p className="text-sm font-semibold text-primary">
-													New space &amp; new collection
+													{m.import_modal_destination_new_space_new_collection_title()}
 												</p>
 												<p className="text-xs text-secondary">
-													Create a new space and a new collection for these
-													tabs.
+													{m.import_modal_destination_new_space_new_collection_body()}
 												</p>
 											</div>
 											{destinationMode === "NEW_SPACE_NEW_COLLECTION" && (
@@ -285,20 +293,20 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 										{destinationMode === "NEW_SPACE_NEW_COLLECTION" && (
 											<div className="mt-3 space-y-3">
 												<TextField
-													label="Space"
+													label={m.import_modal_label_space()}
 													type="text"
 													value={newWorkspaceName}
 													onChange={(e) => setNewWorkspaceName(e.target.value)}
 													size="md"
-													placeholder="Enter Space Name"
+													placeholder={m.import_modal_placeholder_space_name()}
 												/>
 												<TextField
-													label="Collection"
+													label={m.import_modal_label_collection()}
 													type="text"
 													value={newCollectionName}
 													onChange={(e) => setNewCollectionName(e.target.value)}
 													size="md"
-													placeholder="Enter Collection Name"
+													placeholder={m.import_modal_placeholder_collection_name()}
 												/>
 											</div>
 										)}
@@ -329,10 +337,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 										>
 											<div>
 												<p className="text-sm font-semibold text-primary">
-													Existing space, new collection
+													{m.import_modal_destination_existing_space_new_collection_title()}
 												</p>
 												<p className="text-xs text-secondary">
-													Add a new collection into one of your existing spaces.
+													{m.import_modal_destination_existing_space_new_collection_body()}
 												</p>
 											</div>
 											{destinationMode === "EXISTING_SPACE_NEW_COLLECTION" && (
@@ -348,7 +356,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 												<div className="mt-3 space-y-3">
 													<div>
 														<label className="block text-[11px] font-semibold text-secondary mb-1 ml-0.5">
-															Space
+															{m.import_modal_label_space()}
 														</label>
 														<Select
 															options={workspaceOptions}
@@ -358,20 +366,20 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 																setTargetCollectionId("new");
 															}}
 															icon={<Layers size={14} />}
-															placeholder="Choose a Space..."
+															placeholder={m.import_modal_placeholder_choose_space()}
 															size="md"
 														/>
 													</div>
 													<div>
 														<TextField
-															label="New collection"
+															label={m.import_modal_label_new_collection()}
 															type="text"
 															value={newCollectionName}
 															onChange={(e) =>
 																setNewCollectionName(e.target.value)
 															}
 															size="md"
-															placeholder="Enter Collection Name"
+															placeholder={m.import_modal_placeholder_collection_name()}
 														/>
 													</div>
 												</div>
@@ -432,10 +440,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 										>
 											<div>
 												<p className="text-sm font-semibold text-primary">
-													Existing space &amp; existing collection
+													{m.import_modal_destination_existing_space_existing_collection_title()}
 												</p>
 												<p className="text-xs text-secondary">
-													Put tabs into one of your existing collections.
+													{m.import_modal_destination_existing_space_existing_collection_body()}
 												</p>
 											</div>
 											{destinationMode ===
@@ -452,7 +460,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 												<div className="mt-3 space-y-3">
 													<div>
 														<label className="block text-[11px] font-semibold text-secondary mb-1 ml-0.5">
-															Space
+															{m.import_modal_label_space()}
 														</label>
 														<Select
 															options={workspaceWithCollectionsOptions}
@@ -472,20 +480,20 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 																}
 															}}
 															icon={<Layers size={14} />}
-															placeholder="Choose a Space..."
+															placeholder={m.import_modal_placeholder_choose_space()}
 															size="md"
 														/>
 													</div>
 													<div>
 														<label className="block text-[11px] font-semibold text-secondary mb-1 ml-0.5">
-															Collection
+															{m.import_modal_label_collection()}
 														</label>
 														<Select
 															options={collectionOptions}
 															value={targetCollectionId}
 															onChange={setTargetCollectionId}
 															icon={<FolderOpen size={14} />}
-															placeholder="Choose a Collection..."
+															placeholder={m.import_modal_placeholder_choose_collection()}
 															size="md"
 														/>
 													</div>
@@ -501,7 +509,9 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 								fullWidth
 								className="mt-4 disabled:cursor-wait flex items-center justify-center gap-2"
 							>
-								{isImporting ? "Importing..." : "Start Import"}
+								{isImporting
+									? m.import_modal_button_importing()
+									: m.import_modal_button_start()}
 								{!isImporting && <ArrowRight size={18} />}
 							</Button>
 						</div>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
 import { TextField } from "@/components/ui/TextField";
+import * as m from "@/paraglide/messages";
 
 interface AddTabModalProps {
 	isOpen: boolean;
@@ -41,7 +42,7 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 					.hostname;
 				finalTitle = domain.replace("www.", "");
 			} catch (_e) {
-				finalTitle = "New Tab";
+				finalTitle = m.add_tab_modal_fallback_title();
 			}
 		}
 
@@ -67,12 +68,12 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 				<div className="flex justify-between items-start mb-6">
 					<div>
 						<h3 className="text-xl font-bold text-primary tracking-tight">
-							Add New Tab
+							{m.add_tab_modal_title()}
 						</h3>
 						<p className="text-body text-secondary mt-1 font-medium">
-							to{" "}
+							{m.add_tab_modal_to_prefix()}{" "}
 							<span className="text-accent bg-accent-soft/40 px-1.5 py-0.5 rounded-md">
-								{collectionName || "Collection"}
+								{collectionName || m.add_tab_modal_collection_fallback()}
 							</span>
 						</p>
 					</div>
@@ -80,7 +81,7 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 						type="button"
 						variant="subtle"
 						size="sm"
-						aria-label="Close"
+						aria-label={m.add_tab_modal_close_aria()}
 						onClick={onClose}
 					>
 						<X size={18} />
@@ -89,24 +90,24 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<TextField
-						label="URL"
+						label={m.add_tab_modal_url_label()}
 						labelClassName="text-xs font-bold text-secondary uppercase tracking-wider mb-1.5 ml-1"
 						type="text"
 						value={url}
 						onChange={(e) => setUrl(e.target.value)}
-						placeholder="https://example.com"
+						placeholder={m.add_tab_modal_url_placeholder()}
 						prefix={<Link2 size={18} />}
 						containerClassName="group"
 						ref={inputRef}
 					/>
 
 					<TextField
-						label="Title (Optional)"
+						label={m.add_tab_modal_title_label()}
 						labelClassName="text-xs font-bold text-secondary uppercase tracking-wider mb-1.5 ml-1"
 						type="text"
 						value={title}
 						onChange={(e) => setTitle(e.target.value)}
-						placeholder="e.g. Design Inspiration"
+						placeholder={m.add_tab_modal_title_placeholder()}
 						prefix={<Type size={18} />}
 						containerClassName="group"
 					/>
@@ -128,7 +129,9 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 									{title ||
 										(url.length > 30 ? `${url.substring(0, 30)}...` : url)}
 								</p>
-								<p className="text-label text-accent">Preview</p>
+								<p className="text-label text-accent">
+									{m.add_tab_modal_preview_label()}
+								</p>
 							</div>
 						</div>
 					)}
@@ -140,10 +143,10 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 							onClick={onClose}
 							className="flex-1"
 						>
-							Cancel
+							{m.common_cancel()}
 						</Button>
 						<Button type="submit" disabled={!url.trim()} className="flex-1">
-							Add Tab
+							{m.add_tab_modal_submit_label()}
 						</Button>
 					</div>
 				</form>

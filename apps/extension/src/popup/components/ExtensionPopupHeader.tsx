@@ -2,6 +2,7 @@ import { DoorOpen, LogIn, Save } from "lucide-react";
 import type React from "react";
 import { Button } from "@/components/ui/Button";
 import { SearchInput } from "@/components/ui/SearchInput";
+import * as m from "@/paraglide/messages";
 import { AuraLogo } from "../../components/AuraLogo";
 
 interface ExtensionPopupHeaderProps {
@@ -41,12 +42,12 @@ export const ExtensionPopupHeader: React.FC<ExtensionPopupHeaderProps> = ({
 						onClick={onOpenSaveDrawer}
 						size="sm"
 						className="flex items-center gap-1.5"
-						aria-label="Save all open tabs into a collection"
-						title="Save all open tabs into a collection"
+						aria-label={m.popup_header_save_button_aria()}
+						title={m.popup_header_save_button_title()}
 					>
 						<Save size={14} />
 						<span className="text-xs font-medium whitespace-nowrap">
-							Save tabs
+							{m.popup_header_save_button_label()}
 						</span>
 					</Button>
 					{!currentUserEmail ? (
@@ -56,8 +57,8 @@ export const ExtensionPopupHeader: React.FC<ExtensionPopupHeaderProps> = ({
 							variant="ghost"
 							iconOnly
 							className="w-8 h-8 rounded-lg"
-							aria-label="Log in / Sign up"
-							title="Log in / Sign up"
+							aria-label={m.user_menu_login_signup_button_label()}
+							title={m.user_menu_login_signup_button_label()}
 						>
 							<LogIn size={14} />
 						</Button>
@@ -68,8 +69,8 @@ export const ExtensionPopupHeader: React.FC<ExtensionPopupHeaderProps> = ({
 							variant="ghost"
 							iconOnly
 							className="w-8 h-8 rounded-lg"
-							aria-label="Log out"
-							title="Log out"
+							aria-label={m.user_menu_logout()}
+							title={m.user_menu_logout()}
 						>
 							<DoorOpen size={14} />
 						</Button>
@@ -82,7 +83,7 @@ export const ExtensionPopupHeader: React.FC<ExtensionPopupHeaderProps> = ({
 				onChange={onSearchChange}
 				onClear={onClearSearch}
 				inputRef={inputRef}
-				placeholder="Search tabs..."
+				placeholder={m.popup_header_search_placeholder()}
 			/>
 
 			{breadcrumbs.length > 0 && (

@@ -3,6 +3,7 @@ import { ExternalLink } from "lucide-react";
 import type React from "react";
 import { useMemo, useRef, useState } from "react";
 import { useTabSearch } from "@/hooks/useTabSearch";
+import * as m from "@/paraglide/messages";
 import { clearLocalDataAtom, signOutAtom } from "@/store/actions";
 import { ChromeService } from "../../services/chrome";
 import type { Collection, TabItem, User, Workspace } from "../../types";
@@ -59,7 +60,9 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 
 	// Save Form State
 	const [targetWsId, setTargetWsId] = useState<string>("new");
-	const [newWsName, setNewWsName] = useState("My Space");
+	const [newWsName, setNewWsName] = useState<string>(
+		m.popup_save_drawer_default_workspace_name(),
+	);
 	const [targetColId, setTargetColId] = useState<string>("new");
 	const [newColName, setNewColName] = useState("");
 
@@ -165,22 +168,35 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 	// Options for Drawer Selects
 	const wsOptions = useMemo(() => {
 		const existing = workspaces.map((w) => ({ value: w.id, label: w.name }));
-		return [...existing, { value: "new", label: "+ New Space" }];
+		return [
+			...existing,
+			{ value: "new", label: m.popup_save_drawer_ws_option_new_space() },
+		];
 	}, [workspaces]);
 
 	const colOptions = useMemo(() => {
 		if (targetWsId === "new")
-			return [{ value: "new", label: "+ New Collection" }];
+			return [
+				{
+					value: "new",
+					label: m.popup_save_drawer_col_option_new_collection(),
+				},
+			];
 		const cols = collections.filter((c) => c.workspaceId === targetWsId);
 		const existing = cols.map((c) => ({ value: c.id, label: c.name }));
-		return [{ value: "new", label: "+ New Collection" }, ...existing];
+		return [
+			{
+				value: "new",
+				label: m.popup_save_drawer_col_option_new_collection(),
+			},
+			...existing,
+		];
 	}, [collections, targetWsId]);
 
 	// -- Breadcrumb Items Logic --
 	const breadcrumbs = useMemo(() => {
-		// 搜索态下，用一条简单说明，不提供层级点击
 		if (searchQuery) {
-			return [{ label: "Search results" }];
+			return [{ label: m.popup_breadcrumb_search_results() }];
 		}
 
 		const items: {
@@ -189,7 +205,6 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			isCurrent?: boolean;
 		}[] = [];
 
-		// Aura 根级
 		items.push({
 			label: "Aura",
 			onClick:
@@ -203,7 +218,10 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 		});
 
 		if (viewLevel === "workspaces") {
-			items.push({ label: "Spaces for your tabs", isCurrent: true });
+			items.push({
+				label: m.popup_breadcrumb_workspaces_title(),
+				isCurrent: true,
+			});
 			return items;
 		}
 
@@ -212,7 +230,10 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			if (ws) {
 				items.push({ label: ws.name, isCurrent: true });
 			} else {
-				items.push({ label: "Collections", isCurrent: true });
+				items.push({
+					label: m.popup_breadcrumb_collections_fallback(),
+					isCurrent: true,
+				});
 			}
 			return items;
 		}
@@ -235,7 +256,10 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			if (col) {
 				items.push({ label: col.name, isCurrent: true });
 			} else {
-				items.push({ label: "Tabs", isCurrent: true });
+				items.push({
+					label: m.popup_breadcrumb_tabs_fallback(),
+					isCurrent: true,
+				});
 			}
 
 			return items;
@@ -289,7 +313,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 					onClick={onClose}
 					className="inline-flex items-center gap-1 text-[11px] text-secondary hover:text-accent hover:underline underline-offset-2 transition-colors"
 				>
-					<span>Open dashboard to manage spaces</span>
+					<span>{m.popup_footer_open_dashboard_label()}</span>
 					<ExternalLink size={10} />
 				</button>
 			</div>

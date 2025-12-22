@@ -3,6 +3,7 @@ import { Plus, Stars } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
+import * as m from "@/paraglide/messages";
 import {
 	addCollectionAtom,
 	addTabAtom,
@@ -80,23 +81,24 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 					<div className="flex items-center gap-2 mb-3 text-accent">
 						<Stars size={16} />
 						<span className="text-xs font-bold uppercase tracking-wider text-secondary">
-							Getting started
+							{m.workspace_getting_started_badge()}
 						</span>
 					</div>
 					<h2 className="text-3xl font-bold text-primary mb-4">
-						Tame Your Tabs
+						{m.workspace_empty_all_title()}
 					</h2>
 					<p className="text-secondary mb-8 leading-relaxed text-lg">
-						Store, organize, and manage your browser tabs efficiently. Create
-						your first space to start saving your webpages.
+						{m.workspace_empty_all_body()}
 					</p>
 					<Button
 						type="button"
-						onClick={() => createWorkspace("My First Space")}
+						onClick={() =>
+							createWorkspace(m.workspace_empty_all_default_workspace_name())
+						}
 						size="lg"
 					>
 						<Plus size={24} strokeWidth={3} />
-						Create Tab Space
+						{m.workspace_empty_all_button()}
 					</Button>
 				</div>
 			</div>
@@ -107,7 +109,9 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 		return (
 			<div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-surface">
 				<div className="z-10 text-center">
-					<h2 className="text-2xl font-bold text-muted">Select a Space</h2>
+					<h2 className="text-2xl font-bold text-muted">
+						{m.workspace_empty_select_title()}
+					</h2>
 				</div>
 			</div>
 		);
@@ -124,20 +128,21 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 					<div className="flex items-center gap-2 mb-3 text-accent">
 						<Stars size={16} />
 						<span className="text-xs font-bold uppercase tracking-wider text-secondary">
-							Getting started
+							{m.workspace_getting_started_badge()}
 						</span>
 					</div>
-					<h2 className="text-3xl font-bold text-primary mb-3">Space Ready</h2>
+					<h2 className="text-3xl font-bold text-primary mb-3">
+						{m.workspace_empty_collections_title()}
+					</h2>
 					<p className="text-secondary mb-6 leading-relaxed">
-						Start managing your tabs. Create a collection to categorize and save
-						your links.
+						{m.workspace_empty_collections_body()}
 					</p>
 					<Button
 						type="button"
 						onClick={() => setIsCreatingCollection(true)}
 						size="lg"
 					>
-						Create Collection
+						{m.workspace_empty_collections_button()}
 					</Button>
 				</div>
 
@@ -151,7 +156,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 							onClick={(e) => e.stopPropagation()}
 						>
 							<h3 className="text-heading text-primary mb-4">
-								New Tab Collection
+								{m.workspace_new_collection_modal_title()}
 							</h3>
 							<form
 								onSubmit={(e) => {
@@ -169,14 +174,14 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 									<TextField
 										autoFocus
 										type="text"
-										placeholder="Collection Name (e.g., Work, Reading List)..."
+										placeholder={m.workspace_new_collection_modal_placeholder()}
 										value={newColName}
 										onChange={(e) => setNewColName(e.target.value)}
 										containerClassName="w-full"
 									/>
 								</div>
 								<Button type="submit" fullWidth>
-									Create
+									{m.workspace_create_collection_cta()}
 								</Button>
 							</form>
 						</div>
@@ -236,7 +241,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 								<Plus size={18} strokeWidth={3} />
 							</div>
 							<span className="font-semibold text-body text-secondary group-hover:text-accent">
-								Create New Collection
+								{m.workspace_create_collection_cta()}
 							</span>
 						</button>
 					) : (
@@ -244,7 +249,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 							<div className="flex items-center gap-2 mb-4 text-accent">
 								<Stars size={16} />
 								<span className="text-xs font-bold uppercase tracking-wider text-secondary">
-									New Group
+									{m.workspace_new_group_badge()}
 								</span>
 							</div>
 							<form onSubmit={handleCreateCollection} className="space-y-4">
@@ -252,7 +257,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 									<input
 										autoFocus
 										type="text"
-										placeholder="e.g. Research, Daily Reads..."
+										placeholder={m.workspace_new_group_placeholder()}
 										className="relative z-10 w-full px-4 py-2.5 bg-surface-elevated border-2 border-surface-border rounded-2xl text-body text-primary placeholder:text-muted focus:outline-none"
 										value={newColName}
 										onChange={(e) => setNewColName(e.target.value)}
@@ -266,10 +271,10 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 										onClick={() => setIsCreatingCollection(false)}
 										className="px-0 text-secondary hover:text-primary"
 									>
-										Cancel
+										{m.common_cancel()}
 									</Button>
 									<Button type="submit" size="sm" className="px-6">
-										Create
+										{m.common_create()}
 									</Button>
 								</div>
 							</form>

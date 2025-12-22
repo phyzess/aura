@@ -5,6 +5,7 @@ import { Drawer } from "@/components/ui/Drawer";
 import { IconButton } from "@/components/ui/IconButton";
 import { Select, type SelectOption } from "@/components/ui/Select";
 import { TextField } from "@/components/ui/TextField";
+import * as m from "@/paraglide/messages";
 import type { TabItem } from "../../types";
 
 interface ExtensionPopupSaveDrawerProps {
@@ -56,16 +57,18 @@ export const ExtensionPopupSaveDrawer: React.FC<
 		>
 			<div className="px-6 pt-5 pb-2 shrink-0 flex items-center justify-between">
 				<div>
-					<h2 className="text-heading text-primary">Save Session</h2>
+					<h2 className="text-heading text-primary">
+						{m.popup_save_drawer_title()}
+					</h2>
 					<p className="text-xs text-secondary">
-						Review tabs & choose destination
+						{m.popup_save_drawer_subtitle()}
 					</p>
 				</div>
 				<IconButton
 					type="button"
 					variant="subtle"
 					size="sm"
-					aria-label="Close save drawer"
+					aria-label={m.popup_save_drawer_close_aria()}
 					onClick={onClose}
 					className="w-8 h-8 bg-surface-muted text-muted hover:text-secondary hover:bg-surface-elevated"
 				>
@@ -78,7 +81,7 @@ export const ExtensionPopupSaveDrawer: React.FC<
 					<div className="grid grid-cols-2 gap-3">
 						<div className="space-y-1">
 							<label className="text-label text-muted uppercase tracking-wider ml-1">
-								Space
+								{m.popup_save_drawer_label_space()}
 							</label>
 							<Select
 								options={wsOptions}
@@ -93,7 +96,7 @@ export const ExtensionPopupSaveDrawer: React.FC<
 						</div>
 						<div className="space-y-1">
 							<label className="text-label text-muted uppercase tracking-wider ml-1">
-								Collection
+								{m.popup_save_drawer_label_collection()}
 							</label>
 							<Select
 								options={colOptions}
@@ -108,7 +111,7 @@ export const ExtensionPopupSaveDrawer: React.FC<
 					{targetWsId === "new" && (
 						<TextField
 							type="text"
-							placeholder="New Space Name"
+							placeholder={m.popup_save_drawer_placeholder_new_space()}
 							value={newWsName}
 							onChange={(e) => onChangeNewWorkspaceName(e.target.value)}
 							size="sm"
@@ -119,7 +122,7 @@ export const ExtensionPopupSaveDrawer: React.FC<
 					{targetColId === "new" && (
 						<TextField
 							type="text"
-							placeholder="New Collection Name"
+							placeholder={m.popup_save_drawer_placeholder_new_collection()}
 							value={newColName}
 							onChange={(e) => onChangeNewCollectionName(e.target.value)}
 							size="sm"
@@ -132,7 +135,7 @@ export const ExtensionPopupSaveDrawer: React.FC<
 				<div>
 					<div className="flex items-center justify-between mb-2">
 						<label className="text-label text-muted uppercase tracking-wider ml-1">
-							Tabs to Save ({checkedTabs.size})
+							{m.popup_save_drawer_tabs_label({ count: checkedTabs.size })}
 						</label>
 						<Button
 							type="button"
@@ -142,8 +145,8 @@ export const ExtensionPopupSaveDrawer: React.FC<
 							className="text-label text-accent hover:opacity-80"
 						>
 							{checkedTabs.size === sessionTabs.length
-								? "Unselect All"
-								: "Select All"}
+								? m.popup_save_drawer_toggle_all_selected()
+								: m.popup_save_drawer_toggle_all_unselected()}
 						</Button>
 					</div>
 
@@ -203,7 +206,9 @@ export const ExtensionPopupSaveDrawer: React.FC<
 					disabled={checkedTabs.size === 0}
 					fullWidth
 				>
-					<span>Save {checkedTabs.size} Tabs</span>
+					<span>
+						{m.popup_save_drawer_save_button({ count: checkedTabs.size })}
+					</span>
 					<ArrowRight size={16} />
 				</Button>
 			</div>

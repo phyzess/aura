@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
 import { IconButton } from "@/components/ui/IconButton";
+import * as m from "@/paraglide/messages";
 import { authErrorAtom, authStatusAtom } from "@/store/atoms";
 
 interface ExtensionPopupLogoutDrawerProps {
@@ -44,18 +45,17 @@ const PopupLogoutContent: React.FC<PopupLogoutContentProps> = ({
 			<div className="px-5 pt-4 pb-2 shrink-0 flex items-start justify-between">
 				<div className="pr-4">
 					<h2 className="text-base font-semibold text-primary tracking-tight">
-						Log out
+						{m.user_menu_logout()}
 					</h2>
 					<p className="mt-1 text-[11px] text-secondary leading-snug">
-						You can choose whether to clear the spaces, collections, and tabs
-						saved on this device.
+						{m.logout_dialog_description()}
 					</p>
 				</div>
 				<IconButton
 					type="button"
 					variant="subtle"
 					size="sm"
-					aria-label="Close logout drawer"
+					aria-label={m.logout_dialog_close_drawer_aria()}
 					onClick={onClose}
 					className="w-7 h-7 bg-surface-muted text-muted hover:text-secondary hover:bg-surface-elevated"
 				>
@@ -72,10 +72,10 @@ const PopupLogoutContent: React.FC<PopupLogoutContentProps> = ({
 					}`}
 				>
 					<div className="text-sm font-semibold text-primary">
-						Only log out, keep local data (recommended)
+						{m.logout_dialog_option_keep_title()}
 					</div>
 					<p className="mt-1 text-[11px] leading-snug text-secondary">
-						Your spaces will stay on this device and remain available offline.
+						{m.logout_dialog_option_keep_body()}
 					</p>
 				</button>
 				<button
@@ -86,11 +86,10 @@ const PopupLogoutContent: React.FC<PopupLogoutContentProps> = ({
 					}`}
 				>
 					<div className="text-sm font-semibold text-primary">
-						Log out and clear local data
+						{m.logout_dialog_option_clear_title()}
 					</div>
 					<p className="mt-1 text-[11px] leading-snug text-secondary">
-						Best for shared or public devices. This removes your spaces from
-						this browser.
+						{m.logout_dialog_option_clear_body()}
 					</p>
 				</button>
 			</div>
@@ -104,7 +103,7 @@ const PopupLogoutContent: React.FC<PopupLogoutContentProps> = ({
 					className="flex-1"
 					disabled={isSigningOut}
 				>
-					Cancel
+					{m.common_cancel()}
 				</Button>
 				<Button
 					variant="primary"
@@ -112,7 +111,9 @@ const PopupLogoutContent: React.FC<PopupLogoutContentProps> = ({
 					className="flex-1"
 					disabled={isSigningOut}
 				>
-					{isSigningOut ? "Logging out..." : "Continue"}
+					{isSigningOut
+						? m.logout_dialog_button_logging_out()
+						: m.logout_dialog_button_continue()}
 				</Button>
 			</div>
 		</div>

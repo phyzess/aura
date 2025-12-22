@@ -1,6 +1,7 @@
 import { Search } from "lucide-react";
 import type React from "react";
 import { TabSearchResultList } from "@/components/tab-search";
+import * as m from "@/paraglide/messages";
 import { ChromeService } from "../../services/chrome";
 import type { Collection, TabItem, Workspace } from "../../types";
 
@@ -26,9 +27,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 						<Search size={20} />
 					</div>
 					<p className="text-body font-semibold text-secondary">
-						No matches found
+						{m.global_search_no_results_title()}
 					</p>
-					<p className="text-xs text-muted mt-1">Try a different keyword</p>
+					<p className="text-xs text-muted mt-1">
+						{m.global_search_no_results_subtitle()}
+					</p>
 				</div>
 			</div>
 		);

@@ -1,5 +1,6 @@
 import path from "node:path";
 import { crx } from "@crxjs/vite-plugin";
+import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { minLength, object, parse, pipe, string } from "valibot";
@@ -56,6 +57,10 @@ export default defineConfig(({ mode }) => {
 			},
 		},
 		plugins: [
+			paraglideVitePlugin({
+				project: "./project.inlang",
+				outdir: "./src/paraglide",
+			}),
 			tailwindcss(),
 			react(),
 			crx({ manifest }),

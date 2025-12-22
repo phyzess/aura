@@ -1,6 +1,7 @@
 import { Layout } from "lucide-react";
 import type React from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import * as m from "@/paraglide/messages";
 import type { Collection, Workspace } from "../../types";
 import { PopupListItem } from "./PopupListItem";
 
@@ -16,7 +17,7 @@ export const WorkspaceList: React.FC<WorkspaceListProps> = ({
 	onWorkspaceClick,
 }) => {
 	if (workspaces.length === 0) {
-		return <EmptyState title="No spaces with content found." />;
+		return <EmptyState title={m.popup_workspace_list_empty_title()} />;
 	}
 	return (
 		<div className="grid gap-2 animate-in slide-in-from-right-4 duration-300">
@@ -29,7 +30,9 @@ export const WorkspaceList: React.FC<WorkspaceListProps> = ({
 						key={ws.id}
 						icon={<Layout size={20} strokeWidth={2.5} />}
 						title={ws.name}
-						subtitle={`${colCount} Collections`}
+						subtitle={m.popup_workspace_list_collections_subtitle({
+							count: colCount,
+						})}
 						onClick={() => onWorkspaceClick(ws.id)}
 					/>
 				);
