@@ -30,12 +30,6 @@ export const Header: React.FC<HeaderProps> = ({
 	return (
 		<header className="h-20 flex items-center px-8 justify-between shrink-0 z-10">
 			<div className="flex items-center gap-4">
-				<IconButton
-					className="-ml-2 lg:hidden border-2 border-transparent hover:border-surface-border rounded-lg text-muted hover:text-vibrant-orange"
-					aria-label="Open navigation menu"
-				>
-					<Menu size={24} />
-				</IconButton>
 				<div>
 					<h2 className="text-2xl font-bold text-primary tracking-tight transition-colors">
 						{workspaceName}
