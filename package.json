@@ -17,6 +17,8 @@
 		"deploy:api": "pnpm --filter @aura/api run deploy",
 		"db:migrate:local": "pnpm --filter @aura/api db:migrate:local",
 		"db:migrate:remote": "pnpm --filter @aura/api db:migrate:remote",
+		"db:clear:local": "sh ./scripts/clear-db-local.sh",
+		"db:clear:remote": "sh ./scripts/clear-db-remote.sh",
 		"lint": "biome check",
 		"format": "biome fmt",
 		"check": "pnpm lint && pnpm format"

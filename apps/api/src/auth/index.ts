@@ -8,6 +8,7 @@ import { withCloudflare } from "better-auth-cloudflare";
 import { createDb, schema } from "../db";
 import type { Env } from "../index";
 import { getAuthConfig } from "./config";
+import { hashPassword, verifyPassword } from "./password";
 
 export function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
 	const db = env ? createDb(env.DB) : ({} as unknown);
@@ -30,6 +31,10 @@ export function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
 		{
 			emailAndPassword: {
 				enabled: true,
+				password: {
+					hash: hashPassword,
+					verify: verifyPassword,
+				},
 			},
 		},
 	);

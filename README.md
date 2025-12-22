@@ -169,6 +169,50 @@ This runs `wrangler d1 migrations apply aura-db --env production --remote`.
 
 ---
 
+## Database maintenance
+
+There are two helper scripts for resetting the D1 database used by the API. Both live under `scripts/` and use `wrangler d1 execute` under the hood.
+
+### Local database reset (safe)
+
+- **Script**: `scripts/clear-db-local.sh`
+- **Target**: local D1 instance (`--local`)
+- **What it does**: deletes all rows from auth tables (`users`, `sessions`, `accounts`, `verifications`) and app tables (`workspaces`, `collections`, `tabs`).
+- **Usage**:
+
+  ````bash
+  ./scripts/clear-db-local.sh
+  ```
+
+  You must type `LOCAL` when prompted, otherwise the script aborts.
+
+This script is intended for local development only (e.g. when you want a clean slate for testing).
+
+### Remote production database reset (dangerous)
+
+> **DANGER**: `scripts/clear-db-remote.sh` irreversibly deletes **all data** from the production D1 database (`aura-db`) using `--env production --remote`. Do not wire this into CI or any automated job.
+
+- **Script**: `scripts/clear-db-remote.sh`
+- **Target**: remote production D1 (`aura-db`)
+- **What it does**: same deletes as the local script, but against the production database.
+- **Usage (manual only)**:
+
+  ````bash
+  ./scripts/clear-db-remote.sh
+  ```
+
+  The script requires **three separate confirmations**:
+
+  1. Type `PROD`
+  2. Type the database name `aura-db`
+  3. Type `DELETE EVERYTHING`
+
+  If any confirmation does not match exactly, the script aborts without touching the database.
+
+Only run this script when you fully understand the impact and have confirmed that it is safe to wipe all production data (for example, during early internal testing).
+
+---
+
 ### Quick release commands
 
 For a typical release of the extension + API:
