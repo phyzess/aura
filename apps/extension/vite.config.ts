@@ -21,6 +21,20 @@ export default defineConfig(({ mode }) => {
 
 	parse(extensionEnvSchema, env as Record<string, string | undefined>);
 
+	// Build artifact naming: allow overriding via BUILD_META/RELEASE_TAG, otherwise use timestamp
+	const buildMeta =
+		(env.BUILD_META as string | undefined) ||
+		(env.RELEASE_TAG as string | undefined) ||
+		process.env.BUILD_META ||
+		process.env.RELEASE_TAG;
+	const timestamp = new Date()
+		.toISOString()
+		.replace(/[-:T]/g, "")
+		.split(".")[0];
+	const zipFileName = buildMeta
+		? `crx-${name}-${version}-${buildMeta}.zip`
+		: `crx-${name}-${version}-${timestamp}.zip`;
+
 	return {
 		root: __dirname,
 		envDir: repoRoot,
@@ -47,7 +61,7 @@ export default defineConfig(({ mode }) => {
 			crx({ manifest }),
 			zip({
 				outDir: "release",
-				outFileName: `crx-${name}-${version}.zip`,
+				outFileName: zipFileName,
 			}),
 		],
 		server: {
