@@ -12,6 +12,7 @@ import type {
 import { createAuth } from "./auth";
 import { createDb } from "./db";
 import { collections, tabs, workspaces } from "./db/app.schema";
+import { PRIVACY_HTML } from "./privacy";
 
 export interface Env {
 	DB: D1Database;
@@ -43,6 +44,8 @@ const chunk = <T>(items: T[], size: number): T[][] => {
 	}
 	return result;
 };
+
+app.get("/privacy", (c) => c.html(PRIVACY_HTML));
 
 app.get("/api/health", (c) => c.text("ok"));
 
