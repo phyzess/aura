@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IconButton } from "@/components/ui/IconButton";
-import { Input } from "@/components/ui/Input";
+import { TextField } from "@/components/ui/TextField";
 import type { Collection, TabItem } from "@/types";
 import { ConfirmModal } from "./ConfirmModal";
 import { TabCard } from "./TabCard";
@@ -83,18 +83,17 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 					<div className="w-2 h-2 rounded-full bg-accent shadow-glow flex-shrink-0"></div>
 
 					{isRenaming ? (
-						<div className="group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl w-full max-w-[200px]">
-							<Input
-								ref={inputRef}
-								type="text"
-								value={renameValue}
-								onChange={(e) => setRenameValue(e.target.value)}
-								onBlur={handleSaveRename}
-								onKeyDown={handleKeyDown}
-								size="sm"
-								className="relative z-10 px-2 py-1 font-bold text-primary text-lg tracking-tight"
-							/>
-						</div>
+						<TextField
+							ref={inputRef}
+							type="text"
+							value={renameValue}
+							onChange={(e) => setRenameValue(e.target.value)}
+							onBlur={handleSaveRename}
+							onKeyDown={handleKeyDown}
+							size="sm"
+							containerClassName="w-full max-w-[200px]"
+							inputClassName="px-2 py-1 font-bold text-primary text-lg tracking-tight"
+						/>
 					) : (
 						<h3
 							className="font-bold text-primary text-lg tracking-tight truncate cursor-pointer hover:text-accent transition-colors"

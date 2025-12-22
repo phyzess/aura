@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
+import { TextField } from "@/components/ui/TextField";
 
 interface AddTabModalProps {
 	isOpen: boolean;
@@ -87,42 +88,28 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 				</div>
 
 				<form onSubmit={handleSubmit} className="space-y-4">
-					<div className="group">
-						<label className="block text-xs font-bold text-secondary uppercase tracking-wider mb-1.5 ml-1">
-							URL
-						</label>
-						<div className="relative">
-							<div className="absolute left-3 top-3 text-accent/70 group-focus-within:text-accent dark:text-muted dark:group-focus-within:text-accent transition-colors">
-								<Link2 size={18} />
-							</div>
-							<input
-								ref={inputRef}
-								type="text"
-								value={url}
-								onChange={(e) => setUrl(e.target.value)}
-								placeholder="https://example.com"
-								className="w-full pl-10 pr-4 py-3 bg-surface-muted border border-surface rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/30 focus:bg-surface-elevated text-primary placeholder:text-muted font-medium transition-all"
-							/>
-						</div>
-					</div>
+					<TextField
+						label="URL"
+						labelClassName="text-xs font-bold text-secondary uppercase tracking-wider mb-1.5 ml-1"
+						type="text"
+						value={url}
+						onChange={(e) => setUrl(e.target.value)}
+						placeholder="https://example.com"
+						prefix={<Link2 size={18} />}
+						containerClassName="group"
+						ref={inputRef}
+					/>
 
-					<div className="group">
-						<label className="block text-xs font-bold text-secondary uppercase tracking-wider mb-1.5 ml-1">
-							Title (Optional)
-						</label>
-						<div className="relative">
-							<div className="absolute left-3 top-3 text-accent/70 group-focus-within:text-accent dark:text-muted dark:group-focus-within:text-accent transition-colors">
-								<Type size={18} />
-							</div>
-							<input
-								type="text"
-								value={title}
-								onChange={(e) => setTitle(e.target.value)}
-								placeholder="e.g. Design Inspiration"
-								className="w-full pl-10 pr-4 py-3 bg-surface-muted border border-surface rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/30 focus:bg-surface-elevated text-primary placeholder:text-muted font-medium transition-all"
-							/>
-						</div>
-					</div>
+					<TextField
+						label="Title (Optional)"
+						labelClassName="text-xs font-bold text-secondary uppercase tracking-wider mb-1.5 ml-1"
+						type="text"
+						value={title}
+						onChange={(e) => setTitle(e.target.value)}
+						placeholder="e.g. Design Inspiration"
+						prefix={<Type size={18} />}
+						containerClassName="group"
+					/>
 
 					{url && (
 						<div className="flex items-center gap-3 p-3 bg-accent-soft/40 dark:bg-surface-muted rounded-xl border border-accent/20 dark:border-surface-border">

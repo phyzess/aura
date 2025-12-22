@@ -3,8 +3,8 @@ import type React from "react";
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
 import { IconButton } from "@/components/ui/IconButton";
-import { Input } from "@/components/ui/Input";
 import { Select, type SelectOption } from "@/components/ui/Select";
+import { TextField } from "@/components/ui/TextField";
 import type { TabItem } from "../../types";
 
 interface ExtensionPopupSaveDrawerProps {
@@ -106,32 +106,26 @@ export const ExtensionPopupSaveDrawer: React.FC<
 					</div>
 
 					{targetWsId === "new" && (
-						<div className="animate-in fade-in slide-in-from-top-1">
-							<div className="group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl">
-								<Input
-									type="text"
-									placeholder="New Space Name"
-									value={newWsName}
-									onChange={(e) => onChangeNewWorkspaceName(e.target.value)}
-									size="sm"
-									className="relative z-10 text-xs font-semibold"
-								/>
-							</div>
-						</div>
+						<TextField
+							type="text"
+							placeholder="New Space Name"
+							value={newWsName}
+							onChange={(e) => onChangeNewWorkspaceName(e.target.value)}
+							size="sm"
+							containerClassName="animate-in fade-in slide-in-from-top-1"
+							inputClassName="text-xs font-semibold"
+						/>
 					)}
 					{targetColId === "new" && (
-						<div className="animate-in fade-in slide-in-from-top-1">
-							<div className="group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl">
-								<Input
-									type="text"
-									placeholder="New Collection Name"
-									value={newColName}
-									onChange={(e) => onChangeNewCollectionName(e.target.value)}
-									size="sm"
-									className="relative z-10 text-xs font-semibold"
-								/>
-							</div>
-						</div>
+						<TextField
+							type="text"
+							placeholder="New Collection Name"
+							value={newColName}
+							onChange={(e) => onChangeNewCollectionName(e.target.value)}
+							size="sm"
+							containerClassName="animate-in fade-in slide-in-from-top-1"
+							inputClassName="text-xs font-semibold"
+						/>
 					)}
 				</div>
 

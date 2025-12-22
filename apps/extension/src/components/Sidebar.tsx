@@ -172,8 +172,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 									onChange={(e) => setEditName(e.target.value)}
 									onBlur={saveEditing}
 									onKeyDown={(e) => e.key === "Enter" && saveEditing()}
-									size="sm"
-									variant="borderless"
 									className="truncate flex-1 text-inherit font-semibold h-6"
 									onClick={(e) => e.stopPropagation()}
 								/>

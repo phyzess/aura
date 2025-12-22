@@ -2,6 +2,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { Plus, Stars } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { TextField } from "@/components/ui/TextField";
 import {
 	addCollectionAtom,
 	addTabAtom,
@@ -164,14 +165,16 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 									setIsCreatingCollection(false);
 								}}
 							>
-								<input
-									autoFocus
-									type="text"
-									placeholder="Collection Name (e.g., Work, Reading List)..."
-									className="w-full px-4 py-3 bg-surface-muted border-none rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-accent/20 text-primary"
-									value={newColName}
-									onChange={(e) => setNewColName(e.target.value)}
-								/>
+								<div className="mb-4">
+									<TextField
+										autoFocus
+										type="text"
+										placeholder="Collection Name (e.g., Work, Reading List)..."
+										value={newColName}
+										onChange={(e) => setNewColName(e.target.value)}
+										containerClassName="w-full"
+									/>
+								</div>
 								<Button type="submit" fullWidth>
 									Create
 								</Button>

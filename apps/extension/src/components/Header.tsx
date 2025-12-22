@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { Menu, Moon, Search as SearchIcon, Sun } from "lucide-react";
+import { Moon, Search as SearchIcon, Sun } from "lucide-react";
 import type React from "react";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";

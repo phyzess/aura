@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
-import { Input } from "@/components/ui/Input";
+import { TextField } from "@/components/ui/TextField";
 import { signInAtom, signUpAtom } from "@/store/actions";
 
 interface AuthDialogProps {
@@ -106,66 +106,36 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ isOpen, onClose }) => {
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					{mode === "register" && (
-						<div>
-							<label className="block text-[11px] font-semibold text-secondary mb-1 ml-0.5">
-								Name
-							</label>
-							<div className="relative group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl">
-								<div className="pointer-events-none absolute left-3 top-2.5 text-muted z-20">
-									<User size={16} />
-								</div>
-								<Input
-									type="text"
-									value={name}
-									onChange={(e) => setName(e.target.value)}
-									placeholder="Your name"
-									size="md"
-									hasLeftIcon
-									className="relative z-10 px-9"
-								/>
-							</div>
-						</div>
+						<TextField
+							label="Name"
+							type="text"
+							value={name}
+							onChange={(e) => setName(e.target.value)}
+							placeholder="Your name"
+							size="md"
+							prefix={<User size={16} />}
+						/>
 					)}
 
-					<div>
-						<label className="block text-[11px] font-semibold text-secondary mb-1 ml-0.5">
-							Email
-						</label>
-						<div className="relative group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl">
-							<div className="pointer-events-none absolute left-3 top-2.5 text-muted z-20">
-								<Mail size={16} />
-							</div>
-							<Input
-								type="email"
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
-								placeholder="you@example.com"
-								size="md"
-								hasLeftIcon
-								className="relative z-10 px-9"
-							/>
-						</div>
-					</div>
+					<TextField
+						label="Email"
+						type="email"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						placeholder="you@example.com"
+						size="md"
+						prefix={<Mail size={16} />}
+					/>
 
-					<div>
-						<label className="block text-[11px] font-semibold text-secondary mb-1 ml-0.5">
-							Password
-						</label>
-						<div className="relative group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl">
-							<div className="pointer-events-none absolute left-3 top-2.5 text-muted z-20">
-								<Lock size={16} />
-							</div>
-							<Input
-								type="password"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-								placeholder="At least 8 characters"
-								size="md"
-								hasLeftIcon
-								className="relative z-10 px-9"
-							/>
-						</div>
-					</div>
+					<TextField
+						label="Password"
+						type="password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						placeholder="At least 8 characters"
+						size="md"
+						prefix={<Lock size={16} />}
+					/>
 
 					{error && (
 						<div className="text-xs text-danger bg-danger-soft/70 border border-danger/20 rounded-xl px-3 py-2">

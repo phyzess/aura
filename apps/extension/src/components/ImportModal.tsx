@@ -12,8 +12,8 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
-import { Input } from "@/components/ui/Input";
 import { Select, type SelectOption } from "@/components/ui/Select";
+import { TextField } from "@/components/ui/TextField";
 import type { Collection, Workspace } from "@/types";
 
 interface ImportModalProps {
@@ -284,40 +284,22 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
 										{destinationMode === "NEW_SPACE_NEW_COLLECTION" && (
 											<div className="mt-3 space-y-3">
-												<div>
-													<label className="block text-[11px] font-semibold text-secondary mb-1 ml-0.5">
-														Space
-													</label>
-													<div className="group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl">
-														<Input
-															type="text"
-															value={newWorkspaceName}
-															onChange={(e) =>
-																setNewWorkspaceName(e.target.value)
-															}
-															size="md"
-															className="relative z-10"
-															placeholder="Enter Space Name"
-														/>
-													</div>
-												</div>
-												<div>
-													<label className="block text-[11px] font-semibold text-secondary mb-1 ml-0.5">
-														Collection
-													</label>
-													<div className="group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl">
-														<Input
-															type="text"
-															value={newCollectionName}
-															onChange={(e) =>
-																setNewCollectionName(e.target.value)
-															}
-															size="md"
-															className="relative z-10"
-															placeholder="Enter Collection Name"
-														/>
-													</div>
-												</div>
+												<TextField
+													label="Space"
+													type="text"
+													value={newWorkspaceName}
+													onChange={(e) => setNewWorkspaceName(e.target.value)}
+													size="md"
+													placeholder="Enter Space Name"
+												/>
+												<TextField
+													label="Collection"
+													type="text"
+													value={newCollectionName}
+													onChange={(e) => setNewCollectionName(e.target.value)}
+													size="md"
+													placeholder="Enter Collection Name"
+												/>
 											</div>
 										)}
 									</div>
@@ -381,21 +363,16 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 														/>
 													</div>
 													<div>
-														<label className="block text-[11px] font-semibold text-secondary mb-1 ml-0.5">
-															New collection
-														</label>
-														<div className="group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl">
-															<Input
-																type="text"
-																value={newCollectionName}
-																onChange={(e) =>
-																	setNewCollectionName(e.target.value)
-																}
-																size="md"
-																className="relative z-10"
-																placeholder="Enter Collection Name"
-															/>
-														</div>
+														<TextField
+															label="New collection"
+															type="text"
+															value={newCollectionName}
+															onChange={(e) =>
+																setNewCollectionName(e.target.value)
+															}
+															size="md"
+															placeholder="Enter Collection Name"
+														/>
 													</div>
 												</div>
 											)}
