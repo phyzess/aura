@@ -1,5 +1,6 @@
 import { Check, ChevronDown } from "lucide-react";
 import * as React from "react";
+import { FieldShell } from "./FieldShell";
 
 export interface SelectOption {
 	value: string;
@@ -50,35 +51,37 @@ export const Select: React.FC<SelectProps> = ({
 	const buttonTextSize = size === "sm" ? "text-xs font-semibold" : "text-body";
 	const chevronSize = size === "sm" ? 12 : 16;
 	const optionTextSize = size === "sm" ? "text-xs" : "text-body";
-	const buttonPadding = size === "sm" ? "px-3 py-2" : "px-3 py-2.5";
 
 	return (
-		<div
-			ref={containerRef}
-			className="relative group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl"
-		>
-			<button
-				type="button"
-				onClick={() => setOpen((prev) => !prev)}
-				className={`relative z-10 w-full flex items-center justify-between bg-surface-elevated border-2 border-surface-border rounded-xl text-secondary hover:bg-surface-elevated transition-colors ${buttonPadding} ${buttonTextSize}`}
+		<div ref={containerRef} className="relative">
+			<FieldShell
+				size={size}
+				variant="default"
+				innerClassName="hover:bg-surface-elevated"
 			>
-				<div className="flex items-center gap-2 min-w-0">
-					{icon && <span className="text-muted">{icon}</span>}
-					<span
-						className={`truncate ${
-							!options.find((o) => o.value === value) ? "text-muted" : ""
+				<button
+					type="button"
+					onClick={() => setOpen((prev) => !prev)}
+					className={`w-full flex items-center justify-between text-secondary ${buttonTextSize}`}
+				>
+					<div className="flex items-center gap-2 min-w-0">
+						{icon && <span className="text-muted">{icon}</span>}
+						<span
+							className={`truncate ${
+								!options.find((o) => o.value === value) ? "text-muted" : ""
+							}`}
+						>
+							{selectedLabel}
+						</span>
+					</div>
+					<ChevronDown
+						size={chevronSize}
+						className={`text-muted transition-transform ${
+							open ? "rotate-180" : ""
 						}`}
-					>
-						{selectedLabel}
-					</span>
-				</div>
-				<ChevronDown
-					size={chevronSize}
-					className={`text-muted transition-transform ${
-						open ? "rotate-180" : ""
-					}`}
-				/>
-			</button>
+					/>
+				</button>
+			</FieldShell>
 
 			{open && (
 				<div className="absolute top-full left-0 w-full mt-1 bg-surface-elevated border border-surface rounded-xl shadow-soft max-h-48 overflow-y-auto z-50 custom-scrollbar">

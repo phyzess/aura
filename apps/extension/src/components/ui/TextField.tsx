@@ -1,4 +1,5 @@
 import * as React from "react";
+import { FieldShell } from "./FieldShell";
 import {
 	Input,
 	type InputProps,
@@ -46,35 +47,6 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
 		const helperId = !error && helperText ? `${inputId}-helper` : undefined;
 		const describedBy = error ? errorId : helperId;
 
-		const fieldClasses: string[] = [
-			"relative z-10 flex items-center w-full rounded-xl text-body text-primary placeholder:text-muted transition-colors",
-		];
-
-		if (variant === "default") {
-			fieldClasses.push("bg-surface-elevated border-2 border-surface-border");
-		} else if (variant === "borderless") {
-			fieldClasses.push("bg-transparent border border-transparent");
-		}
-
-		if (size === "sm") {
-			fieldClasses.push("px-3 py-2 text-sm");
-		} else {
-			fieldClasses.push("px-3 py-2.5 text-sm");
-		}
-
-		if (error) {
-			fieldClasses.push("border-danger");
-		}
-
-		const fieldClassName = fieldClasses.filter(Boolean).join(" ");
-
-		const wrapperClasses = [
-			"group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl",
-			wrapperClassName,
-		]
-			.filter(Boolean)
-			.join(" ");
-
 		const labelClasses = [
 			"block text-[11px] font-semibold text-secondary mb-1 ml-0.5",
 			labelClassName,
@@ -97,28 +69,23 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
 					</label>
 				)}
 
-				<div className={wrapperClasses}>
-					<div className={fieldClassName}>
-						{prefix && (
-							<div className="mr-2 flex items-center text-muted group-focus-within:text-accent transition-colors">
-								{prefix}
-							</div>
-						)}
-
-						<Input
-							ref={ref}
-							id={inputId}
-							aria-invalid={error ? true : undefined}
-							aria-describedby={describedBy}
-							{...inputProps}
-							className={inputClasses}
-						/>
-
-						{suffix && (
-							<div className="ml-2 flex items-center text-muted">{suffix}</div>
-						)}
-					</div>
-				</div>
+				<FieldShell
+					size={size}
+					variant={variant}
+					prefix={prefix}
+					suffix={suffix}
+					hasError={!!error}
+					wrapperClassName={wrapperClassName}
+				>
+					<Input
+						ref={ref}
+						id={inputId}
+						aria-invalid={error ? true : undefined}
+						aria-describedby={describedBy}
+						{...inputProps}
+						className={inputClasses}
+					/>
+				</FieldShell>
 
 				{error && (
 					<div id={errorId} className="mt-1 text-xs text-danger ml-0.5">
