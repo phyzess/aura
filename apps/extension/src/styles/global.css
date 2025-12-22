@@ -570,11 +570,11 @@ textarea[readonly] {
 }
 
 .bottom-shadow-focus:focus-within::before {
-	background-color: var(--color-surface-border-strong);
+	background-color: var(--color-surface-border);
 }
 
 .group.bottom-shadow-wrapper:focus-within::before {
-	background-color: var(--color-surface-border-strong);
+	background-color: var(--color-surface-border);
 }
 
 .bottom-shadow-hover:hover::before {
