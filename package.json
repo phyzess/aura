@@ -4,6 +4,8 @@
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
+		"changeset": "changeset",
+		"changeset:version": "changeset version",
 		"dev": "pnpm --filter @aura/extension dev",
 		"build": "pnpm --filter @aura/extension build",
 		"preview": "pnpm --filter @aura/extension preview",
@@ -20,7 +22,8 @@
 		"check": "pnpm lint && pnpm format"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.3.9"
+		"@biomejs/biome": "2.3.9",
+		"@changesets/cli": "^2.29.8"
 	},
 	"dependencies": {
 		"valibot": "^1.2.0"

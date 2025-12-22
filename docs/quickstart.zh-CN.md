@@ -160,3 +160,9 @@ pnpm dev:api:prod
 
 这会运行 `wrangler dev --env production`，直接使用生产环境的配置与数据库，请谨慎使用。
 
+---
+
+## 5. 推荐阅读
+
+- `docs/env.zh-CN.md` – 更完整的环境变量说明，以及 `@aura/config` 如何做校验
+- `docs/release.zh-CN.md` – 从版本管理（Changesets）到打包扩展、部署 API 的完整发布流程

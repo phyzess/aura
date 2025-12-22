@@ -147,6 +147,6 @@ You can upload this zip to the Chrome Web Store or load it unpacked from Chrome 
 
 ## 5. Where to look next
 
-- `docs/env.md` – more detailed explanation of environment variables and how `@aura/config` validates them
+- `docs/env.md` – detailed explanation of environment variables and how `@aura/config` validates them
+- `docs/release.md` – end-to-end release guide (versioning with Changesets, building the extension zip, deploying the API)
 - `README.md` – high-level overview of the architecture and project layout
-

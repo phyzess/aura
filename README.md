@@ -169,6 +169,23 @@ This runs `wrangler d1 migrations apply aura-db --env production --remote`.
 
 ---
 
+### Quick release commands
+
+For a typical release of the extension + API:
+
+1. Record changes:
+   - `pnpm changeset`
+2. On `main`, bump versions and changelogs:
+   - `pnpm changeset:version`
+3. Build artifacts:
+   - `pnpm build:extension`
+4. Deploy API (if needed):
+   - `pnpm deploy:api`
+
+For the full release guide and detailed checklist, see `docs/release.md` and `docs/release.zh-CN.md`.
+
+---
+
 ## Conventions
 
 - Application code reads configuration objects, not raw environment variables
