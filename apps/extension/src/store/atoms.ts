@@ -42,3 +42,15 @@ export const authStatusAtom = atom<"idle" | "signingOut">("idle");
 export const authErrorAtom = atom<string | null>(null);
 
 export const activeWorkspaceIdAtom = atom<string | null>(null);
+
+export const syncStatusAtom = atom<"idle" | "syncing" | "success" | "error">(
+	"idle",
+);
+
+export const syncErrorAtom = atom<string | null>(null);
+
+export const syncDirtyAtom = atom<boolean>(false);
+
+export const lastLocalChangeAtAtom = atom<number | null>(null);
+
+export const syncLastSourceAtom = atom<"auto" | "manual" | null>(null);

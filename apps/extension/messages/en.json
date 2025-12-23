@@ -147,5 +147,10 @@
 	"popup_collection_list_items_subtitle": "{count} items",
 	"popup_tab_list_empty_title": "No tabs in this collection",
 	"popup_save_drawer_ws_option_new_space": "+ New Space",
-	"popup_save_drawer_col_option_new_collection": "+ New Collection"
+	"popup_save_drawer_col_option_new_collection": "+ New Collection",
+	"sidebar_sync_success_toast": "Synced successfully",
+	"sidebar_sync_status_synced": "All changes synced",
+	"sidebar_sync_status_syncing": "Syncing...",
+	"sidebar_sync_status_error": "Sync failed, tap to retry",
+	"sidebar_login_prompt": "Sign in to sync your spaces across devices"
 }

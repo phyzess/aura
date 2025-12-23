@@ -1,0 +1,21 @@
+.toast-aura {
+	background-color: var(--color-surface-elevated);
+	color: var(--color-text-primary);
+	border-radius: 1.5rem;
+	border: 1px solid var(--color-surface-border);
+	box-shadow: var(--shadow-soft);
+	padding: 4px 10px;
+	font-size: 0.75rem;
+	line-height: 1.35;
+}
+
+.toast-aura--success {
+	background-color: var(--color-success-soft);
+	border-color: var(--color-success);
+}
+
+.toast-aura--error {
+	background-color: var(--color-danger-soft);
+	border-color: var(--color-danger);
+}
+

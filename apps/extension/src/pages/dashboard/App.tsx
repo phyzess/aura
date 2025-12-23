@@ -59,7 +59,7 @@ export default function App() {
 
 	useEffect(() => {
 		if (!currentUser) return;
-		syncWithServer();
+		syncWithServer({ source: "auto" });
 	}, [currentUser, syncWithServer]);
 
 	useEffect(() => {

@@ -16,6 +16,11 @@ import {
 	collectionsAtom,
 	currentUserAtom,
 	isLoadingAtom,
+	lastLocalChangeAtAtom,
+	syncDirtyAtom,
+	syncErrorAtom,
+	syncLastSourceAtom,
+	syncStatusAtom,
 	tabsAtom,
 	themeModeAtom,
 	workspacesAtom,
@@ -68,6 +73,141 @@ const updateFavicon = () => {
 	newLink.href = FAVICON_PATH;
 
 	head.appendChild(newLink);
+};
+
+type SyncResult = "success" | "unauthorized" | "error";
+
+const AUTO_SYNC_DEBOUNCE_MS = 2000;
+const AUTO_SYNC_MIN_INTERVAL_MS = 5000;
+const AUTO_SYNC_INITIAL_RETRY_DELAY_MS = 10000;
+const AUTO_SYNC_MAX_RETRY_DELAY_MS = 60000;
+
+let autoSyncTimeout: ReturnType<typeof setTimeout> | null = null;
+let lastAutoSyncAt = 0;
+let autoSyncRetryDelayMs = 0;
+let lastSyncRunLocalChangeAt: number | null = null;
+
+const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
+	const currentUser = get(currentUserAtom);
+	if (!currentUser) {
+		return "unauthorized";
+	}
+
+	await initDB();
+
+	const [allWorkspaces, allCollections, allTabs] = await Promise.all([
+		LocalDB.getWorkspaces(),
+		LocalDB.getCollections(),
+		LocalDB.getTabs(),
+	]);
+
+	const lastSync = (await LocalDB.getLastSyncTimestamp()) ?? 0;
+
+	const payload: SyncPayload = {
+		workspaces: allWorkspaces,
+		collections: allCollections,
+		tabs: allTabs,
+		lastSyncTimestamp: lastSync,
+	};
+
+	let pushRes: Response;
+	try {
+		pushRes = await fetch(`${API_BASE_URL}/api/app/sync/push`, {
+			method: "POST",
+			credentials: "include",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload),
+		});
+	} catch (error) {
+		console.error("[sync] push request failed", error);
+		return "error";
+	}
+
+	if (pushRes.status === 401) {
+		return "unauthorized";
+	}
+	if (!pushRes.ok) {
+		console.error("[sync] push request not ok", pushRes.status);
+		return "error";
+	}
+
+	let pullRes: Response;
+	try {
+		pullRes = await fetch(`${API_BASE_URL}/api/app/sync/pull`, {
+			method: "POST",
+			credentials: "include",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ lastSyncTimestamp: lastSync }),
+		});
+	} catch (error) {
+		console.error("[sync] pull request failed", error);
+		return "error";
+	}
+
+	if (pullRes.status === 401) {
+		return "unauthorized";
+	}
+	if (!pullRes.ok) {
+		console.error("[sync] pull request not ok", pullRes.status);
+		return "error";
+	}
+
+	let pullPayload: SyncPayload | null = null;
+	try {
+		pullPayload = (await pullRes.json()) as SyncPayload;
+	} catch (error) {
+		console.error("[sync] failed to parse pull payload", error);
+		return "error";
+	}
+
+	if (!pullPayload) {
+		return "success";
+	}
+
+	try {
+		const mergedWorkspaces = mergeWithTombstones<Workspace>(
+			allWorkspaces,
+			pullPayload.workspaces,
+		);
+		const mergedCollections = mergeWithTombstones<Collection>(
+			allCollections,
+			pullPayload.collections,
+		);
+		const mergedTabs = mergeWithTombstones<TabItem>(allTabs, pullPayload.tabs);
+
+		await Promise.all([
+			LocalDB.saveAllWorkspaces(mergedWorkspaces),
+			LocalDB.saveAllCollections(mergedCollections),
+			LocalDB.saveAllTabs(mergedTabs),
+			LocalDB.saveLastSyncTimestamp(pullPayload.lastSyncTimestamp),
+		]);
+
+		const activeWorkspaces = mergedWorkspaces.filter((w) => !w.deletedAt);
+		const activeCollections = mergedCollections.filter((c) => !c.deletedAt);
+		const activeTabs = mergedTabs.filter((t) => !t.deletedAt);
+
+		set(workspacesAtom, activeWorkspaces);
+		set(collectionsAtom, activeCollections);
+		set(tabsAtom, activeTabs);
+
+		const activeId = get(activeWorkspaceIdAtom);
+		if (!activeId && activeWorkspaces.length > 0) {
+			set(activeWorkspaceIdAtom, activeWorkspaces[0].id);
+		} else if (
+			activeId &&
+			activeWorkspaces.every((workspace) => workspace.id !== activeId)
+		) {
+			set(
+				activeWorkspaceIdAtom,
+				activeWorkspaces.length > 0 ? activeWorkspaces[0].id : null,
+			);
+		}
+	} catch (error) {
+		console.error("[sync] failed to update local state", error);
+		return "error";
+	}
+
+	return "success";
 };
 
 export const initThemeAtom = atom(null, (get) => {
@@ -145,6 +285,9 @@ export const createWorkspaceAtom = atom(
 		await LocalDB.saveWorkspace(newWorkspace);
 		set(workspacesAtom, [...workspaces, newWorkspace]);
 		set(activeWorkspaceIdAtom, newWorkspace.id);
+		set(syncDirtyAtom, true);
+		set(lastLocalChangeAtAtom, Date.now());
+		set(scheduleAutoSyncAtom);
 
 		return newWorkspace;
 	},
@@ -161,6 +304,9 @@ export const updateWorkspaceNameAtom = atom(
 
 		const workspace = updated.find((w) => w.id === args.id);
 		if (workspace) await LocalDB.saveWorkspace(workspace);
+		set(syncDirtyAtom, true);
+		set(lastLocalChangeAtAtom, Date.now());
+		set(scheduleAutoSyncAtom);
 	},
 );
 
@@ -211,6 +357,9 @@ export const deleteWorkspaceAtom = atom(null, async (get, set, id: string) => {
 		const remaining = workspaces.filter((w) => w.id !== id);
 		set(activeWorkspaceIdAtom, remaining.length > 0 ? remaining[0].id : null);
 	}
+	set(syncDirtyAtom, true);
+	set(lastLocalChangeAtAtom, Date.now());
+	set(scheduleAutoSyncAtom);
 });
 
 export const addCollectionAtom = atom(
@@ -232,6 +381,9 @@ export const addCollectionAtom = atom(
 
 		await LocalDB.saveCollection(newCollection);
 		set(collectionsAtom, [...collections, newCollection]);
+		set(syncDirtyAtom, true);
+		set(lastLocalChangeAtAtom, Date.now());
+		set(scheduleAutoSyncAtom);
 
 		return newCollection;
 	},
@@ -248,6 +400,9 @@ export const updateCollectionNameAtom = atom(
 
 		const collection = updated.find((c) => c.id === args.id);
 		if (collection) await LocalDB.saveCollection(collection);
+		set(syncDirtyAtom, true);
+		set(lastLocalChangeAtAtom, Date.now());
+		set(scheduleAutoSyncAtom);
 	},
 );
 
@@ -279,6 +434,9 @@ export const deleteCollectionAtom = atom(null, async (get, set, id: string) => {
 		tabsAtom,
 		tabs.filter((t) => t.collectionId !== id),
 	);
+	set(syncDirtyAtom, true);
+	set(lastLocalChangeAtAtom, Date.now());
+	set(scheduleAutoSyncAtom);
 });
 
 export const addTabAtom = atom(
@@ -306,6 +464,9 @@ export const addTabAtom = atom(
 
 		await LocalDB.saveTab(newTab);
 		set(tabsAtom, [...tabs, newTab]);
+		set(syncDirtyAtom, true);
+		set(lastLocalChangeAtAtom, Date.now());
+		set(scheduleAutoSyncAtom);
 
 		return newTab;
 	},
@@ -323,108 +484,142 @@ export const deleteTabAtom = atom(null, async (get, set, id: string) => {
 		tabsAtom,
 		tabs.filter((t) => t.id !== id),
 	);
+	set(syncDirtyAtom, true);
+	set(lastLocalChangeAtAtom, Date.now());
+	set(scheduleAutoSyncAtom);
 });
 
-export const syncWithServerAtom = atom(null, async (get, set) => {
+export const syncWithServerAtom = atom(
+	null,
+	async (
+		get,
+		set,
+		options?: {
+			source?: "auto" | "manual";
+		},
+	) => {
+		if (get(syncStatusAtom) === "syncing") {
+			return;
+		}
+
+		const source = options?.source ?? "manual";
+		set(syncLastSourceAtom, source);
+		set(syncStatusAtom, "syncing");
+		set(syncErrorAtom, null);
+
+		lastSyncRunLocalChangeAt = get(lastLocalChangeAtAtom) ?? null;
+
+		let result: SyncResult;
+		try {
+			result = await runSyncOnce(get, set);
+		} catch (error) {
+			console.error("[sync] unexpected error", error);
+			result = "error";
+		}
+
+		if (result === "success") {
+			const latestLocalChangeAt = get(lastLocalChangeAtAtom);
+			if (
+				latestLocalChangeAt == null ||
+				lastSyncRunLocalChangeAt == null ||
+				latestLocalChangeAt <= lastSyncRunLocalChangeAt
+			) {
+				set(syncDirtyAtom, false);
+			} else {
+				set(syncDirtyAtom, true);
+			}
+			set(syncStatusAtom, "success");
+		} else if (result === "unauthorized") {
+			set(syncStatusAtom, "error");
+			set(syncErrorAtom, "Please sign in to sync.");
+		} else {
+			set(syncStatusAtom, "error");
+			set(syncErrorAtom, "Sync failed, please try again.");
+		}
+
+		if (typeof window !== "undefined") {
+			setTimeout(() => {
+				set(syncStatusAtom, "idle");
+				set(syncErrorAtom, null);
+			}, 1500);
+		} else {
+			set(syncStatusAtom, "idle");
+			set(syncErrorAtom, null);
+		}
+	},
+);
+
+export const scheduleAutoSyncAtom = atom(null, (get, set) => {
+	if (typeof window === "undefined") {
+		return;
+	}
+
 	const currentUser = get(currentUserAtom);
 	if (!currentUser) {
 		return;
 	}
 
-	await initDB();
+	if (!get(syncDirtyAtom)) {
+		return;
+	}
 
-	const [allWorkspaces, allCollections, allTabs] = await Promise.all([
-		LocalDB.getWorkspaces(),
-		LocalDB.getCollections(),
-		LocalDB.getTabs(),
-	]);
+	const schedule = (delay: number) => {
+		if (autoSyncTimeout) {
+			clearTimeout(autoSyncTimeout);
+		}
 
-	const lastSync = (await LocalDB.getLastSyncTimestamp()) ?? 0;
+		autoSyncTimeout = window.setTimeout(() => {
+			(async () => {
+				autoSyncTimeout = null;
 
-	const payload: SyncPayload = {
-		workspaces: allWorkspaces,
-		collections: allCollections,
-		tabs: allTabs,
-		lastSyncTimestamp: lastSync,
+				const user = get(currentUserAtom);
+				if (!user) {
+					autoSyncRetryDelayMs = 0;
+					return;
+				}
+
+				if (!get(syncDirtyAtom)) {
+					autoSyncRetryDelayMs = 0;
+					return;
+				}
+
+				const now = Date.now();
+				const sinceLast = now - lastAutoSyncAt;
+				if (lastAutoSyncAt && sinceLast < AUTO_SYNC_MIN_INTERVAL_MS) {
+					schedule(AUTO_SYNC_MIN_INTERVAL_MS - sinceLast);
+					return;
+				}
+
+				if (get(syncStatusAtom) === "syncing") {
+					schedule(AUTO_SYNC_DEBOUNCE_MS);
+					return;
+				}
+
+				lastAutoSyncAt = now;
+
+				await set(syncWithServerAtom, { source: "auto" });
+
+				const status = get(syncStatusAtom);
+				const stillDirty = get(syncDirtyAtom);
+
+				if (status === "error" && stillDirty) {
+					const nextDelay =
+						autoSyncRetryDelayMs > 0
+							? Math.min(autoSyncRetryDelayMs * 2, AUTO_SYNC_MAX_RETRY_DELAY_MS)
+							: AUTO_SYNC_INITIAL_RETRY_DELAY_MS;
+					autoSyncRetryDelayMs = nextDelay;
+					schedule(nextDelay);
+				} else if (stillDirty) {
+					autoSyncRetryDelayMs = 0;
+					schedule(AUTO_SYNC_DEBOUNCE_MS);
+				} else {
+					autoSyncRetryDelayMs = 0;
+				}
+			})();
+		}, delay);
 	};
 
-	try {
-		const pushRes = await fetch(`${API_BASE_URL}/api/app/sync/push`, {
-			method: "POST",
-			credentials: "include",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(payload),
-		});
-
-		if (pushRes.status === 401) {
-			return;
-		}
-		if (!pushRes.ok) {
-			return;
-		}
-	} catch {
-		return;
-	}
-
-	let pullPayload: SyncPayload | null = null;
-	try {
-		const pullRes = await fetch(`${API_BASE_URL}/api/app/sync/pull`, {
-			method: "POST",
-			credentials: "include",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ lastSyncTimestamp: lastSync }),
-		});
-
-		if (pullRes.status === 401) {
-			return;
-		}
-		if (!pullRes.ok) {
-			return;
-		}
-		pullPayload = (await pullRes.json()) as SyncPayload;
-	} catch {
-		return;
-	}
-
-	if (!pullPayload) return;
-
-	const mergedWorkspaces = mergeWithTombstones<Workspace>(
-		allWorkspaces,
-		pullPayload.workspaces,
-	);
-	const mergedCollections = mergeWithTombstones<Collection>(
-		allCollections,
-		pullPayload.collections,
-	);
-	const mergedTabs = mergeWithTombstones<TabItem>(allTabs, pullPayload.tabs);
-
-	await Promise.all([
-		LocalDB.saveAllWorkspaces(mergedWorkspaces),
-		LocalDB.saveAllCollections(mergedCollections),
-		LocalDB.saveAllTabs(mergedTabs),
-		LocalDB.saveLastSyncTimestamp(pullPayload.lastSyncTimestamp),
-	]);
-
-	const activeWorkspaces = mergedWorkspaces.filter((w) => !w.deletedAt);
-	const activeCollections = mergedCollections.filter((c) => !c.deletedAt);
-	const activeTabs = mergedTabs.filter((t) => !t.deletedAt);
-
-	set(workspacesAtom, activeWorkspaces);
-	set(collectionsAtom, activeCollections);
-	set(tabsAtom, activeTabs);
-
-	const activeId = get(activeWorkspaceIdAtom);
-	if (!activeId && activeWorkspaces.length > 0) {
-		set(activeWorkspaceIdAtom, activeWorkspaces[0].id);
-	} else if (
-		activeId &&
-		activeWorkspaces.every((workspace) => workspace.id !== activeId)
-	) {
-		set(
-			activeWorkspaceIdAtom,
-			activeWorkspaces.length > 0 ? activeWorkspaces[0].id : null,
-		);
-	}
+	schedule(AUTO_SYNC_DEBOUNCE_MS);
 });
 
 export const signUpAtom = atom(

@@ -147,5 +147,10 @@
 	"popup_collection_list_items_subtitle": "{count} 个项目",
 	"popup_tab_list_empty_title": "这个集合里还没有标签页。",
 	"popup_save_drawer_ws_option_new_space": "+ 新空间",
-	"popup_save_drawer_col_option_new_collection": "+ 新集合"
+	"popup_save_drawer_col_option_new_collection": "+ 新集合",
+	"sidebar_sync_success_toast": "同步成功",
+	"sidebar_sync_status_synced": "所有更改已同步",
+	"sidebar_sync_status_syncing": "正在同步…",
+	"sidebar_sync_status_error": "同步失败，点击重试",
+	"sidebar_login_prompt": "登录后，在多设备间同步空间和集合"
 }
