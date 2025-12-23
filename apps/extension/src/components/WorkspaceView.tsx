@@ -233,8 +233,9 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 
 				<div className="w-full transition-all duration-300">
 					{!isCreatingCollection ? (
-						<button
+						<Button
 							onClick={() => setIsCreatingCollection(true)}
+							variant="ghost"
 							className="w-full py-6 flex flex-col items-center justify-center gap-2 text-accent bg-surface rounded-3xl border-2 border-dashed border-surface-border hover:border-accent hover:bg-surface-elevated/60 transition-all group"
 						>
 							<div className="w-9 h-9 rounded-full bg-accent-soft text-accent flex items-center justify-center transition-all group-hover:bg-accent group-hover:text-on-accent group-hover:shadow-soft group-hover:scale-105">
@@ -243,7 +244,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 							<span className="font-semibold text-body text-secondary group-hover:text-accent">
 								{m.workspace_create_collection_cta()}
 							</span>
-						</button>
+						</Button>
 					) : (
 						<div className="bg-surface-elevated p-5 rounded-3xl shadow-soft border border-surface animate-in fade-in zoom-in-95 duration-200">
 							<div className="flex items-center gap-2 mb-4 text-accent">

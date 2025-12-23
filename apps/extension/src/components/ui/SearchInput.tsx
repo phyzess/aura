@@ -1,6 +1,7 @@
 import { Search, X } from "lucide-react";
 import type * as React from "react";
 import { FieldShell } from "./FieldShell";
+import { IconButton } from "./IconButton";
 import { Input } from "./Input";
 
 interface SearchInputProps
@@ -36,16 +37,16 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 		<div className="flex items-center gap-2">
 			{shortcutHint}
 			{onClear && value && (
-				<button
+				<IconButton
 					type="button"
 					onClick={onClear}
-					className="flex items-center text-muted hover:text-secondary cursor-pointer transition-colors"
+					size="sm"
+					variant="subtle"
 					aria-label="Clear search"
+					className="w-5 h-5 border border-surface-border bg-surface-muted hover:bg-vibrant-pink hover:text-white hover:border-black"
 				>
-					<div className="w-5 h-5 rounded-full border border-surface-border bg-surface-muted flex items-center justify-center hover:bg-vibrant-pink hover:text-white hover:border-black">
-						<X size={12} strokeWidth={3} />
-					</div>
-				</button>
+					<X size={12} strokeWidth={3} />
+				</IconButton>
 			)}
 		</div>
 	) : undefined;

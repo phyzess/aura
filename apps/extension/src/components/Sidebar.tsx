@@ -1,7 +1,8 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { LogIn, Pencil, Plus, Trash2, UploadCloud } from "lucide-react";
+import { Pencil, Plus, Trash2, UploadCloud } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/IconButton";
 import { Input } from "@/components/ui/Input";
@@ -243,15 +244,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 				<div className="p-4 mt-2 bg-linear-to-b from-transparent to-surface-muted/60">
 					<div className="bg-surface-muted p-1 rounded-2xl flex gap-1">
-						<button
+						<Button
 							type="button"
 							onClick={() => setIsImportModalOpen(true)}
 							title={m.sidebar_import_button_title()}
+							variant="secondary"
+							size="sm"
 							className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated/90 hover:shadow-sm rounded-l-xl transition-all cursor-pointer"
 						>
 							<UploadCloud size={14} />
 							<span>{m.sidebar_import_button_label()}</span>
-						</button>
+						</Button>
 						<User
 							currentUserEmail={currentUserEmail}
 							onOpenAuth={onOpenAuth}
@@ -263,10 +266,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 							{m.sidebar_login_prompt()}
 						</div>
 					) : (
-						<button
+						<Button
 							type="button"
 							onClick={() => syncWithServer({ source: "manual" })}
 							disabled={syncStatus === "syncing"}
+							variant="link"
+							size="sm"
 							className={`mt-2 w-full px-3 py-1 text-xs text-center transition-colors ${
 								syncStatus === "error"
 									? "text-danger hover:text-danger/80 cursor-pointer"
@@ -280,7 +285,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 								: syncStatus === "syncing"
 									? m.sidebar_sync_status_syncing()
 									: m.sidebar_sync_status_error()}
-						</button>
+						</Button>
 					)}
 				</div>
 			</Card>

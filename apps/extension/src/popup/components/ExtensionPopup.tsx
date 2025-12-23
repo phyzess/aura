@@ -2,6 +2,7 @@ import { useSetAtom } from "jotai";
 import { ExternalLink } from "lucide-react";
 import type React from "react";
 import { useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/Button";
 import { useTabSearch } from "@/hooks/useTabSearch";
 import * as m from "@/paraglide/messages";
 import { clearLocalDataAtom, signOutAtom } from "@/store/actions";
@@ -308,14 +309,16 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			/>
 
 			<div className="px-5 pb-4 text-[11px] text-secondary text-right">
-				<button
+				<Button
 					type="button"
 					onClick={onClose}
-					className="inline-flex items-center gap-1 text-[11px] text-secondary hover:text-accent hover:underline underline-offset-2 transition-colors"
+					variant="link"
+					size="sm"
+					className="text-[11px]"
 				>
 					<span>{m.popup_footer_open_dashboard_label()}</span>
 					<ExternalLink size={10} />
-				</button>
+				</Button>
 			</div>
 
 			<ExtensionPopupSaveDrawer

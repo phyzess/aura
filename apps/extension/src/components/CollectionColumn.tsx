@@ -136,25 +136,29 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 						{isMenuOpen && (
 							<div className="absolute right-0 top-full mt-2 w-48 bg-surface-elevated rounded-xl shadow-xl border border-surface overflow-hidden z-40 animate-in fade-in zoom-in-95 duration-150">
 								<div className="p-1.5 flex flex-col gap-0.5">
-									<button
+									<Button
 										onClick={() => {
 											setIsRenaming(true);
 											setIsMenuOpen(false);
 										}}
-										className="w-full flex items-center gap-2 px-3 py-2 text-body font-semibold text-secondary hover:bg-surface-muted hover:text-accent rounded-lg transition-colors text-left"
+										variant="ghost"
+										size="sm"
+										className="w-full flex items-center gap-2 px-3 py-2 text-body font-semibold text-secondary hover:bg-surface-muted hover:text-accent rounded-lg transition-colors text-left justify-start"
 									>
 										<Pencil size={14} /> Rename
-									</button>
+									</Button>
 									<div className="h-px bg-surface-muted my-1 mx-1"></div>
-									<button
+									<Button
 										onClick={() => {
 											setShowDeleteConfirm(true);
 											setIsMenuOpen(false);
 										}}
-										className="w-full flex items-center gap-2 px-3 py-2 text-body font-semibold text-danger hover:bg-danger-soft rounded-lg transition-colors text-left"
+										variant="ghost"
+										size="sm"
+										className="w-full flex items-center gap-2 px-3 py-2 text-body font-semibold text-danger hover:bg-danger-soft rounded-lg transition-colors text-left justify-start"
 									>
 										<Trash2 size={14} /> Delete Collection
-									</button>
+									</Button>
 								</div>
 							</div>
 						)}

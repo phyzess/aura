@@ -83,20 +83,24 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 				</div>
 
 				<div className="flex mb-5 rounded-full bg-surface-muted p-1 text-xs font-semibold">
-					<button
+					<Button
 						type="button"
 						onClick={() => setMode("login")}
-						className={`flex-1 py-1.5 rounded-full transition-all ${mode === "login" ? "bg-surface-elevated text-primary shadow-sm" : "text-muted"}`}
+						variant="ghost"
+						size="sm"
+						className={`flex-1 py-1.5 rounded-full ${mode === "login" ? "bg-surface-elevated text-primary shadow-sm" : "text-muted bg-transparent"}`}
 					>
 						{m.auth_dialog_tab_login()}
-					</button>
-					<button
+					</Button>
+					<Button
 						type="button"
 						onClick={() => setMode("register")}
-						className={`flex-1 py-1.5 rounded-full transition-all ${mode === "register" ? "bg-surface-elevated text-primary shadow-sm" : "text-muted"}`}
+						variant="ghost"
+						size="sm"
+						className={`flex-1 py-1.5 rounded-full ${mode === "register" ? "bg-surface-elevated text-primary shadow-sm" : "text-muted bg-transparent"}`}
 					>
 						{m.auth_dialog_tab_register()}
-					</button>
+					</Button>
 				</div>
 
 				<form onSubmit={handleSubmit} className="space-y-4">
