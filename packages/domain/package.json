@@ -1,9 +1,8 @@
 {
-  "name": "@aura/domain",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "main": "src/index.ts",
-  "types": "src/index.ts"
+	"name": "@aura/domain",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"main": "src/index.ts",
+	"types": "src/index.ts"
 }
-
