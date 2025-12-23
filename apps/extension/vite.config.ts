@@ -19,16 +19,18 @@ const extensionEnvSchema = object({
 
 export default defineConfig(({ mode }) => {
 	const repoRoot = path.resolve(__dirname, "../..");
-	const env = loadEnv(mode, repoRoot, "");
+	const fileEnv = loadEnv(mode, repoRoot, "");
+	const env = {
+		...process.env,
+		...fileEnv,
+	} as Record<string, string | undefined>;
 
-	parse(extensionEnvSchema, env as Record<string, string | undefined>);
+	parse(extensionEnvSchema, env);
 
 	// Build artifact naming: allow overriding via BUILD_META/RELEASE_TAG, otherwise use timestamp
 	const buildMeta =
 		(env.BUILD_META as string | undefined) ||
-		(env.RELEASE_TAG as string | undefined) ||
-		process.env.BUILD_META ||
-		process.env.RELEASE_TAG;
+		(env.RELEASE_TAG as string | undefined);
 	const timestamp = new Date()
 		.toISOString()
 		.replace(/[-:T]/g, "")
