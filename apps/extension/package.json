@@ -5,7 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc -b ../../tsconfig.json && vite build",
+		"i18n:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
+		"build": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide && tsc -b ../../tsconfig.json && vite build",
 		"preview": "vite preview"
 	},
 	"dependencies": {
