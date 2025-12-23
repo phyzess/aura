@@ -17,6 +17,7 @@ import {
 	createWorkspaceAtom,
 	deleteWorkspaceAtom,
 	importTobyDataAtom,
+	syncWithServerAtom,
 	updateWorkspaceNameAtom,
 } from "@/store/actions";
 import { activeWorkspaceIdAtom } from "@/store/atoms";
@@ -50,6 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 	const updateWorkspaceName = useSetAtom(updateWorkspaceNameAtom);
 	const deleteWorkspace = useSetAtom(deleteWorkspaceAtom);
 	const importTobyData = useSetAtom(importTobyDataAtom);
+	const syncWithServer = useSetAtom(syncWithServerAtom);
 
 	const [editingId, setEditingId] = useState<string | null>(null);
 	const [editName, setEditName] = useState("");
@@ -243,6 +245,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 							</button>
 							<button
 								type="button"
+								onClick={syncWithServer}
 								title={m.sidebar_sync_button_title()}
 								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated/90 hover:shadow-sm rounded-tr-2xl transition-all cursor-pointer"
 							>

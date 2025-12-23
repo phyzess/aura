@@ -135,7 +135,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 		const finalTabs = sessionTabs.filter((_, i) => checkedTabs.has(i));
 
 		onCapture({
-			abs: finalTabs,
+			tabs: finalTabs,
 			targetWorkspaceId: targetWsId,
 			newWorkspaceName: targetWsId === "new" ? newWsName : undefined,
 			targetCollectionId: targetColId,
