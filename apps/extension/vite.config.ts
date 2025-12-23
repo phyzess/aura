@@ -6,8 +6,9 @@ import react from "@vitejs/plugin-react";
 import { minLength, object, parse, pipe, string } from "valibot";
 import { defineConfig, loadEnv } from "vite";
 import zip from "vite-plugin-zip-pack";
-import { name, version } from "../../package.json";
+import rootPkg from "../../package.json";
 import manifest from "./manifest.config.js";
+import extPkg from "./package.json";
 
 const extensionEnvSchema = object({
 	VITE_API_BASE_URL: pipe(
@@ -32,9 +33,11 @@ export default defineConfig(({ mode }) => {
 		.toISOString()
 		.replace(/[-:T]/g, "")
 		.split(".")[0];
+	const extensionName = rootPkg.name;
+	const extensionVersion = extPkg.version;
 	const zipFileName = buildMeta
-		? `crx-${name}-${version}-${buildMeta}.zip`
-		: `crx-${name}-${version}-${timestamp}.zip`;
+		? `crx-${extensionName}-${extensionVersion}-${buildMeta}.zip`
+		: `crx-${extensionName}-${extensionVersion}-${timestamp}.zip`;
 
 	return {
 		root: __dirname,
