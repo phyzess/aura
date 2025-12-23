@@ -74,14 +74,26 @@ git add .
 git commit -m "chore: version packages"
 ````
 
-可选：给本次发布打一个 Git tag：
+接着给本次扩展发布打一个 Git tag：
 
 ````bash
-git tag extension-vX.Y.Z
+git tag ext-vX.Y.Z
 git push && git push --tags
 ````
 
-tag 的命名可以自己约定，例如使用 `vX.Y.Z` 或 `extension-vX.Y.Z`。
+`ext-v*` 前缀约定用于 Chrome 扩展版本，例如当 `apps/extension/package.json` 里是 `"version": "1.2.3"` 时，对应的 tag 应为 `ext-v1.2.3`。
+
+### 2.3 Tag 命名与 CI 约定（ext-v / api-v）
+
+为了区分 monorepo 中不同的可部署目标，约定使用带作用域的 tag：
+
+- `ext-vX.Y.Z`：Chrome 扩展版本，对应 `apps/extension/package.json.version`；
+- `api-vX.Y.Z`：API 版本，对应 `apps/api/package.json.version`。
+
+GitHub Actions 将按前缀触发不同流程：
+
+- 推送 `ext-v*` tag 时，构建扩展并在 GitHub Releases 中创建带 zip 附件的 release；
+- 推送 `api-v*` tag 时，通过 `pnpm deploy:api` 部署 `@aura/api` 到 Cloudflare Workers。
 
 ## 3. 构建 Chrome 扩展发布包
 
@@ -149,8 +161,9 @@ pnpm deploy:api
 5. 部署后端（如有变更）：
    - 运行 `pnpm deploy:api` 部署 Cloudflare Worker API。
 6. 打 tag 并推送：
-   - `git tag extension-vX.Y.Z`（或采用你约定的命名风格）；
+   - 扩展：`git tag ext-vX.Y.Z`（与 `apps/extension/package.json.version` 一致）；
+   - API（如需要部署）：`git tag api-vX.Y.Z`（与 `apps/api/package.json.version` 一致）；
    - `git push && git push --tags`。
 
-通过以上流程，可以在保持简单的前提下，让版本号、CHANGELOG、扩展 manifest 与构建产物始终保持一致，方便团队协作与追踪历史。
+通过以上流程，可以在保持简单的前提下，让版本号、CHANGELOG、扩展 manifest、构建产物与自动化流程始终保持一致，方便团队协作与追踪历史。
 

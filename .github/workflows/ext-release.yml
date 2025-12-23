@@ -1,0 +1,50 @@
+name: Release Chrome extension
+
+on:
+  push:
+    tags:
+      - 'ext-v*'
+
+jobs:
+  build-and-release:
+    name: Build and publish extension release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: true
+          args: '--frozen-lockfile'
+
+      - name: Build extension
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: pnpm build:extension
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Extension ${{ github.ref_name }}"
+          body: |
+            Aura Chrome extension release for tag ${{ github.ref_name }}.
+            The attached zip can be uploaded to the Chrome Web Store.
+          files: apps/extension/release/*.zip
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-rc.') }}
+

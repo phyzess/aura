@@ -19,7 +19,6 @@ dist-ssr
 !.env.example
 .dev.vars
 .wrangler
-apps/api/wrangler.toml
 
 # Editor directories and files
 .vscode/*

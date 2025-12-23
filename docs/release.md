@@ -70,14 +70,26 @@ git add .
 git commit -m "chore: version packages"
 ````
 
-Optionally, tag the release:
+After committing the version bump, tag the extension release:
 
 ````bash
-git tag extension-vX.Y.Z
+git tag ext-vX.Y.Z
 git push && git push --tags
 ````
 
-You can pick whatever tag naming convention you prefer (for example, `vX.Y.Z` or `extension-vX.Y.Z`).
+The `ext-v*` prefix is reserved for Chrome extension releases. For example, if `apps/extension/package.json` now has `"version": "1.2.3"`, tag `ext-v1.2.3`.
+
+### 2.3 Tag naming (ext-v / api-v) and CI
+
+We use scoped tags to distinguish different deployable targets in the monorepo:
+
+- `ext-vX.Y.Z` – Chrome extension release, version taken from `apps/extension/package.json.version`.
+- `api-vX.Y.Z` – API release, version taken from `apps/api/package.json.version`.
+
+GitHub Actions workflows are wired so that:
+
+- pushing an `ext-v*` tag builds the extension and publishes a GitHub Release with the built zip attached;
+- pushing an `api-v*` tag deploys `@aura/api` to Cloudflare Workers via `pnpm deploy:api`.
 
 ## 3. Building the Chrome extension for release
 
@@ -142,8 +154,9 @@ Putting it all together, a typical release looks like this:
 5. Deploy backend (if needed):
    - `pnpm deploy:api` to deploy the Cloudflare Worker API.
 6. Tag and push:
-   - `git tag extension-vX.Y.Z` (or your preferred naming scheme).
+   - For the extension: `git tag ext-vX.Y.Z` (matching `apps/extension/package.json.version`).
+   - For the API (when deploying): `git tag api-vX.Y.Z` (matching `apps/api/package.json.version`).
    - `git push && git push --tags`.
 
-This flow keeps your versions, changelogs, extension manifest, and built artifacts in sync, while staying simple enough for a small team.
+This flow keeps your versions, changelogs, extension manifest, built artifacts, and deployment automation in sync, while staying simple enough for a small team.
 
