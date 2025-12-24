@@ -31,7 +31,22 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 	onDeleteCollection,
 	highlightedTabId,
 }) => {
-	const sortedTabs = [...tabs].sort((a, b) => a.order - b.order);
+	const sortedTabs = [...tabs].sort((a, b) => {
+		const aPinned = !!a.isPinned;
+		const bPinned = !!b.isPinned;
+		if (aPinned !== bPinned) return aPinned ? -1 : 1;
+
+		if (a.order !== b.order) return a.order - b.order;
+
+		const aTime = a.updatedAt ?? a.createdAt ?? 0;
+		const bTime = b.updatedAt ?? b.createdAt ?? 0;
+		if (aTime !== bTime) return bTime - aTime;
+
+		return 0;
+	});
+
+	const pinnedTabs = sortedTabs.filter((t) => !!t.isPinned);
+	const regularTabs = sortedTabs.filter((t) => !t.isPinned);
 
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
@@ -175,7 +190,18 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 			<CardBody className="px-5 pb-4">
 				{sortedTabs.length > 0 ? (
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4">
-						{sortedTabs.map((tab) => (
+						{pinnedTabs.map((tab) => (
+							<TabCard
+								key={tab.id}
+								tab={tab}
+								onDelete={onDeleteTab}
+								isHighlighted={highlightedTabId === tab.id}
+							/>
+						))}
+						{pinnedTabs.length > 0 && regularTabs.length > 0 && (
+							<div className="col-span-full h-px bg-surface-muted/80 my-1.5" />
+						)}
+						{regularTabs.map((tab) => (
 							<TabCard
 								key={tab.id}
 								tab={tab}

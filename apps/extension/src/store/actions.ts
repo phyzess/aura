@@ -489,6 +489,29 @@ export const deleteTabAtom = atom(null, async (get, set, id: string) => {
 	set(scheduleAutoSyncAtom);
 });
 
+export const toggleTabPinAtom = atom(null, async (get, set, id: string) => {
+	const tabs = get(tabsAtom);
+	const tab = tabs.find((t) => t.id === id);
+
+	if (!tab) return;
+
+	const updated: TabItem = {
+		...tab,
+		isPinned: !tab.isPinned,
+		updatedAt: Date.now(),
+	};
+
+	await LocalDB.saveTab(updated);
+
+	set(
+		tabsAtom,
+		tabs.map((t) => (t.id === id ? updated : t)),
+	);
+	set(syncDirtyAtom, true);
+	set(lastLocalChangeAtAtom, Date.now());
+	set(scheduleAutoSyncAtom);
+});
+
 export const syncWithServerAtom = atom(
 	null,
 	async (

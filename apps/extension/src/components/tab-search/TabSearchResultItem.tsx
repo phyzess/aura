@@ -1,5 +1,7 @@
-import { ExternalLink, Folder, Globe, Layout } from "lucide-react";
+import { useSetAtom } from "jotai";
+import { ExternalLink, Folder, Globe, Layout, Pin } from "lucide-react";
 import type React from "react";
+import { toggleTabPinAtom } from "@/store/actions";
 import type { Collection, TabItem, Workspace } from "@/types";
 
 type TabSearchResultVariant = "popup" | "dashboard";
@@ -37,12 +39,19 @@ export const TabSearchResultItem: React.FC<TabSearchResultItemProps> = ({
 	const isDashboard = variant === "dashboard";
 	const basePadding = isDashboard ? "p-3" : "p-2.5";
 	const baseText = isDashboard ? "text-sm" : "text-xs";
+	const togglePin = useSetAtom(toggleTabPinAtom);
 	const randomColor =
 		vibrantColors[Math.floor(Math.random() * vibrantColors.length)];
 
 	const containerClasses = isDashboard
 		? `group relative flex items-center justify-between gap-3 ${basePadding} bg-surface-elevated rounded-xl border-2 border-surface-border hover:border-black dark:hover:border-white hover:shadow-soft-hover cursor-pointer transition-all duration-200 overflow-hidden`
-		: `group flex items-center justify-between gap-3 ${basePadding} rounded-xl border border-surface bg-transparent hover:bg-surface-elevated hover:border-surface-border hover:shadow-soft-hover cursor-pointer transition-all duration-200`;
+		: `group relative flex items-center justify-between gap-3 ${basePadding} rounded-xl border border-surface bg-transparent hover:bg-surface-elevated hover:border-surface-border hover:shadow-soft-hover cursor-pointer transition-all duration-200`;
+
+	const handlePinClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
+		event.stopPropagation();
+		event.preventDefault();
+		togglePin(tab.id);
+	};
 
 	const iconClasses = isDashboard
 		? "w-8 h-8 rounded-lg bg-surface-elevated border border-surface flex items-center justify-center shrink-0 overflow-hidden text-muted"
@@ -89,8 +98,24 @@ export const TabSearchResultItem: React.FC<TabSearchResultItemProps> = ({
 						)}
 					</div>
 				</div>
-				<div className="w-7 h-7 rounded-full bg-surface-muted flex items-center justify-center text-muted group-hover:bg-surface-elevated group-hover:text-primary transition-colors duration-200">
-					<ExternalLink size={12} />
+				<div className="flex items-center gap-1.5">
+					<button
+						type="button"
+						onClick={handlePinClick}
+						className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-colors duration-200 ${
+							tab.isPinned
+								? "bg-accent-soft text-accent"
+								: "bg-surface-muted text-muted group-hover:bg-surface-elevated group-hover:text-primary"
+						}`}
+						aria-pressed={!!tab.isPinned}
+						title={tab.isPinned ? "Unpin tab" : "Pin tab"}
+						aria-label={tab.isPinned ? "Unpin tab" : "Pin tab"}
+					>
+						<Pin size={11} />
+					</button>
+					<div className="w-7 h-7 rounded-full bg-surface-muted flex items-center justify-center text-muted group-hover:bg-surface-elevated group-hover:text-primary transition-colors duration-200">
+						<ExternalLink size={12} />
+					</div>
 				</div>
 			</div>
 		</div>
