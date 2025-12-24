@@ -50,16 +50,6 @@ textarea[readonly] {
 	cursor: not-allowed;
 }
 
-.custom-card {
-	@apply rounded-xl shadow-soft p-6;
-	background-color: var(--color-surface-elevated);
-	border: 1px solid var(--color-surface-border);
-}
-
-.dark .custom-card {
-	border-color: var(--color-surface-border-strong);
-}
-
 /* Background utilities */
 .bg-surface {
 	background-color: var(--color-surface);
@@ -186,6 +176,19 @@ textarea[readonly] {
 	background-color: var(--color-info-soft);
 }
 
+/* Lime highlight utilities - small-scale fluorescent accents */
+.bg-lime-soft {
+	background-color: var(--color-lime-soft);
+}
+
+.text-lime {
+	color: var(--color-vibrant-lime);
+}
+
+.border-lime {
+	border-color: var(--color-vibrant-lime);
+}
+
 /* Gradient utilities */
 .bg-gradient-accent {
 	background-image: var(--gradient-accent);
@@ -299,6 +302,10 @@ textarea[readonly] {
 	top: 50%;
 	height: 100%;
 	z-index: 0;
+}
+
+.bottom-shadow-subtle::before {
+	opacity: 0.35;
 }
 
 .bottom-shadow-sm::before {

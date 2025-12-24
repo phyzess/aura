@@ -1,4 +1,5 @@
 import type * as React from "react";
+import { cn } from "@/lib/utils";
 
 export type BadgeVariant = "accent" | "neutral";
 
@@ -20,9 +21,7 @@ export const Badge: React.FC<BadgeProps> = ({
 	const baseClasses =
 		"inline-flex items-center rounded-full px-2 py-0.5 text-label font-medium whitespace-nowrap";
 
-	const classes = [baseClasses, variantClassName[variant], className]
-		.filter(Boolean)
-		.join(" ");
+	const classes = cn(baseClasses, variantClassName[variant], className);
 
 	return (
 		<span className={classes} {...props}>

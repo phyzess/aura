@@ -25,8 +25,8 @@ export const User: React.FC<UserProps> = ({
 				type="button"
 				onClick={() => onOpenAuth?.()}
 				title={m.sidebar_login_button_title()}
-				variant="ghost"
-				className="flex-1 rounded-none rounded-r-xl text-xs"
+				variant="secondary"
+				className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated/90 hover:shadow-sm rounded-r-xl transition-all cursor-pointer"
 			>
 				<LogIn size={14} />
 				<span>{m.sidebar_login_button_label()}</span>

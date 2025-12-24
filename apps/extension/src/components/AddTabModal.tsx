@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
+import { HStack } from "@/components/ui/Stack";
 import { TextField } from "@/components/ui/TextField";
 import * as m from "@/paraglide/messages";
 
@@ -113,7 +114,10 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 					/>
 
 					{url && (
-						<div className="flex items-center gap-3 p-3 bg-accent-soft/40 dark:bg-surface-muted rounded-xl border border-accent/20 dark:border-surface-border">
+						<HStack
+							gap="md"
+							className="p-3 bg-accent-soft/40 dark:bg-surface-muted rounded-xl border border-accent/20 dark:border-surface-border"
+						>
 							<div className="w-8 h-8 rounded-lg bg-surface-elevated shadow-sm flex items-center justify-center text-accent/80 dark:text-accent overflow-hidden">
 								<img
 									src={`https://www.google.com/s2/favicons?domain=${url}&sz=64`}
@@ -133,7 +137,7 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 									{m.add_tab_modal_preview_label()}
 								</p>
 							</div>
-						</div>
+						</HStack>
 					)}
 
 					<div className="pt-2 flex gap-3">

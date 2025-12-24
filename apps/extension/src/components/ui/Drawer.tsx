@@ -1,5 +1,6 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
+import { cn } from "@/lib/utils";
 
 interface DrawerProps {
 	isOpen: boolean;
@@ -56,23 +57,20 @@ export const Drawer: React.FC<DrawerProps> = ({
 
 	const overlayBase =
 		"fixed inset-0 bg-surface-overlay/70 backdrop-blur-sm transition-opacity duration-300";
-	const overlayClasses = [
+	const overlayClasses = cn(
 		overlayBase,
 		isOpen ? "opacity-100" : "opacity-0",
 		overlayClassName,
-	]
-		.filter(Boolean)
-		.join(" ");
+	);
 
 	const panelBase =
 		"fixed bottom-0 left-0 w-full transition-transform duration-300 ease-out";
-	const panelClasses = [
+	const panelClasses = cn(
 		panelBase,
 		isOpen ? "translate-y-0" : "translate-y-full",
 		className,
-	]
-		.filter(Boolean)
-		.join(" ");
+		"pointer-events-auto",
+	);
 
 	const content = (
 		<div className="fixed inset-0 z-[120]">
@@ -80,7 +78,7 @@ export const Drawer: React.FC<DrawerProps> = ({
 				className={overlayClasses}
 				onClick={closeOnOverlayClick ? onClose : undefined}
 			/>
-			<div className={panelClasses + " pointer-events-auto"}>{children}</div>
+			<div className={panelClasses}>{children}</div>
 		</div>
 	);
 

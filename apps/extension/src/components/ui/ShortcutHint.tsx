@@ -1,4 +1,5 @@
 import type * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface ShortcutHintProps
 	extends React.HTMLAttributes<HTMLSpanElement> {
@@ -13,7 +14,7 @@ export const ShortcutHint: React.FC<ShortcutHintProps> = ({
 	const baseClasses =
 		"inline-flex items-center gap-1 rounded-full bg-surface-muted px-2 py-0.5 text-label text-muted";
 
-	const classes = [baseClasses, className].filter(Boolean).join(" ");
+	const classes = cn(baseClasses, className);
 
 	return (
 		<span className={classes} {...props}>

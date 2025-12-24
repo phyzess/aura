@@ -37,16 +37,18 @@
     --color-coral-300: oklch(80.97% 0.1061 11.64);
     --color-coral-400: oklch(71.92% 0.169 13.43);
 
-  /* ========================================
-     BUTTON & INTERACTIVE COLOR SYSTEM
-     按钮与交互元素色彩系统
-     ======================================== */
+	  /* ========================================
+	     BUTTON & INTERACTIVE COLOR SYSTEM
+	     按钮与交互元素色彩系统
+	     ======================================== */
 
-	  /* Primary - 主要操作 (珊瑚橙 rgb(255 95 64)) */
-    --color-primary: oklch(68% 0.21 25);
-    --color-primary-hover: oklch(72% 0.21 25);
-    --color-primary-active: oklch(64% 0.21 25);
-    --color-on-primary: oklch(100% 0 0);
+		  /* Primary - 主要操作 (珊瑚橙 rgb(255 95 64)) */
+	    --color-primary: oklch(68% 0.21 25);
+	    --color-primary-hover: oklch(72% 0.21 25);
+	    --color-primary-active: oklch(64% 0.21 25);
+	    --color-on-primary: oklch(100% 0 0);
+	    /* Disabled 主按钮：略微变亮且降低饱和度，避免在暗底下显得脏灰 */
+	    --color-primary-disabled: oklch(78% 0.11 35);
 
 	  /* Secondary - 次要操作 (紫色) */
     --color-secondary: oklch(65% 0.17 290);
@@ -111,10 +113,18 @@
 		    --color-warning-soft: oklch(75% 0.15 85 / 0.15);
 		    --color-info: oklch(65% 0.12 240);
 		    --color-info-soft: oklch(65% 0.12 240 / 0.15);
+			
+			  /* Vibrant Accent Colors - 用于 Badge、状态点、特殊 CTA 等小面积高亮 */
+			    --color-vibrant-orange: oklch(75% 0.18 40);
+			    --color-vibrant-pink: oklch(70% 0.20 350);
+			    --color-vibrant-yellow: oklch(85% 0.15 95);
+			    --color-vibrant-cyan: oklch(75% 0.12 200);
+			    --color-vibrant-lime: oklch(80% 0.16 130);
+			    --color-lime-soft: oklch(80% 0.16 130 / 0.2);
 		
-		  /* 语义渐变 */
-		    --gradient-accent: linear-gradient(135deg, var(--color-lavender-500), var(--color-lavender-600));
-		    --gradient-accent-soft: linear-gradient(135deg, var(--color-lavender-400), var(--color-coral-400));
+			  /* 语义渐变 */
+			    --gradient-accent: linear-gradient(135deg, var(--color-lavender-500), var(--color-lavender-600));
+			    --gradient-accent-soft: linear-gradient(135deg, var(--color-lavender-400), var(--color-coral-400));
 
 	  /* Logo 专用色（从现有色板中抽取/扩展） */
 	    --color-logo-glass: var(--color-white);
@@ -146,34 +156,41 @@
 	  --font-weight-label: 700;
 	}
 
-		/* ========== 深色模式变量 ========== */
-		/* 当 <html class="dark"> 时，这些变量会覆盖上方的默认值 */
-		:root:has(.dark, .dark *),
-		.dark {
-			    --color-slate-950: oklch(10% 0 89.88);
-			    --color-surface: var(--color-slate-950);
-				    --color-surface-elevated: var(--color-slate-900);
-				    --color-surface-muted: var(--color-slate-800);
-			    --color-surface-border: var(--color-slate-600);
-			    --color-surface-border-strong: var(--color-slate-300);
-			    --color-surface-overlay: oklch(10% 0 89.88 / 0.6);
-			    --color-surface-glass: oklch(14.08% 0.0044 285.82 / 0.6);
-			    --color-text-primary: var(--color-white);
-			    --color-text-secondary: var(--color-slate-300);
-			    --color-text-muted: var(--color-slate-500);
-			    --color-text-on-accent: var(--color-black);
-		
-			  /* 深色模式按钮颜色调整 */
-			    --color-ghost: var(--color-surface-elevated);
-			    --color-ghost-hover: oklch(100% 0 0 / 0.06);
-			    --color-ghost-active: oklch(100% 0 0 / 0.10);
-			    --color-outline-hover: oklch(100% 0 0 / 0.05);
-			    --color-outline-active: oklch(100% 0 0 / 0.08);
-		
-			    --color-accent: var(--color-secondary);
-			    --color-accent-soft: oklch(32% 0.13 290 / 0.55);
-			    --gradient-accent: linear-gradient(135deg, var(--color-lavender-400), var(--color-lavender-600));
-			    --gradient-accent-soft: linear-gradient(135deg, var(--color-lavender-400), var(--color-coral-400));
-		    --shadow-soft: 0 4px 20px -2px oklch(0% 0 0 / 0.3);
-		    --shadow-glow: 0 0 20px oklch(65.41% 0.1678 287.14 / 0.2);
-		}
+			/* ========== 深色模式变量 ========== */
+			/* 当 <html class="dark"> 时，这些变量会覆盖上方的默认值 */
+			:root:has(.dark, .dark *),
+			.dark {
+				    --color-slate-950: oklch(10% 0 89.88);
+				    --color-surface: var(--color-slate-950);
+						    --color-surface-elevated: var(--color-slate-900);
+						    --color-surface-muted: var(--color-slate-800);
+				    --color-surface-border: var(--color-slate-600);
+				    --color-surface-border-strong: var(--color-slate-300);
+				    --color-surface-overlay: oklch(10% 0 89.88 / 0.6);
+				    --color-surface-glass: oklch(14.08% 0.0044 285.82 / 0.6);
+				    --color-text-primary: var(--color-white);
+				    --color-text-secondary: var(--color-slate-300);
+				    --color-text-muted: var(--color-slate-500);
+							    --color-text-on-accent: var(--color-black);
+				
+					  /* 深色模式按钮颜色：使用荧光绿 Primary，与暗色背景形成强对比 */
+						    --color-primary: var(--color-vibrant-lime);
+						    --color-primary-hover: oklch(84% 0.16 130);
+						    --color-primary-active: oklch(76% 0.16 130);
+						    /* Disabled 版主按钮：降低饱和度和亮度，保持层级但不过曝 */
+						    --color-primary-disabled: oklch(72% 0.07 130);
+					
+					    --color-ghost: var(--color-surface-elevated);
+					    --color-ghost-hover: oklch(100% 0 0 / 0.06);
+					    --color-ghost-active: oklch(100% 0 0 / 0.10);
+					    --color-outline-hover: oklch(100% 0 0 / 0.05);
+					    --color-outline-active: oklch(100% 0 0 / 0.08);
+					
+						    /* 深色模式下，Accent 与 Primary 一致使用荧光绿色系 */
+						    --color-accent: var(--color-vibrant-lime);
+						    --color-accent-soft: oklch(80% 0.16 130 / 0.26);
+						    --gradient-accent: linear-gradient(135deg, oklch(84% 0.16 130), oklch(76% 0.16 130));
+						    --gradient-accent-soft: linear-gradient(135deg, oklch(84% 0.16 130 / 0.35), oklch(76% 0.16 130 / 0.08));
+						    --shadow-soft: 0 4px 20px -2px oklch(0% 0 0 / 0.35);
+						    --shadow-glow: 0 0 20px oklch(80% 0.18 120 / 0.55);
+			}

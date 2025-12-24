@@ -3,10 +3,11 @@ import { Pencil, Plus, Trash2, UploadCloud } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/IconButton";
 import { Input } from "@/components/ui/Input";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { HStack } from "@/components/ui/Stack";
 import * as m from "@/paraglide/messages";
 import {
 	createWorkspaceAtom,
@@ -152,9 +153,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 	return (
 		<div className="w-72 p-4 flex flex-col z-20 h-full">
-			<Card variant="glass" className="flex-1 rounded-4xl backdrop-blur-xl">
-				<div className="p-6 pb-2">
-					<div className="flex items-center gap-3 mb-8">
+			<Card variant="glass" radius="4xl" className="flex-1 backdrop-blur-xl">
+				<CardHeader className="p-6 pb-2 flex-col items-stretch gap-6">
+					<HStack className="mb-8">
 						<div className="w-10 h-10 relative shrink-0">
 							<AuraLogo className="w-full h-full drop-shadow-md transform hover:scale-110 transition-transform duration-300" />
 						</div>
@@ -163,7 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 								Aura
 							</h1>
 						</div>
-					</div>
+					</HStack>
 
 					<SectionHeader
 						title={m.sidebar_my_spaces_title()}
@@ -180,9 +181,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 							</div>
 						}
 					/>
-				</div>
+				</CardHeader>
 
-				<div className="flex-1 overflow-y-auto px-4 space-y-2 custom-scrollbar">
+				<CardBody className="flex-1 overflow-y-auto px-4 space-y-2 custom-scrollbar">
 					{workspaces.map((ws) => (
 						<div
 							key={ws.id}
@@ -240,7 +241,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 							)}
 						</div>
 					))}
-				</div>
+				</CardBody>
 
 				<div className="p-4 mt-2 bg-linear-to-b from-transparent to-surface-muted/60">
 					<div className="bg-surface-muted p-1 rounded-2xl flex gap-1">

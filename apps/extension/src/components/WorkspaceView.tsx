@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { Plus, Stars } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BottomShadow } from "@/components/ui/BottomShadow";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import * as m from "@/paraglide/messages";
@@ -215,7 +216,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 
 	return (
 		<div className="flex-1 overflow-y-auto bg-surface p-8 transition-colors duration-300">
-			<div className="flex flex-col gap-8 items-stretch max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-360 mx-auto pb-24">
+			<div className="flex flex-col gap-6 items-stretch max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-360 mx-auto pb-24">
 				{workspaceCollections.map((col) => (
 					<CollectionColumn
 						key={col.id}
@@ -236,10 +237,10 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 						<Button
 							onClick={() => setIsCreatingCollection(true)}
 							variant="ghost"
-							className="w-full py-6 flex flex-col items-center justify-center gap-2 text-accent bg-surface rounded-3xl border-2 border-dashed border-surface-border hover:border-accent hover:bg-surface-elevated/60 transition-all group"
+							className="w-full px-4 py-3 flex items-center justify-center gap-3 text-accent bg-surface rounded-2xl border border-dashed border-surface-muted hover:border-accent hover:bg-surface-elevated/60 transition-all group"
 						>
-							<div className="w-9 h-9 rounded-full bg-accent-soft text-accent flex items-center justify-center transition-all group-hover:bg-accent group-hover:text-on-accent group-hover:shadow-soft group-hover:scale-105">
-								<Plus size={18} strokeWidth={3} />
+							<div className="w-8 h-8 rounded-full bg-accent-soft text-accent flex items-center justify-center group-hover:bg-accent group-hover:text-on-accent group-hover:shadow-soft transition-all">
+								<Plus size={16} strokeWidth={2.5} />
 							</div>
 							<span className="font-semibold text-body text-secondary group-hover:text-accent">
 								{m.workspace_create_collection_cta()}
@@ -254,7 +255,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 								</span>
 							</div>
 							<form onSubmit={handleCreateCollection} className="space-y-4">
-								<div className="group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-2xl">
+								<BottomShadow size="lg" focusWithin className="rounded-2xl">
 									<input
 										autoFocus
 										type="text"
@@ -263,7 +264,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 										value={newColName}
 										onChange={(e) => setNewColName(e.target.value)}
 									/>
-								</div>
+								</BottomShadow>
 								<div className="flex items-center justify-between gap-4">
 									<Button
 										type="button"

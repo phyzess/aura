@@ -152,5 +152,10 @@
 	"sidebar_sync_status_synced": "所有更改已同步",
 	"sidebar_sync_status_syncing": "正在同步…",
 	"sidebar_sync_status_error": "同步失败，点击重试",
-	"sidebar_login_prompt": "登录后，在多设备间同步空间和集合"
+	"sidebar_login_prompt": "登录后，在多设备间同步空间和集合",
+	"auth_dialog_prompt_no_account_prefix": "还没有账号？",
+	"auth_dialog_prompt_has_account_prefix": "已经有账号了？",
+	"workspace_collection_empty_title": "集合里还没有标签页",
+	"workspace_collection_empty_body": "把你常用的标签页加到这个集合里。",
+	"workspace_collection_empty_button": "添加第一个标签页"
 }

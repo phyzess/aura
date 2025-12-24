@@ -1,5 +1,6 @@
 import { Search, X } from "lucide-react";
 import type * as React from "react";
+import { cn } from "@/lib/utils";
 import { FieldShell } from "./FieldShell";
 import { IconButton } from "./IconButton";
 import { Input } from "./Input";
@@ -30,7 +31,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 		onChange(event.target.value);
 	};
 
-	const inputClasses = ["font-medium", className].filter(Boolean).join(" ");
+	const inputClasses = cn("font-medium", className);
 
 	const hasRightContent = Boolean(shortcutHint || (onClear && value));
 	const suffix = hasRightContent ? (

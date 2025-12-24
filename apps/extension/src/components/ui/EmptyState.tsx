@@ -1,4 +1,5 @@
 import type * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface EmptyStateProps
 	extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
@@ -17,9 +18,9 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 	...props
 }) => {
 	const baseClasses =
-		"h-40 flex flex-col items-center justify-center text-center p-4 rounded-2xl border border-dashed border-surface bg-surface-elevated group transition-colors";
+		"min-h-[160px] inline-flex flex-col items-center justify-center text-center p-4 rounded-2xl border border-dashed border-surface bg-surface-elevated group transition-colors mx-auto";
 
-	const classes = [baseClasses, className].filter(Boolean).join(" ");
+	const classes = cn(baseClasses, className);
 
 	return (
 		<div className={classes} {...props}>

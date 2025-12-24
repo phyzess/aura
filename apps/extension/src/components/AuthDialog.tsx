@@ -82,28 +82,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 					</IconButton>
 				</div>
 
-				<div className="flex mb-5 rounded-full bg-surface-muted p-1 text-xs font-semibold">
-					<Button
-						type="button"
-						onClick={() => setMode("login")}
-						variant="ghost"
-						size="sm"
-						className={`flex-1 py-1.5 rounded-full ${mode === "login" ? "bg-surface-elevated text-primary shadow-sm" : "text-muted bg-transparent"}`}
-					>
-						{m.auth_dialog_tab_login()}
-					</Button>
-					<Button
-						type="button"
-						onClick={() => setMode("register")}
-						variant="ghost"
-						size="sm"
-						className={`flex-1 py-1.5 rounded-full ${mode === "register" ? "bg-surface-elevated text-primary shadow-sm" : "text-muted bg-transparent"}`}
-					>
-						{m.auth_dialog_tab_register()}
-					</Button>
-				</div>
-
-				<form onSubmit={handleSubmit} className="space-y-4">
+				<form onSubmit={handleSubmit} className="mt-4 space-y-4">
 					{mode === "register" && (
 						<TextField
 							label={m.auth_dialog_name_label()}
@@ -161,6 +140,38 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 								? m.auth_dialog_button_sign_in()
 								: m.auth_dialog_button_sign_up()}
 					</Button>
+
+					<div className="mt-3 text-left text-xs text-secondary">
+						{mode === "login" ? (
+							<>
+								{m.auth_dialog_prompt_no_account_prefix()}{" "}
+								<button
+									type="button"
+									className="font-semibold text-[var(--color-primary)] hover:underline"
+									onClick={() => {
+										setMode("register");
+										setError(null);
+									}}
+								>
+									{m.auth_dialog_tab_register()}
+								</button>
+							</>
+						) : (
+							<>
+								{m.auth_dialog_prompt_has_account_prefix()}{" "}
+								<button
+									type="button"
+									className="font-semibold text-[var(--color-primary)] hover:underline"
+									onClick={() => {
+										setMode("login");
+										setError(null);
+									}}
+								>
+									{m.auth_dialog_tab_login()}
+								</button>
+							</>
+						)}
+					</div>
 				</form>
 			</div>
 		</div>

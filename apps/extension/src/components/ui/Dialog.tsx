@@ -1,5 +1,6 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
+import { cn } from "@/lib/utils";
 
 export type DialogSize = "sm" | "md" | "lg" | "xl";
 export type DialogPosition = "center" | "top";
@@ -58,28 +59,25 @@ export const Dialog: React.FC<DialogProps> = ({
 	const overlayBase =
 		"absolute inset-0 bg-surface-overlay backdrop-blur-sm transition-opacity duration-200";
 
-	const cardBase = "relative w-full bg-surface-elevated rounded-3xl overflow-hidden";
+	const cardBase =
+		"relative w-full bg-surface-elevated rounded-3xl overflow-hidden";
 
-	const overlayClasses = [overlayBase, overlayClassName]
-		.filter(Boolean)
-		.join(" ");
+	const overlayClasses = cn(overlayBase, overlayClassName);
 
-	const cardClasses = [cardBase, sizeClass, className]
-		.filter(Boolean)
-		.join(" ");
+	const cardClasses = cn(cardBase, sizeClass, className);
 
 	const content = (
 		<div
-			className={`fixed inset-0 z-[120] flex justify-center p-4 ${positionClass}`}
+			className={cn(
+				"fixed inset-0 z-[120] flex justify-center p-4",
+				positionClass,
+			)}
 		>
 			<div
 				className={overlayClasses}
 				onClick={closeOnOverlayClick ? onClose : undefined}
 			/>
-			<div
-				className={cardClasses}
-				onClick={(event) => event.stopPropagation()}
-			>
+			<div className={cardClasses} onClick={(event) => event.stopPropagation()}>
 				{children}
 			</div>
 		</div>
@@ -87,4 +85,3 @@ export const Dialog: React.FC<DialogProps> = ({
 
 	return createPortal(content, document.body);
 };
-

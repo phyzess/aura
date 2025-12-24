@@ -1,4 +1,5 @@
 import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export type InputSize = "sm" | "md";
 
@@ -12,7 +13,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 		const baseClass =
 			"w-full bg-transparent text-body text-primary placeholder:text-muted focus:outline-none";
 
-		const classes = [baseClass, className].filter(Boolean).join(" ");
+		const classes = cn(baseClass, className);
 
 		return <input ref={ref} className={classes} {...props} />;
 	},

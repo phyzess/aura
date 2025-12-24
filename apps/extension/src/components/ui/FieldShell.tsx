@@ -1,4 +1,6 @@
 import type * as React from "react";
+import { cn } from "@/lib/utils";
+import { BottomShadow } from "./BottomShadow";
 import type { InputSize, InputVariant } from "./Input";
 
 export interface FieldShellProps {
@@ -24,42 +26,23 @@ export const FieldShell: React.FC<FieldShellProps> = ({
 	innerClassName,
 	children,
 }) => {
-	const fieldClasses: string[] = [
+	const fieldClassName = cn(
 		"relative z-10 flex items-center w-full rounded-xl text-body text-primary placeholder:text-muted transition-colors",
-	];
-
-	if (innerClassName) {
-		fieldClasses.push(innerClassName);
-	}
-
-	if (variant === "default") {
-		fieldClasses.push("bg-surface-elevated border-2 border-surface-border");
-	} else if (variant === "borderless") {
-		fieldClasses.push("bg-transparent border border-transparent");
-	}
-
-	if (size === "sm") {
-		fieldClasses.push("px-3 py-2 text-sm");
-	} else {
-		fieldClasses.push("px-3 py-2.5 text-sm");
-	}
-
-	if (hasError) {
-		fieldClasses.push("border-danger");
-	}
-
-	const wrapperClasses = [
-		"group bottom-shadow-wrapper bottom-shadow-lg bottom-shadow-focus rounded-xl",
-		wrapperClassName,
-	]
-		.filter(Boolean)
-		.join(" ");
-
-	const fieldClassName = fieldClasses.filter(Boolean).join(" ");
+		innerClassName,
+		variant === "default" &&
+			"bg-surface-elevated border-2 border-surface-border",
+		variant === "borderless" && "bg-transparent border border-transparent",
+		size === "sm" ? "px-3 py-2 text-sm" : "px-3 py-2.5 text-sm",
+		hasError && "border-danger",
+	);
 
 	return (
 		<div className={containerClassName}>
-			<div className={wrapperClasses}>
+			<BottomShadow
+				size="lg"
+				focusWithin
+				className={cn("rounded-xl", wrapperClassName)}
+			>
 				<div className={fieldClassName}>
 					{prefix && (
 						<div className="mr-2 flex items-center text-muted group-focus-within:text-accent transition-colors">
@@ -73,7 +56,7 @@ export const FieldShell: React.FC<FieldShellProps> = ({
 						<div className="ml-2 flex items-center text-muted">{suffix}</div>
 					)}
 				</div>
-			</div>
+			</BottomShadow>
 		</div>
 	);
 };

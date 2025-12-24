@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { Moon, Search as SearchIcon, Sun } from "lucide-react";
 import type React from "react";
+import { BottomShadow } from "@/components/ui/BottomShadow";
 import { IconButton } from "@/components/ui/IconButton";
 import { ShortcutHint } from "@/components/ui/ShortcutHint";
 import { changeLocale } from "@/config/locale";
@@ -40,11 +41,14 @@ export const Header: React.FC<HeaderProps> = ({
 			<div className="flex items-center gap-3 sm:gap-4">
 				{onOpenSearch && (
 					<>
-						<div className="hidden md:inline-flex group bottom-shadow-wrapper bottom-shadow-md rounded-xl">
+						<BottomShadow
+							size="sm"
+							className="hidden md:inline-flex rounded-xl bottom-shadow-subtle"
+						>
 							<button
 								type="button"
 								onClick={onOpenSearch}
-								className="relative z-10 inline-flex items-center gap-2 px-3 py-1.5 bg-surface-elevated rounded-xl border-2 border-surface-border text-xs font-semibold text-secondary transition-colors hover:border-vibrant-cyan focus:outline-none"
+								className="relative z-10 inline-flex items-center gap-2 px-3 py-1.5 bg-surface-elevated rounded-xl border border-surface-border/80 text-xs font-medium text-muted transition-colors hover:border-surface-border hover:bg-surface-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vibrant-cyan"
 								aria-label={m.header_search_button_aria_full()}
 							>
 								<SearchIcon size={14} className="text-muted" />
@@ -54,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
 									className="hidden sm:inline-flex"
 								/>
 							</button>
-						</div>
+						</BottomShadow>
 
 						<IconButton
 							type="button"
@@ -72,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
 				<button
 					type="button"
 					onClick={() => handleLocaleChange(locale === "en" ? "zh-CN" : "en")}
-					className="hidden sm:inline-flex items-center rounded-full bg-surface-elevated border-2 border-surface-border px-3 py-1 text-[11px] font-medium text-secondary transition-colors hover:border-vibrant-cyan hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vibrant-cyan"
+					className="hidden sm:inline-flex items-center px-2 py-1 rounded-full text-[11px] text-muted hover:text-secondary hover:bg-surface-muted/60 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-vibrant-cyan/70"
 					aria-label={m.user_menu_language_label()}
 				>
 					<span>{locale === "en" ? "中文" : "English"}</span>
@@ -81,10 +85,10 @@ export const Header: React.FC<HeaderProps> = ({
 				<IconButton
 					type="button"
 					variant="subtle"
-					size="md"
+					size="sm"
 					onClick={toggleTheme}
 					aria-label={m.header_theme_toggle_aria()}
-					className="w-10 h-10 rounded-full bg-surface-elevated border-2 border-surface-border shadow-sm text-secondary hover:text-black dark:hover:text-white hover:bg-vibrant-yellow transition-all hover:scale-105 active:scale-95"
+					className="hover:text-secondary hover:bg-surface-muted/60"
 					title={m.header_theme_toggle_title()}
 				>
 					{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}

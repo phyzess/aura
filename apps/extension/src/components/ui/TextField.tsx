@@ -1,4 +1,5 @@
 import * as React from "react";
+import { cn } from "@/lib/utils";
 import { FieldShell } from "./FieldShell";
 import {
 	Input,
@@ -47,19 +48,15 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
 		const helperId = !error && helperText ? `${inputId}-helper` : undefined;
 		const describedBy = error ? errorId : helperId;
 
-		const labelClasses = [
+		const labelClasses = cn(
 			"block text-[11px] font-semibold text-secondary mb-1 ml-0.5",
 			labelClassName,
-		]
-			.filter(Boolean)
-			.join(" ");
+		);
 
-		const inputClasses = [
+		const inputClasses = cn(
 			"flex-1 bg-transparent border-0 outline-none focus:outline-none min-w-0",
 			inputClassName,
-		]
-			.filter(Boolean)
-			.join(" ");
+		);
 
 		return (
 			<div className={containerClassName}>

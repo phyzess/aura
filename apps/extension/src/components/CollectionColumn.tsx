@@ -2,10 +2,12 @@ import { MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IconButton } from "@/components/ui/IconButton";
+import { HStack } from "@/components/ui/Stack";
 import { TextField } from "@/components/ui/TextField";
+import * as m from "@/paraglide/messages";
 import type { Collection, TabItem } from "@/types";
 import { ConfirmModal } from "./ConfirmModal";
 import { TabCard } from "./TabCard";
@@ -77,8 +79,12 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 	};
 
 	return (
-		<Card variant="glass" className="w-full hover:bg-surface-elevated pb-2">
-			<div className="p-5 flex items-center justify-between sticky top-0 z-30">
+		<Card
+			variant="glass"
+			interactive
+			className="w-full hover:bg-surface-elevated pb-2"
+		>
+			<CardHeader className="p-5 sticky top-0 z-30">
 				<div className="flex items-center gap-2 flex-1 min-w-0">
 					<div className="w-2 h-2 rounded-full bg-accent shadow-glow flex-shrink-0"></div>
 
@@ -112,7 +118,7 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 					)}
 				</div>
 
-				<div className="flex items-center gap-1 relative">
+				<HStack gap="xs" className="relative">
 					<IconButton
 						onClick={() => onAddTab(collection.id)}
 						variant="neutral"
@@ -163,10 +169,10 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 							</div>
 						)}
 					</div>
-				</div>
-			</div>
+				</HStack>
+			</CardHeader>
 
-			<div className="px-5 pb-4">
+			<CardBody className="px-5 pb-4">
 				{sortedTabs.length > 0 ? (
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4">
 						{sortedTabs.map((tab) => (
@@ -181,7 +187,9 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 				) : (
 					<EmptyState
 						icon="🍃"
-						title="Empty collection"
+						title={m.workspace_collection_empty_title()}
+						description={m.workspace_collection_empty_body()}
+						className="my-4 min-h-[120px] max-w-md bg-surface border-solid border-surface-muted"
 						action={
 							<Button
 								onClick={() => onAddTab(collection.id)}
@@ -190,12 +198,12 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 								className="flex items-center gap-2"
 							>
 								<Plus size={12} strokeWidth={3} />
-								Add First Tab
+								{m.workspace_collection_empty_button()}
 							</Button>
 						}
 					/>
 				)}
-			</div>
+			</CardBody>
 
 			<ConfirmModal
 				isOpen={showDeleteConfirm}

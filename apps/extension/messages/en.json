@@ -152,5 +152,10 @@
 	"sidebar_sync_status_synced": "All changes synced",
 	"sidebar_sync_status_syncing": "Syncing...",
 	"sidebar_sync_status_error": "Sync failed, tap to retry",
-	"sidebar_login_prompt": "Sign in to sync your spaces across devices"
+	"sidebar_login_prompt": "Sign in to sync your spaces across devices",
+	"auth_dialog_prompt_no_account_prefix": "Don’t have an account?",
+	"auth_dialog_prompt_has_account_prefix": "Already have an account?",
+	"workspace_collection_empty_title": "Empty collection",
+	"workspace_collection_empty_body": "Add tabs you want to keep handy in this collection.",
+	"workspace_collection_empty_button": "Add First Tab"
 }

@@ -1,4 +1,5 @@
 import type * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface SectionHeaderProps
 	extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
@@ -18,10 +19,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 	const content = title ?? children;
 
 	return (
-		<div
-			className={[baseClasses, className].filter(Boolean).join(" ")}
-			{...props}
-		>
+		<div className={cn(baseClasses, className)} {...props}>
 			{typeof content === "string" ? (
 				<span className="text-xs font-bold text-muted uppercase tracking-wider">
 					{content}

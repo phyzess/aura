@@ -1,4 +1,5 @@
 import type * as React from "react";
+import { cn } from "@/lib/utils";
 
 export type IconButtonSize = "sm" | "md";
 
@@ -37,17 +38,13 @@ export const IconButton: React.FC<IconButtonProps> = ({
 	const baseClasses =
 		"inline-flex items-center justify-center rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-vibrant-cyan/80 focus-visible:ring-offset-2 focus-visible:ring-offset-surface";
 
-	const activeClasses = active ? " text-accent bg-surface-muted" : "";
-
-	const classes = [
+	const classes = cn(
 		baseClasses,
 		sizeClassName[size],
 		variantClassName[variant],
-		activeClasses,
+		active && "text-accent bg-surface-muted",
 		className,
-	]
-		.filter(Boolean)
-		.join(" ");
+	);
 
 	return <button className={classes} {...props} />;
 };
