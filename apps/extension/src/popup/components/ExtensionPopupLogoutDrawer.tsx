@@ -127,7 +127,7 @@ export const ExtensionPopupLogoutDrawer: React.FC<
 		<Drawer
 			isOpen={isOpen}
 			onClose={onClose}
-			className="bg-surface-elevated rounded-t-4xl shadow-soft flex flex-col border-t border-surface"
+			className="bg-surface-elevated rounded-t-4xl shadow-soft flex flex-col"
 		>
 			<PopupLogoutContent onClose={onClose} onConfirm={onConfirm} />
 		</Drawer>

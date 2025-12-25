@@ -8,6 +8,10 @@ import type {
 
 export type { User, Workspace, Collection, TabItem, SyncPayload };
 
+export interface SessionTab extends Partial<TabItem> {
+	chromeTabId?: number;
+}
+
 export interface AppState {
 	workspaces: Workspace[];
 	collections: Collection[];

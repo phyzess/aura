@@ -73,7 +73,7 @@ export const Drawer: React.FC<DrawerProps> = ({
 	);
 
 	const content = (
-		<div className="fixed inset-0 z-[120]">
+		<div className="fixed inset-0 z-120">
 			<div
 				className={overlayClasses}
 				onClick={closeOnOverlayClick ? onClose : undefined}

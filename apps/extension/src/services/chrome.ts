@@ -1,4 +1,4 @@
-import type { TabItem } from "../types";
+import type { SessionTab } from "../types";
 
 declare var chrome: any;
 
@@ -14,14 +14,14 @@ export const ChromeService = {
 	 * Get all tabs from the current window.
 	 * If in development (web) mode, returns mock data.
 	 */
-	getCurrentTabs: async (): Promise<Partial<TabItem>[]> => {
+	getCurrentTabs: async (): Promise<SessionTab[]> => {
 		if (isExtension()) {
 			try {
 				// Query tabs in the current window
 				const tabs = await chrome.tabs.query({ currentWindow: true });
 
-				// Transform chrome.tabs.Tab to our TabItem structure (partial)
-				const result: Partial<TabItem>[] = [];
+				// Transform chrome.tabs.Tab to our SessionTab structure
+				const result: SessionTab[] = [];
 
 				for (const tab of tabs as any[]) {
 					const url: string = tab.url || "";
@@ -44,7 +44,12 @@ export const ChromeService = {
 						}
 					}
 
-					result.push({ url, title, faviconUrl });
+					result.push({
+						url,
+						title,
+						faviconUrl,
+						chromeTabId: typeof tab.id === "number" ? tab.id : undefined,
+					});
 				}
 
 				return result;
@@ -86,8 +91,44 @@ export const ChromeService = {
 					faviconUrl:
 						"https://www.google.com/s2/favicons?domain=react.dev&sz=64",
 				},
-			];
+			] as SessionTab[];
 		}
+	},
+
+	/**
+	 * Close tabs by their Chrome tab IDs.
+	 * Gracefully handles tabs that may already be closed.
+	 */
+	closeTabsById: async (tabIds: number[]): Promise<void> => {
+		const ids = tabIds.filter((id) => typeof id === "number");
+		if (!ids.length) return;
+
+		if (!isExtension()) {
+			console.log("Environment: Web (Mocking closeTabsById)", ids);
+			return;
+		}
+
+		await new Promise<void>((resolve, reject) => {
+			try {
+				chrome.tabs.remove(ids, () => {
+					const err = chrome.runtime?.lastError;
+					if (err) {
+						// If some tabs are already closed, ignore this as a non-fatal condition.
+						if (err.message && err.message.includes("No tab with id")) {
+							console.warn("Some tabs were already closed:", err.message);
+							resolve();
+							return;
+						}
+						console.error("Error closing tabs:", err.message);
+						reject(new Error(err.message));
+					} else {
+						resolve();
+					}
+				});
+			} catch (e) {
+				reject(e);
+			}
+		});
 	},
 
 	/**

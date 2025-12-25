@@ -14,7 +14,7 @@ export const ExtensionPopupAuthDrawer: React.FC<
 		<Drawer
 			isOpen={isOpen}
 			onClose={onClose}
-			className="bg-surface-elevated rounded-t-4xl shadow-soft flex flex-col border-t border-surface max-h-[85%]"
+			className="bg-surface-elevated rounded-t-4xl shadow-soft flex flex-col max-h-[85%]"
 		>
 			<div className="w-full max-w-md mx-auto overflow-y-auto">
 				<AuthForm onSuccess={onClose} onClose={onClose} />

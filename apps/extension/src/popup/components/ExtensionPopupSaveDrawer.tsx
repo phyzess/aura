@@ -1,17 +1,19 @@
 import { ArrowRight, Check, Folder, Layout, X } from "lucide-react";
 import type React from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/ui/Card";
 import { Drawer } from "@/components/ui/Drawer";
 import { IconButton } from "@/components/ui/IconButton";
+import { Popover } from "@/components/ui/Popover";
 import { Select, type SelectOption } from "@/components/ui/Select";
 import { TextField } from "@/components/ui/TextField";
 import * as m from "@/paraglide/messages";
-import type { TabItem } from "../../types";
+import type { SessionTab } from "../../types";
 
 interface ExtensionPopupSaveDrawerProps {
 	isOpen: boolean;
-	sessionTabs: Partial<TabItem>[];
+	sessionTabs: SessionTab[];
 	checkedTabs: Set<number>;
 	wsOptions: SelectOption[];
 	colOptions: SelectOption[];
@@ -19,6 +21,7 @@ interface ExtensionPopupSaveDrawerProps {
 	targetColId: string;
 	newWsName: string;
 	newColName: string;
+	closeTabsAfterSave: boolean;
 	onClose: () => void;
 	onToggleTab: (index: number) => void;
 	onToggleAllTabs: () => void;
@@ -26,6 +29,7 @@ interface ExtensionPopupSaveDrawerProps {
 	onChangeCollection: (id: string) => void;
 	onChangeNewWorkspaceName: (name: string) => void;
 	onChangeNewCollectionName: (name: string) => void;
+	onToggleCloseTabsAfterSave: () => void;
 	onConfirmSave: () => void;
 }
 
@@ -41,6 +45,7 @@ export const ExtensionPopupSaveDrawer: React.FC<
 	targetColId,
 	newWsName,
 	newColName,
+	closeTabsAfterSave,
 	onClose,
 	onToggleTab,
 	onToggleAllTabs,
@@ -48,14 +53,18 @@ export const ExtensionPopupSaveDrawer: React.FC<
 	onChangeCollection,
 	onChangeNewWorkspaceName,
 	onChangeNewCollectionName,
+	onToggleCloseTabsAfterSave,
 	onConfirmSave,
 }) => {
+	const [isCloseTabsHintOpen, setIsCloseTabsHintOpen] = useState(false);
+
 	return (
 		<Drawer isOpen={isOpen} onClose={onClose} className="h-[85%]">
 			<Card
 				variant="elevated"
 				radius="4xl"
-				className="h-full bg-surface-elevated rounded-t-4xl shadow-soft flex flex-col overflow-hidden border-t border-surface"
+				border={false}
+				className="h-full bg-surface-elevated rounded-t-4xl rounded-b-none shadow-soft flex flex-col overflow-hidden"
 			>
 				<CardHeader className="px-6 pt-5 pb-2 shrink-0">
 					<div>
@@ -134,7 +143,7 @@ export const ExtensionPopupSaveDrawer: React.FC<
 						)}
 					</div>
 
-					<div>
+					<div className="mt-2">
 						<div className="flex items-center justify-between mb-2">
 							<label className="text-label text-muted uppercase tracking-wider ml-1">
 								{m.popup_save_drawer_tabs_label({ count: checkedTabs.size })}
@@ -202,7 +211,58 @@ export const ExtensionPopupSaveDrawer: React.FC<
 					</div>
 				</CardBody>
 
-				<CardFooter className="px-6 py-4 border-t-2 border-surface-border bg-surface-elevated">
+				<CardFooter className="px-6 py-4 border-t-2 border-surface-border bg-surface-elevated flex-col items-stretch gap-3">
+					<div
+						className="flex items-center gap-2 text-[11px] text-secondary cursor-pointer"
+						onClick={onToggleCloseTabsAfterSave}
+					>
+						<div
+							className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+								closeTabsAfterSave
+									? "bg-accent border-accent text-on-accent"
+									: "border-surface bg-surface-elevated text-transparent"
+							}`}
+						>
+							<Check size={10} strokeWidth={3} />
+						</div>
+						<span className="text-secondary">
+							{m.popup_save_drawer_close_tabs_checkbox_label()}
+						</span>
+						<Popover
+							isOpen={isCloseTabsHintOpen}
+							onClickOutside={() => setIsCloseTabsHintOpen(false)}
+							positions={["top"]}
+							align="start"
+							padding={6}
+							content={
+								<div className="px-3 py-2 text-[11px] text-secondary max-w-55">
+									{m.popup_save_drawer_close_tabs_tooltip()}
+								</div>
+							}
+						>
+							<IconButton
+								type="button"
+								variant="subtle"
+								size="sm"
+								aria-label={m.popup_save_drawer_close_tabs_help_aria()}
+								className="w-5 h-5 text-muted hover:text-secondary"
+								onMouseEnter={(event) => {
+									event.stopPropagation();
+									setIsCloseTabsHintOpen(true);
+								}}
+								onMouseLeave={(event) => {
+									event.stopPropagation();
+									setIsCloseTabsHintOpen(false);
+								}}
+								onClick={(event) => {
+									event.stopPropagation();
+								}}
+							>
+								<span className="text-[10px] font-semibold">?</span>
+							</IconButton>
+						</Popover>
+					</div>
+
 					<Button
 						onClick={onConfirmSave}
 						disabled={checkedTabs.size === 0}

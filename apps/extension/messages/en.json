@@ -166,5 +166,8 @@
 	"tabs_open_error_generic": "Failed to open some tabs. Please check your browser or extension permissions.",
 	"workspace_tabs_open_all_confirm_title": "Open all tabs from this space?",
 	"workspace_tabs_open_all_confirm_message_here": "This will open {count} tabs from this space in this window. Continue?",
-	"workspace_tabs_open_all_confirm_message_new_window": "This will open {count} tabs from this space in a new window. Continue?"
+	"workspace_tabs_open_all_confirm_message_new_window": "This will open {count} tabs from this space in a new window. Continue?",
+	"popup_save_drawer_close_tabs_checkbox_label": "Close tabs after save",
+	"popup_save_drawer_close_tabs_tooltip": "Original browser tabs will be closed after saving.",
+	"popup_save_drawer_close_tabs_help_aria": "Close tabs after save details"
 }

@@ -2,12 +2,19 @@ import { useSetAtom } from "jotai";
 import { ExternalLink } from "lucide-react";
 import type React from "react";
 import { useMemo, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/Button";
 import { useTabSearch } from "@/hooks/useTabSearch";
 import * as m from "@/paraglide/messages";
 import { clearLocalDataAtom, signOutAtom } from "@/store/actions";
 import { ChromeService } from "../../services/chrome";
-import type { Collection, TabItem, User, Workspace } from "../../types";
+import type {
+	Collection,
+	SessionTab,
+	TabItem,
+	User,
+	Workspace,
+} from "../../types";
 import { ExtensionPopupAuthDrawer } from "./ExtensionPopupAuthDrawer";
 import { ExtensionPopupHeader } from "./ExtensionPopupHeader";
 import { ExtensionPopupLogoutDrawer } from "./ExtensionPopupLogoutDrawer";
@@ -56,8 +63,9 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 	const [isAuthDrawerOpen, setIsAuthDrawerOpen] = useState(false);
 	const [isLogoutDrawerOpen, setIsLogoutDrawerOpen] = useState(false);
-	const [sessionTabs, setSessionTabs] = useState<Partial<TabItem>[]>([]);
+	const [sessionTabs, setSessionTabs] = useState<SessionTab[]>([]);
 	const [checkedTabs, setCheckedTabs] = useState<Set<number>>(new Set());
+	const [closeTabsAfterSave, setCloseTabsAfterSave] = useState(false);
 
 	// Save Form State
 	const [targetWsId, setTargetWsId] = useState<string>("new");
@@ -108,6 +116,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 	// --- DRAWER HANDLERS ---
 
 	const handleOpenSaveDrawer = async () => {
+		setCloseTabsAfterSave(false);
 		const tabs = await ChromeService.getCurrentTabs();
 		setSessionTabs(tabs);
 
@@ -134,6 +143,11 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 
 	const handleConfirmSave = () => {
 		const finalTabs = sessionTabs.filter((_, i) => checkedTabs.has(i));
+		const tabIdsToClose = closeTabsAfterSave
+			? finalTabs
+					.map((tab) => tab.chromeTabId)
+					.filter((id): id is number => typeof id === "number")
+			: [];
 
 		onCapture({
 			tabs: finalTabs,
@@ -142,6 +156,16 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			targetCollectionId: targetColId,
 			newCollectionName: targetColId === "new" ? newColName : undefined,
 		});
+
+		if (closeTabsAfterSave && tabIdsToClose.length > 0) {
+			void ChromeService.closeTabsById(tabIdsToClose).catch((error: any) => {
+				console.error("Failed to close some tabs after saving:", error);
+				toast.error(
+					"Failed to close some tabs. Please check your browser or extension permissions.",
+				);
+			});
+		}
+
 		setIsDrawerOpen(false);
 	};
 
@@ -331,6 +355,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 				targetColId={targetColId}
 				newWsName={newWsName}
 				newColName={newColName}
+				closeTabsAfterSave={closeTabsAfterSave}
 				onClose={() => setIsDrawerOpen(false)}
 				onToggleTab={(index) => {
 					const next = new Set(checkedTabs);
@@ -347,6 +372,9 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 				onChangeCollection={(id) => setTargetColId(id)}
 				onChangeNewWorkspaceName={setNewWsName}
 				onChangeNewCollectionName={setNewColName}
+				onToggleCloseTabsAfterSave={() =>
+					setCloseTabsAfterSave((prev) => !prev)
+				}
 				onConfirmSave={handleConfirmSave}
 			/>
 			<ExtensionPopupAuthDrawer
