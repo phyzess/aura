@@ -774,6 +774,45 @@ export const importTobyDataAtom = atom(
 		const tobyData = payload.data;
 		if (!tobyData?.lists || !Array.isArray(tobyData.lists)) return;
 
+		// Determine target collection behavior based on payload:
+		// 1) Existing collection: append all imported tabs into that collection.
+		// 2) New collection (with name provided): create exactly one collection
+		//    and append all imported tabs into it.
+		// 3) Fallback (no collection info): keep legacy behavior of creating
+		//    one collection per list.
+		let targetCollectionId: string | null = null;
+
+		if (payload.targetCollectionId && payload.targetCollectionId !== "new") {
+			targetCollectionId = payload.targetCollectionId;
+		} else if (
+			payload.targetCollectionId === "new" &&
+			payload.newCollectionName
+		) {
+			const newCollection = await set(addCollectionAtom, {
+				workspaceId,
+				name: payload.newCollectionName,
+			});
+			targetCollectionId = newCollection.id;
+		}
+
+		if (targetCollectionId) {
+			for (const list of tobyData.lists) {
+				if (!list.cards || !Array.isArray(list.cards)) continue;
+
+				for (const card of list.cards) {
+					if (card.url && card.title) {
+						await set(addTabAtom, {
+							collectionId: targetCollectionId,
+							url: card.url,
+							title: card.title,
+						});
+					}
+				}
+			}
+
+			return;
+		}
+
 		for (const list of tobyData.lists) {
 			if (!list.title || !list.cards || !Array.isArray(list.cards)) continue;
 
