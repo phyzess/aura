@@ -37,7 +37,7 @@ export const ExtensionPopupMainContent: React.FC<
 	onCollectionClick,
 }) => {
 	return (
-		<div className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-4">
+		<div className="flex-1 overflow-y-auto custom-scrollbar p-5 pt-0 space-y-4">
 			{searchQuery ? (
 				<SearchResults
 					query={searchQuery}

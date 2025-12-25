@@ -27,6 +27,8 @@ import {
 } from "@/store/atoms";
 import { activeWorkspaceAtom } from "@/store/selectors";
 
+const WORKSPACE_RESTORE_CONFIRM_THRESHOLD = 25;
+
 export default function App() {
 	// subscribe to locale changes so the whole tree re-renders when language changes
 	useAtomValue(localeAtom);
@@ -95,6 +97,40 @@ export default function App() {
 		? (currentUser.name ?? currentUser.email)
 		: null;
 
+	const workspaceCollections = collections
+		.filter((c) => c.workspaceId === activeWorkspaceId)
+		.sort((a, b) => a.order - b.order);
+
+	const workspaceCollectionIds = new Set(workspaceCollections.map((c) => c.id));
+	const workspaceTabs = tabs.filter((t) =>
+		workspaceCollectionIds.has(t.collectionId),
+	);
+	const workspaceTabsCount = workspaceTabs.length;
+
+	const getWorkspaceUrlsInDisplayOrder = () => {
+		const urls: string[] = [];
+		for (const col of workspaceCollections) {
+			const collectionTabs = tabs.filter((t) => t.collectionId === col.id);
+			const sortedTabs = [...collectionTabs].sort((a, b) => {
+				const aPinned = !!a.isPinned;
+				const bPinned = !!b.isPinned;
+				if (aPinned !== bPinned) return aPinned ? -1 : 1;
+
+				if (a.order !== b.order) return a.order - b.order;
+
+				const aTime = a.updatedAt ?? a.createdAt ?? 0;
+				const bTime = b.updatedAt ?? b.createdAt ?? 0;
+				if (aTime !== bTime) return bTime - aTime;
+
+				return 0;
+			});
+			for (const tab of sortedTabs) {
+				if (tab.url) urls.push(tab.url);
+			}
+		}
+		return urls;
+	};
+
 	return (
 		<div className="relative flex h-screen bg-cloud-50 dark:bg-slate-950 overflow-hidden">
 			<Sidebar
@@ -110,6 +146,10 @@ export default function App() {
 				<Header
 					workspaceName={activeWorkspace?.name || ""}
 					onOpenSearch={() => setIsSearchOpen(true)}
+					workspaceTabsCount={workspaceTabsCount}
+					workspaceCollectionsCount={workspaceCollections.length}
+					getWorkspaceUrlsInDisplayOrder={getWorkspaceUrlsInDisplayOrder}
+					workspaceRestoreConfirmThreshold={WORKSPACE_RESTORE_CONFIRM_THRESHOLD}
 				/>
 				<WorkspaceView
 					workspaceId={activeWorkspaceId}

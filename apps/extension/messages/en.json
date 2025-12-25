@@ -157,5 +157,14 @@
 	"auth_dialog_prompt_has_account_prefix": "Already have an account?",
 	"workspace_collection_empty_title": "Empty collection",
 	"workspace_collection_empty_body": "Add tabs you want to keep handy in this collection.",
-	"workspace_collection_empty_button": "Add First Tab"
+	"workspace_collection_empty_button": "Add First Tab",
+	"common_open_in_new_window": "Open in new window",
+	"common_open_here": "Open here",
+	"tabs_open_all_confirm_title": "Open all tabs?",
+	"tabs_open_all_confirm_message_here": "This will open {count} tabs in this window. Continue?",
+	"tabs_open_all_confirm_message_new_window": "This will open {count} tabs in a new window. Continue?",
+	"tabs_open_error_generic": "Failed to open some tabs. Please check your browser or extension permissions.",
+	"workspace_tabs_open_all_confirm_title": "Open all tabs from this space?",
+	"workspace_tabs_open_all_confirm_message_here": "This will open {count} tabs from this space in this window. Continue?",
+	"workspace_tabs_open_all_confirm_message_new_window": "This will open {count} tabs from this space in a new window. Continue?"
 }

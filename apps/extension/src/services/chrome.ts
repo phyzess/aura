@@ -100,4 +100,94 @@ export const ChromeService = {
 			window.open(url, "_blank");
 		}
 	},
+
+	/**
+	 * Open multiple URLs in the current window.
+	 */
+	openTabs: async (urls: string[]): Promise<void> => {
+		const list = urls.filter(Boolean);
+		if (!list.length) return;
+
+		if (!isExtension()) {
+			for (const url of list) {
+				window.open(url, "_blank");
+			}
+			return;
+		}
+
+		for (const url of list) {
+			// eslint-disable-next-line no-await-in-loop
+			await new Promise<void>((resolve, reject) => {
+				try {
+					chrome.tabs.create({ url }, () => {
+						const err = chrome.runtime?.lastError;
+						if (err) {
+							console.error("Error opening tab:", err.message);
+							reject(new Error(err.message));
+						} else {
+							resolve();
+						}
+					});
+				} catch (e) {
+					reject(e);
+				}
+			});
+		}
+	},
+
+	/**
+	 * Open multiple URLs grouped in a dedicated browser window.
+	 */
+	openTabsInNewWindow: async (urls: string[]): Promise<void> => {
+		const list = urls.filter(Boolean);
+		if (!list.length) return;
+
+		if (!isExtension()) {
+			for (const url of list) {
+				window.open(url, "_blank");
+			}
+			return;
+		}
+
+		const [first, ...rest] = list;
+		if (!first) return;
+
+		const createdWindow: any = await new Promise((resolve, reject) => {
+			try {
+				chrome.windows.create({ url: first, focused: true }, (win: any) => {
+					const err = chrome.runtime?.lastError;
+					if (err) {
+						console.error("Error creating window:", err.message);
+						reject(new Error(err.message));
+					} else {
+						resolve(win);
+					}
+				});
+			} catch (e) {
+				reject(e);
+			}
+		});
+
+		const windowId = createdWindow?.id;
+		if (!windowId) return;
+
+		for (const url of rest) {
+			// eslint-disable-next-line no-await-in-loop
+			await new Promise<void>((resolve, reject) => {
+				try {
+					chrome.tabs.create({ windowId, url }, () => {
+						const err = chrome.runtime?.lastError;
+						if (err) {
+							console.error("Error opening tab in new window:", err.message);
+							reject(new Error(err.message));
+						} else {
+							resolve();
+						}
+					});
+				} catch (e) {
+					reject(e);
+				}
+			});
+		}
+	},
 };

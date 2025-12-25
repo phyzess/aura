@@ -1,10 +1,12 @@
 import { MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { OpenTabsButton } from "@/components/OpenTabsButton";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IconButton } from "@/components/ui/IconButton";
+import { Popover } from "@/components/ui/Popover";
 import { HStack } from "@/components/ui/Stack";
 import { TextField } from "@/components/ui/TextField";
 import * as m from "@/paraglide/messages";
@@ -21,6 +23,8 @@ interface CollectionColumnProps {
 	onDeleteCollection: (id: string) => void;
 	highlightedTabId?: string | null;
 }
+
+const COLLECTION_RESTORE_CONFIRM_THRESHOLD = 15;
 
 export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 	collection,
@@ -49,25 +53,12 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 	const regularTabs = sortedTabs.filter((t) => !t.isPinned);
 
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const menuRef = useRef<HTMLDivElement>(null);
 
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [renameValue, setRenameValue] = useState(collection.name);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-				setIsMenuOpen(false);
-			}
-		};
-		if (isMenuOpen) {
-			document.addEventListener("mousedown", handleClickOutside);
-		}
-		return () => document.removeEventListener("mousedown", handleClickOutside);
-	}, [isMenuOpen]);
 
 	useEffect(() => {
 		if (isRenaming && inputRef.current) {
@@ -92,6 +83,8 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 			setIsRenaming(false);
 		}
 	};
+
+	const getCollectionUrls = () => sortedTabs.map((t) => t.url).filter(Boolean);
 
 	return (
 		<Card
@@ -143,20 +136,35 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 					>
 						<Plus size={18} />
 					</IconButton>
-					<div className="relative" ref={menuRef}>
-						<IconButton
-							onClick={() => setIsMenuOpen(!isMenuOpen)}
-							variant="subtle"
-							size="md"
-							active={isMenuOpen}
-							aria-label="Collection actions"
-						>
-							<MoreHorizontal size={18} />
-						</IconButton>
-
-						{isMenuOpen && (
-							<div className="absolute right-0 top-full mt-2 w-48 bg-surface-elevated rounded-xl shadow-xl border border-surface overflow-hidden z-40 animate-in fade-in zoom-in-95 duration-150">
+					<Popover
+						isOpen={isMenuOpen}
+						onClickOutside={() => setIsMenuOpen(false)}
+						positions={["bottom"]}
+						align="end"
+						content={
+							<div className="w-52">
 								<div className="p-1.5 flex flex-col gap-0.5">
+									{sortedTabs.length > 0 && (
+										<>
+											<OpenTabsButton
+												mode="new-window"
+												getUrls={getCollectionUrls}
+												confirmThreshold={COLLECTION_RESTORE_CONFIRM_THRESHOLD}
+												showIcon
+												variant="menu"
+												onClick={() => setIsMenuOpen(false)}
+											/>
+											<OpenTabsButton
+												mode="current"
+												getUrls={getCollectionUrls}
+												confirmThreshold={COLLECTION_RESTORE_CONFIRM_THRESHOLD}
+												showIcon
+												variant="menu"
+												onClick={() => setIsMenuOpen(false)}
+											/>
+											<div className="h-px bg-surface-muted my-1 mx-1" />
+										</>
+									)}
 									<Button
 										onClick={() => {
 											setIsRenaming(true);
@@ -168,7 +176,7 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 									>
 										<Pencil size={14} /> Rename
 									</Button>
-									<div className="h-px bg-surface-muted my-1 mx-1"></div>
+									<div className="h-px bg-surface-muted my-1 mx-1" />
 									<Button
 										onClick={() => {
 											setShowDeleteConfirm(true);
@@ -182,8 +190,18 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 									</Button>
 								</div>
 							</div>
-						)}
-					</div>
+						}
+					>
+						<IconButton
+							onClick={() => setIsMenuOpen(!isMenuOpen)}
+							variant="subtle"
+							size="md"
+							active={isMenuOpen}
+							aria-label="Collection actions"
+						>
+							<MoreHorizontal size={18} />
+						</IconButton>
+					</Popover>
 				</HStack>
 			</CardHeader>
 

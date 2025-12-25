@@ -10,6 +10,7 @@ interface ConfirmModalProps {
 	message: string;
 	onConfirm: () => void;
 	onClose: () => void;
+	confirmLabel?: string;
 }
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -18,6 +19,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 	message,
 	onConfirm,
 	onClose,
+	confirmLabel,
 }) => {
 	return (
 		<Dialog
@@ -57,7 +59,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 						}}
 						className="flex-1"
 					>
-						{m.common_delete()}
+						{confirmLabel ?? m.common_delete()}
 					</Button>
 				</CardFooter>
 			</Card>
