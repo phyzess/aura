@@ -17,7 +17,12 @@ export const WorkspaceList: React.FC<WorkspaceListProps> = ({
 	onWorkspaceClick,
 }) => {
 	if (workspaces.length === 0) {
-		return <EmptyState title={m.popup_workspace_list_empty_title()} />;
+		return (
+			<EmptyState
+				className="w-full"
+				title={m.popup_workspace_list_empty_title()}
+			/>
+		);
 	}
 	return (
 		<div className="grid gap-2 animate-in slide-in-from-right-4 duration-300">
