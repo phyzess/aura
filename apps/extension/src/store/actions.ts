@@ -362,6 +362,50 @@ export const deleteWorkspaceAtom = atom(null, async (get, set, id: string) => {
 	set(scheduleAutoSyncAtom);
 });
 
+export const reorderWorkspaceCollectionsAtom = atom(
+	null,
+	async (get, set, args: { workspaceId: string; orderedIds: string[] }) => {
+		const collections = get(collectionsAtom);
+		const workspaceCollections = collections.filter(
+			(c) => c.workspaceId === args.workspaceId,
+		);
+
+		if (workspaceCollections.length === 0) return;
+
+		const byId = new Map<string, Collection>();
+		for (const c of workspaceCollections) {
+			byId.set(c.id, c);
+		}
+
+		const now = Date.now();
+		const reordered: Collection[] = [];
+
+		for (let index = 0; index < args.orderedIds.length; index += 1) {
+			const id = args.orderedIds[index];
+			const existing = byId.get(id);
+			if (!existing) continue;
+			reordered.push({
+				...existing,
+				order: index,
+				updatedAt: now,
+			});
+		}
+
+		if (reordered.length === 0) return;
+
+		const otherCollections = collections.filter(
+			(c) => c.workspaceId !== args.workspaceId,
+		);
+
+		set(collectionsAtom, [...otherCollections, ...reordered]);
+
+		await Promise.all(reordered.map((c) => LocalDB.saveCollection(c)));
+		set(syncDirtyAtom, true);
+		set(lastLocalChangeAtAtom, Date.now());
+		set(scheduleAutoSyncAtom);
+	},
+);
+
 export const addCollectionAtom = atom(
 	null,
 	async (get, set, args: { workspaceId: string; name: string }) => {
@@ -511,6 +555,98 @@ export const toggleTabPinAtom = atom(null, async (get, set, id: string) => {
 	set(lastLocalChangeAtAtom, Date.now());
 	set(scheduleAutoSyncAtom);
 });
+
+export const moveTabAtom = atom(
+	null,
+	async (
+		get,
+		set,
+		args: {
+			tabId: string;
+			targetCollectionId: string;
+			targetIndex: number;
+			shouldPin?: boolean;
+		},
+	) => {
+		const tabs = get(tabsAtom);
+		const tab = tabs.find((t) => t.id === args.tabId);
+
+		if (!tab) return;
+
+		const sourceCollectionId = tab.collectionId;
+		const now = Date.now();
+
+		const targetTabs = tabs
+			.filter(
+				(t) => t.collectionId === args.targetCollectionId && t.id !== tab.id,
+			)
+			.sort((a, b) => a.order - b.order);
+
+		const clampedIndex = Math.max(
+			0,
+			Math.min(args.targetIndex, targetTabs.length),
+		);
+
+		const shouldUpdatePin = args.shouldPin !== undefined;
+		const newPinState = shouldUpdatePin ? args.shouldPin : tab.isPinned;
+
+		const movedTab: TabItem = {
+			...tab,
+			collectionId: args.targetCollectionId,
+			order: clampedIndex,
+			isPinned: newPinState,
+			updatedAt: now,
+		};
+
+		const newTargetTabs: TabItem[] = [
+			...targetTabs.slice(0, clampedIndex),
+			movedTab,
+			...targetTabs.slice(clampedIndex),
+		];
+
+		const normalizedTargetTabs = newTargetTabs.map((t, index) => ({
+			...t,
+			order: index,
+			updatedAt: t.id === movedTab.id ? now : t.updatedAt,
+		}));
+
+		let normalizedSourceTabs: TabItem[] = [];
+		if (sourceCollectionId !== args.targetCollectionId) {
+			const sourceTabs = tabs
+				.filter((t) => t.collectionId === sourceCollectionId && t.id !== tab.id)
+				.sort((a, b) => a.order - b.order);
+
+			normalizedSourceTabs = sourceTabs.map((t, index) => ({
+				...t,
+				order: index,
+				updatedAt: now,
+			}));
+		}
+
+		const keptTabs = tabs.filter((t) => {
+			if (t.collectionId === args.targetCollectionId) return false;
+			if (t.collectionId === sourceCollectionId) return false;
+			return true;
+		});
+
+		const finalTabs =
+			sourceCollectionId === args.targetCollectionId
+				? [...keptTabs, ...normalizedTargetTabs]
+				: [...keptTabs, ...normalizedTargetTabs, ...normalizedSourceTabs];
+
+		set(tabsAtom, finalTabs);
+
+		const tabsToPersist =
+			sourceCollectionId === args.targetCollectionId
+				? normalizedTargetTabs
+				: [...normalizedTargetTabs, ...normalizedSourceTabs];
+
+		await Promise.all(tabsToPersist.map((t) => LocalDB.saveTab(t)));
+		set(syncDirtyAtom, true);
+		set(lastLocalChangeAtAtom, Date.now());
+		set(scheduleAutoSyncAtom);
+	},
+);
 
 export const syncWithServerAtom = atom(
 	null,

@@ -1,3 +1,5 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useSetAtom } from "jotai";
 import { ExternalLink, Globe, Pin, X } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
@@ -28,32 +30,54 @@ interface TabCardProps {
 	tab: TabItem;
 	onDelete: (id: string) => void;
 	isHighlighted?: boolean;
+	isDragOverlay?: boolean;
 }
 
 export const TabCard: React.FC<TabCardProps> = ({
 	tab,
 	onDelete,
 	isHighlighted,
+	isDragOverlay = false,
 }) => {
 	const togglePin = useSetAtom(toggleTabPinAtom);
+
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({
+		id: tab.id,
+		data: {
+			type: "TAB",
+			tabId: tab.id,
+			collectionId: tab.collectionId,
+		},
+	});
 
 	const hostname = new URL(tab.url).hostname.replace("www.", "");
 	const stripColor = getHostnameColor(hostname);
 
+	const style: React.CSSProperties = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+		opacity: isDragging ? 0.5 : 1,
+	};
+
 	return (
 		<div
+			ref={setNodeRef}
+			style={style}
+			{...attributes}
+			{...listeners}
 			id={`tab-${tab.id}`}
 			className={cn(
 				"group relative flex items-center gap-3 bg-surface-muted px-3 py-2.5 rounded-xl overflow-hidden border border-transparent shadow-none cursor-grab active:cursor-grabbing transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-surface-elevated hover:shadow-soft-hover hover:-translate-y-0.5",
 				isHighlighted && "ring-2 ring-accent-soft ring-offset-0 scale-[1.01]",
+				isDragging && "z-50",
 			)}
-			draggable
-			onDragStart={(e) => {
-				e.dataTransfer.setData(
-					"text/plain",
-					JSON.stringify({ type: "TAB", id: tab.id }),
-				);
-			}}
 		>
 			<div
 				style={{ backgroundColor: stripColor }}
@@ -64,24 +88,26 @@ export const TabCard: React.FC<TabCardProps> = ({
 						: "scale-x-0 group-hover:scale-x-110",
 				)}
 			/>
-			<button
-				type="button"
-				className={cn(
-					"absolute top-1.5 left-2.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-surface-elevated shadow-soft-hover transition-all",
-					tab.isPinned
-						? "text-accent opacity-100"
-						: "text-muted opacity-0 group-hover:opacity-100",
-				)}
-				onClick={(e) => {
-					e.stopPropagation();
-					togglePin(tab.id);
-				}}
-				aria-pressed={!!tab.isPinned}
-				title={tab.isPinned ? "Unpin tab" : "Pin tab"}
-				aria-label={tab.isPinned ? "Unpin tab" : "Pin tab"}
-			>
-				<Pin size={11} className="fill-current rotate-315" />
-			</button>
+			{!isDragOverlay && (
+				<button
+					type="button"
+					className={cn(
+						"absolute top-1.5 left-2.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-surface-elevated shadow-soft-hover transition-all",
+						tab.isPinned
+							? "text-accent opacity-100"
+							: "text-muted opacity-0 group-hover:opacity-100",
+					)}
+					onClick={(e) => {
+						e.stopPropagation();
+						togglePin(tab.id);
+					}}
+					aria-pressed={!!tab.isPinned}
+					title={tab.isPinned ? "Unpin tab" : "Pin tab"}
+					aria-label={tab.isPinned ? "Unpin tab" : "Pin tab"}
+				>
+					<Pin size={11} className="fill-current rotate-315" />
+				</button>
+			)}
 			<div className="flex items-center gap-3 overflow-hidden flex-1">
 				<div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-surface flex items-center justify-center shrink-0 text-primary">
 					{tab.faviconUrl ? (
@@ -106,39 +132,41 @@ export const TabCard: React.FC<TabCardProps> = ({
 				</div>
 			</div>
 
-			<div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-				<div
-					className={cn(
-						"flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface shadow-soft-hover text-muted opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-160 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-auto",
-					)}
-				>
-					<IconButton
-						type="button"
-						onClick={() => window.open(tab.url, "_blank")}
-						variant="subtle"
-						size="sm"
-						title={m.tab_card_open_link_title()}
-						aria-label={m.tab_card_open_link_title()}
-						className="text-primary"
+			{!isDragOverlay && (
+				<div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+					<div
+						className={cn(
+							"flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface shadow-soft-hover text-muted opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-160 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-auto",
+						)}
 					>
-						<ExternalLink size={15} />
-					</IconButton>
-					<IconButton
-						type="button"
-						onClick={(e) => {
-							e.stopPropagation();
-							onDelete(tab.id);
-						}}
-						variant="danger"
-						size="sm"
-						className="text-destructive"
-						title={m.tab_card_delete_tab_title()}
-						aria-label={m.tab_card_delete_tab_title()}
-					>
-						<X size={15} />
-					</IconButton>
+						<IconButton
+							type="button"
+							onClick={() => window.open(tab.url, "_blank")}
+							variant="subtle"
+							size="sm"
+							title={m.tab_card_open_link_title()}
+							aria-label={m.tab_card_open_link_title()}
+							className="text-primary"
+						>
+							<ExternalLink size={15} />
+						</IconButton>
+						<IconButton
+							type="button"
+							onClick={(e) => {
+								e.stopPropagation();
+								onDelete(tab.id);
+							}}
+							variant="danger"
+							size="sm"
+							className="text-destructive"
+							title={m.tab_card_delete_tab_title()}
+							aria-label={m.tab_card_delete_tab_title()}
+						>
+							<X size={15} />
+						</IconButton>
+					</div>
 				</div>
-			</div>
+			)}
 		</div>
 	);
 };
