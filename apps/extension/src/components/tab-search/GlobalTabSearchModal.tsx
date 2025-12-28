@@ -17,6 +17,7 @@ interface GlobalTabSearchModalProps {
 	workspaces: Workspace[];
 	collections: Collection[];
 	tabs: TabItem[];
+	activeWorkspaceId?: string | null;
 	onSelectTab: (tabId: string) => void;
 }
 
@@ -26,9 +27,14 @@ export const GlobalTabSearchModal: React.FC<GlobalTabSearchModalProps> = ({
 	workspaces,
 	collections,
 	tabs,
+	activeWorkspaceId,
 	onSelectTab,
 }) => {
-	const { query, setQuery, results, clear } = useTabSearch({ tabs });
+	const { query, setQuery, results, groupedResults, clear } = useTabSearch({
+		tabs,
+		collections,
+		activeWorkspaceId,
+	});
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const handleClose = useCallback(() => {
@@ -130,6 +136,7 @@ export const GlobalTabSearchModal: React.FC<GlobalTabSearchModalProps> = ({
 							workspaces={workspaces}
 							collections={collections}
 							variant="dashboard"
+							groups={groupedResults}
 							onItemClick={(tab, event) => {
 								if (event.metaKey || event.ctrlKey) {
 									onSelectTab(tab.id);

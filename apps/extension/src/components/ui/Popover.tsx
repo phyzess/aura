@@ -13,6 +13,7 @@ export interface PopoverProps {
 	padding?: number;
 	containerClassName?: string;
 	parentElement?: HTMLElement;
+	reposition?: boolean;
 }
 
 export const Popover: React.FC<PopoverProps> = ({
@@ -25,6 +26,7 @@ export const Popover: React.FC<PopoverProps> = ({
 	padding = 8,
 	containerClassName,
 	parentElement,
+	reposition = true,
 }) => {
 	return (
 		<TinyPopover
@@ -32,11 +34,12 @@ export const Popover: React.FC<PopoverProps> = ({
 			positions={positions}
 			align={align}
 			padding={padding}
+			reposition={reposition}
 			onClickOutside={onClickOutside}
-			containerClassName={cn("z-200", containerClassName)}
-			parentElement={parentElement || document.body}
+			containerClassName={cn("z-[200]", containerClassName)}
+			parentElement={parentElement ?? document.body}
 			content={
-				<div className="bg-surface-elevated rounded-2xl shadow-soft border border-surface-border overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
+				<div className="bg-surface-elevated rounded-2xl shadow-lg border border-surface-border/50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200 backdrop-blur-sm">
 					{content}
 				</div>
 			}

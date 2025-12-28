@@ -161,7 +161,7 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 									setIsRenaming(true);
 									setIsMenuOpen(false);
 								}}
-								title="Click to rename"
+								title={m.collection_rename_title()}
 							>
 								{collection.name}
 							</h3>
@@ -177,7 +177,7 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 							onClick={() => onAddTab(collection.id)}
 							variant="neutral"
 							size="md"
-							title="Add Tab"
+							title={m.collection_add_tab_title()}
 							aria-label="Add tab to collection"
 						>
 							<Plus size={18} />
@@ -319,8 +319,11 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 
 				<ConfirmModal
 					isOpen={showDeleteConfirm}
-					title="Delete Collection?"
-					message={`Are you sure you want to delete "${collection.name}"? All ${sortedTabs.length} tabs in this collection will be lost.`}
+					title={m.collection_delete_confirm_title()}
+					message={m.collection_delete_confirm_message({
+						name: collection.name,
+						count: sortedTabs.length,
+					})}
 					onConfirm={() => onDeleteCollection(collection.id)}
 					onClose={() => setShowDeleteConfirm(false)}
 				/>

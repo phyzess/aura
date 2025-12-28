@@ -54,7 +54,10 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 		setQuery: setSearchQuery,
 		results: searchResults,
 		clear: clearSearch,
-	} = useTabSearch({ tabs });
+	} = useTabSearch({
+		tabs,
+		collections,
+	});
 	const inputRef = useRef<HTMLInputElement>(null);
 	const signOut = useSetAtom(signOutAtom);
 	const clearLocalData = useSetAtom(clearLocalDataAtom);
@@ -160,9 +163,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 		if (closeTabsAfterSave && tabIdsToClose.length > 0) {
 			void ChromeService.closeTabsById(tabIdsToClose).catch((error: any) => {
 				console.error("Failed to close some tabs after saving:", error);
-				toast.error(
-					"Failed to close some tabs. Please check your browser or extension permissions.",
-				);
+				toast.error(m.popup_close_tabs_error());
 			});
 		}
 
@@ -231,7 +232,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 		}[] = [];
 
 		items.push({
-			label: "Aura",
+			label: m.popup_breadcrumb_home(),
 			onClick:
 				viewLevel !== "workspaces"
 					? () => {

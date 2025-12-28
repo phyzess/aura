@@ -1,6 +1,7 @@
 import { useSetAtom } from "jotai";
 import { ExternalLink, Folder, Globe, Layout, Pin } from "lucide-react";
 import type React from "react";
+import * as m from "@/paraglide/messages";
 import { toggleTabPinAtom } from "@/store/actions";
 import type { Collection, TabItem, Workspace } from "@/types";
 
@@ -108,8 +109,8 @@ export const TabSearchResultItem: React.FC<TabSearchResultItemProps> = ({
 								: "bg-surface-muted text-muted group-hover:bg-surface-elevated group-hover:text-primary"
 						}`}
 						aria-pressed={!!tab.isPinned}
-						title={tab.isPinned ? "Unpin tab" : "Pin tab"}
-						aria-label={tab.isPinned ? "Unpin tab" : "Pin tab"}
+						title={tab.isPinned ? m.tab_unpin_title() : m.tab_pin_title()}
+						aria-label={tab.isPinned ? m.tab_unpin_title() : m.tab_pin_title()}
 					>
 						<Pin size={11} />
 					</button>

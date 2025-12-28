@@ -180,6 +180,7 @@ export default function App() {
 				workspaces={workspaces}
 				collections={collections}
 				tabs={tabs}
+				activeWorkspaceId={activeWorkspaceId}
 				onSelectTab={(tabId) => {
 					const tab = tabs.find((t) => t.id === tabId);
 					if (!tab) return;

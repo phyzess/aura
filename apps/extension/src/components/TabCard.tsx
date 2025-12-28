@@ -102,8 +102,8 @@ export const TabCard: React.FC<TabCardProps> = ({
 						togglePin(tab.id);
 					}}
 					aria-pressed={!!tab.isPinned}
-					title={tab.isPinned ? "Unpin tab" : "Pin tab"}
-					aria-label={tab.isPinned ? "Unpin tab" : "Pin tab"}
+					title={tab.isPinned ? m.tab_unpin_title() : m.tab_pin_title()}
+					aria-label={tab.isPinned ? m.tab_unpin_title() : m.tab_pin_title()}
 				>
 					<Pin size={11} className="fill-current rotate-315" />
 				</button>
