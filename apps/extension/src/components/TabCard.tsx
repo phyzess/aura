@@ -1,13 +1,24 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useSetAtom } from "jotai";
-import { ExternalLink, Globe, Pin, X } from "lucide-react";
+import {
+	AlertTriangle,
+	CheckCircle2,
+	Clock,
+	ExternalLink,
+	Globe,
+	HelpCircle,
+	Loader2,
+	Pin,
+	X,
+} from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/lib/utils";
 import * as m from "@/paraglide/messages";
 import { toggleTabPinAtom } from "@/store/actions";
 import type { TabItem } from "@/types";
+import { formatLastVisited, getTimeAge } from "@/utils/timeUtils";
 
 const TAB_STRIP_COLORS = [
 	"hsl(265, 100%, 70%)", // neon violet
@@ -24,6 +35,41 @@ const getHostnameColor = (hostname: string) => {
 		hash = (hash * 31 + hostname.charCodeAt(i)) >>> 0;
 	}
 	return TAB_STRIP_COLORS[hash % TAB_STRIP_COLORS.length];
+};
+
+const getLinkStatusInfo = (status?: string) => {
+	switch (status) {
+		case "valid":
+			return {
+				icon: CheckCircle2,
+				color: "text-green-500",
+				label: "Valid",
+				show: false, // Don't show valid status by default
+			};
+		case "broken":
+			return {
+				icon: AlertTriangle,
+				color: "text-red-500",
+				label: "Broken",
+				show: true,
+			};
+		case "uncertain":
+			return {
+				icon: HelpCircle,
+				color: "text-yellow-500",
+				label: "Uncertain",
+				show: true,
+			};
+		case "checking":
+			return {
+				icon: Loader2,
+				color: "text-blue-500",
+				label: "Checking...",
+				show: true,
+			};
+		default:
+			return null;
+	}
 };
 
 interface TabCardProps {
@@ -59,11 +105,22 @@ export const TabCard: React.FC<TabCardProps> = ({
 
 	const hostname = new URL(tab.url).hostname.replace("www.", "");
 	const stripColor = getHostnameColor(hostname);
+	const timeAge = getTimeAge(tab.updatedAt);
+	const linkStatus = getLinkStatusInfo(tab.linkStatus);
+
+	// Calculate opacity based on age and link status
+	const getOpacity = () => {
+		if (isDragging) return 0.5;
+		if (tab.linkStatus === "broken") return 0.6;
+		if (timeAge.level === "old") return 0.85;
+		if (timeAge.level === "ancient") return 0.7;
+		return 1;
+	};
 
 	const style: React.CSSProperties = {
 		transform: CSS.Transform.toString(transform),
 		transition,
-		opacity: isDragging ? 0.5 : 1,
+		opacity: getOpacity(),
 	};
 
 	return (
@@ -74,10 +131,17 @@ export const TabCard: React.FC<TabCardProps> = ({
 			{...listeners}
 			id={`tab-${tab.id}`}
 			className={cn(
-				"group relative flex items-center gap-3 bg-surface-muted px-3 py-2.5 rounded-xl overflow-hidden border border-transparent shadow-none cursor-grab active:cursor-grabbing transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-surface-elevated hover:shadow-soft-hover hover:-translate-y-0.5",
+				"group relative flex items-center gap-3 bg-surface-muted px-3 py-2.5 rounded-xl overflow-hidden border shadow-none cursor-grab active:cursor-grabbing transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-surface-elevated hover:shadow-soft-hover hover:-translate-y-0.5",
 				isHighlighted && "ring-2 ring-accent-soft ring-offset-0 scale-[1.01]",
 				isDragging && "z-50",
+				tab.linkStatus === "broken" && "border-red-500/50",
+				tab.linkStatus === "uncertain" && "border-yellow-500/30",
+				(!tab.linkStatus ||
+					tab.linkStatus === "unchecked" ||
+					tab.linkStatus === "valid") &&
+					"border-transparent",
 			)}
+			title={formatLastVisited(tab.updatedAt)}
 		>
 			<div
 				style={{ backgroundColor: stripColor }}
@@ -128,6 +192,44 @@ export const TabCard: React.FC<TabCardProps> = ({
 						>
 							{hostname}
 						</Badge>
+						{linkStatus?.show && (
+							<Badge
+								variant={
+									tab.linkStatus === "broken"
+										? "danger"
+										: tab.linkStatus === "uncertain"
+											? "warning"
+											: "neutral"
+								}
+								className="px-2 py-0.5 text-[11px] flex items-center gap-1"
+							>
+								<linkStatus.icon
+									size={10}
+									className={cn(
+										linkStatus.color,
+										tab.linkStatus === "checking" && "animate-spin",
+									)}
+								/>
+								<span>{linkStatus.label}</span>
+							</Badge>
+						)}
+						{timeAge.level !== "fresh" && (
+							<Badge
+								variant={
+									timeAge.level === "ancient"
+										? "danger"
+										: timeAge.level === "old"
+											? "warning"
+											: timeAge.level === "stale"
+												? "warning"
+												: "neutral"
+								}
+								className="px-2 py-0.5 text-[11px] flex items-center gap-1"
+							>
+								<Clock size={10} />
+								<span>{timeAge.label}</span>
+							</Badge>
+						)}
 					</div>
 				</div>
 			</div>

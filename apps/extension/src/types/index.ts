@@ -1,12 +1,24 @@
 import type {
 	Collection,
+	TabItem as DomainTabItem,
 	SyncPayload,
-	TabItem,
 	User,
 	Workspace,
 } from "@aura/domain";
 
-export type { User, Workspace, Collection, TabItem, SyncPayload };
+export type { User, Workspace, Collection, SyncPayload };
+
+export type LinkStatus =
+	| "valid"
+	| "broken"
+	| "uncertain"
+	| "checking"
+	| "unchecked";
+
+export interface TabItem extends DomainTabItem {
+	linkStatus?: LinkStatus;
+	lastCheckedAt?: number;
+}
 
 export interface SessionTab extends Partial<TabItem> {
 	chromeTabId?: number;

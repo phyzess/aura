@@ -2,8 +2,10 @@ import { atom } from "jotai";
 import { API_BASE_URL } from "@/config/env";
 import { authClient } from "@/services/authClient";
 import { initDB, LocalDB } from "@/services/db";
+import { linkCheckService } from "@/services/linkCheck";
 import type {
 	Collection,
+	LinkStatus,
 	SyncPayload,
 	TabItem,
 	User,
@@ -967,5 +969,120 @@ export const importTobyDataAtom = atom(
 				}
 			}
 		}
+	},
+);
+
+/**
+ * Check link status for a single tab
+ */
+export const checkTabLinkAtom = atom(null, async (get, set, tabId: string) => {
+	const tabs = get(tabsAtom);
+	const tab = tabs.find((t) => t.id === tabId);
+	if (!tab) return;
+
+	// Set checking status
+	const updatedTabs = tabs.map((t) =>
+		t.id === tabId ? { ...t, linkStatus: "checking" as LinkStatus } : t,
+	);
+	set(tabsAtom, updatedTabs);
+
+	// Check the link
+	const status = await linkCheckService.checkUrl(tab.url);
+	const now = Date.now();
+
+	// Update tab with result
+	const finalTabs = get(tabsAtom).map((t) =>
+		t.id === tabId
+			? { ...t, linkStatus: status, lastCheckedAt: now, updatedAt: now }
+			: t,
+	);
+	set(tabsAtom, finalTabs);
+
+	// Save to local DB
+	const updatedTab = finalTabs.find((t) => t.id === tabId);
+	if (updatedTab) {
+		await LocalDB.saveTab(updatedTab);
+	}
+
+	set(syncDirtyAtom, true);
+	set(lastLocalChangeAtAtom, Date.now());
+	set(scheduleAutoSyncAtom);
+});
+
+/**
+ * Check link status for multiple tabs with progress callback
+ */
+export const checkMultipleLinksAtom = atom(
+	null,
+	async (
+		get,
+		set,
+		args: {
+			tabIds: string[];
+			onProgress?: (progress: { total: number; checked: number }) => void;
+		},
+	) => {
+		const tabs = get(tabsAtom);
+		const tabsToCheck = tabs.filter((t) => args.tabIds.includes(t.id));
+
+		if (tabsToCheck.length === 0) {
+			return { total: 0, valid: 0, broken: 0, uncertain: 0 };
+		}
+
+		// Set all to checking status
+		const checkingTabs = tabs.map((t) =>
+			args.tabIds.includes(t.id)
+				? { ...t, linkStatus: "checking" as LinkStatus }
+				: t,
+		);
+		set(tabsAtom, checkingTabs);
+
+		// Check all links
+		const urls = tabsToCheck.map((t) => t.url);
+		const results = await linkCheckService.checkMultipleUrls(
+			urls,
+			(progress) => {
+				args.onProgress?.(progress);
+			},
+		);
+
+		const now = Date.now();
+
+		// Update tabs with results
+		const updatedTabs = get(tabsAtom).map((t) => {
+			if (!args.tabIds.includes(t.id)) return t;
+			const status = results.get(t.url);
+			if (!status) return t;
+			return {
+				...t,
+				linkStatus: status,
+				lastCheckedAt: now,
+				updatedAt: now,
+			};
+		});
+
+		set(tabsAtom, updatedTabs);
+
+		// Save to local DB
+		await Promise.all(
+			updatedTabs
+				.filter((t) => args.tabIds.includes(t.id))
+				.map((t) => LocalDB.saveTab(t)),
+		);
+
+		set(syncDirtyAtom, true);
+		set(lastLocalChangeAtAtom, Date.now());
+		set(scheduleAutoSyncAtom);
+
+		// Calculate and return statistics
+		const checkedTabs = updatedTabs.filter((t) => args.tabIds.includes(t.id));
+		const stats = {
+			total: checkedTabs.length,
+			valid: checkedTabs.filter((t) => t.linkStatus === "valid").length,
+			broken: checkedTabs.filter((t) => t.linkStatus === "broken").length,
+			uncertain: checkedTabs.filter((t) => t.linkStatus === "uncertain").length,
+		};
+
+		return stats;
 	},
 );

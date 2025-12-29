@@ -4,8 +4,10 @@ import {
 	SortableContext,
 	useSortable,
 } from "@dnd-kit/sortable";
-import { MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
+import { useSetAtom } from "jotai";
+import { Link2, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { OpenTabsButton } from "@/components/OpenTabsButton";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -17,6 +19,7 @@ import { HStack } from "@/components/ui/Stack";
 import { TextField } from "@/components/ui/TextField";
 import { cn } from "@/lib/utils";
 import * as m from "@/paraglide/messages";
+import { checkMultipleLinksAtom } from "@/store/actions";
 import type { Collection, TabItem } from "@/types";
 import { ConfirmModal } from "./ConfirmModal";
 import { TabCard } from "./TabCard";
@@ -68,6 +71,10 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+	const [isCheckingLinks, setIsCheckingLinks] = useState(false);
+	const [checkProgress, setCheckProgress] = useState({ total: 0, checked: 0 });
+	const checkLinks = useSetAtom(checkMultipleLinksAtom);
 	const {
 		attributes,
 		listeners,
@@ -124,6 +131,55 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 
 	const getCollectionUrls = () => sortedTabs.map((t) => t.url).filter(Boolean);
 
+	const handleCheckLinks = async () => {
+		if (sortedTabs.length === 0) return;
+
+		setIsCheckingLinks(true);
+		setCheckProgress({ total: sortedTabs.length, checked: 0 });
+
+		try {
+			const tabIds = sortedTabs.map((t) => t.id);
+			const stats = await checkLinks({
+				tabIds,
+				onProgress: (progress) => {
+					setCheckProgress(progress);
+				},
+			});
+
+			// Show completion toast with results
+			if (stats.broken > 0 || stats.uncertain > 0) {
+				const parts = [];
+				if (stats.broken > 0) {
+					parts.push(`${stats.broken} broken`);
+				}
+				if (stats.uncertain > 0) {
+					parts.push(`${stats.uncertain} uncertain`);
+				}
+				toast.error(`Link check complete: ${parts.join(", ")}`);
+			} else {
+				toast.success(`All ${stats.total} links are valid! ✓`);
+			}
+		} catch (error) {
+			console.error("Failed to check links:", error);
+			toast.error("Failed to check links. Please try again.");
+		} finally {
+			// Keep the final progress visible for a moment
+			await new Promise((resolve) => setTimeout(resolve, 500));
+			setIsCheckingLinks(false);
+		}
+	};
+
+	// Calculate link status statistics
+	const brokenCount = sortedTabs.filter(
+		(t) => t.linkStatus === "broken",
+	).length;
+	const uncertainCount = sortedTabs.filter(
+		(t) => t.linkStatus === "uncertain",
+	).length;
+	const uncheckedCount = sortedTabs.filter(
+		(t) => !t.linkStatus || t.linkStatus === "unchecked",
+	).length;
+
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} {...listeners}>
 			<Card
@@ -168,11 +224,51 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 						)}
 
 						{!isRenaming && (
-							<Badge className="flex-shrink-0">{sortedTabs.length}</Badge>
+							<>
+								<Badge className="flex-shrink-0">{sortedTabs.length}</Badge>
+								{brokenCount > 0 && (
+									<Badge variant="danger" className="flex-shrink-0">
+										{brokenCount} broken
+									</Badge>
+								)}
+								{uncertainCount > 0 && (
+									<Badge variant="warning" className="flex-shrink-0">
+										{uncertainCount} uncertain
+									</Badge>
+								)}
+							</>
 						)}
 					</div>
 
 					<HStack gap="xs" className="relative">
+						{sortedTabs.length > 0 && (
+							<div className="relative">
+								<IconButton
+									onClick={handleCheckLinks}
+									variant="neutral"
+									size="md"
+									title={
+										isCheckingLinks
+											? `Checking links... ${checkProgress.checked}/${checkProgress.total}`
+											: uncheckedCount > 0
+												? `Check ${uncheckedCount} unchecked link${uncheckedCount > 1 ? "s" : ""}`
+												: "Re-check all links"
+									}
+									aria-label="Check links"
+									disabled={isCheckingLinks}
+								>
+									<Link2
+										size={18}
+										className={cn(isCheckingLinks && "animate-pulse")}
+									/>
+								</IconButton>
+								{isCheckingLinks && checkProgress.total > 0 && (
+									<div className="absolute -bottom-1 -right-1 bg-accent text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
+										{checkProgress.checked}
+									</div>
+								)}
+							</div>
+						)}
 						<IconButton
 							onClick={() => onAddTab(collection.id)}
 							variant="neutral"

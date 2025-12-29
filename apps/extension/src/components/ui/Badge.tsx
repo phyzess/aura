@@ -1,7 +1,7 @@
 import type * as React from "react";
 import { cn } from "@/lib/utils";
 
-export type BadgeVariant = "accent" | "neutral";
+export type BadgeVariant = "accent" | "neutral" | "danger" | "warning";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 	variant?: BadgeVariant;
@@ -10,6 +10,8 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 const variantClassName: Record<BadgeVariant, string> = {
 	accent: "bg-accent-soft text-accent",
 	neutral: "bg-surface-muted text-secondary",
+	danger: "bg-red-500/10 text-red-500",
+	warning: "bg-yellow-500/10 text-yellow-500",
 };
 
 export const Badge: React.FC<BadgeProps> = ({
