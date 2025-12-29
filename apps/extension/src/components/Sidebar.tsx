@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { Pencil, Plus, Trash2, UploadCloud } from "lucide-react";
+import { Download, Pencil, Plus, Trash2, UploadCloud } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/Button";
@@ -12,6 +12,7 @@ import * as m from "@/paraglide/messages";
 import {
 	createWorkspaceAtom,
 	deleteWorkspaceAtom,
+	exportAllDataAtom,
 	importTobyDataAtom,
 	syncWithServerAtom,
 	updateWorkspaceNameAtom,
@@ -55,6 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 	const updateWorkspaceName = useSetAtom(updateWorkspaceNameAtom);
 	const deleteWorkspace = useSetAtom(deleteWorkspaceAtom);
 	const importTobyData = useSetAtom(importTobyDataAtom);
+	const exportAllData = useSetAtom(exportAllDataAtom);
 	const syncWithServer = useSetAtom(syncWithServerAtom);
 
 	const [editingId, setEditingId] = useState<string | null>(null);
@@ -244,50 +246,45 @@ export const Sidebar: React.FC<SidebarProps> = ({
 				</CardBody>
 
 				<div className="p-4 mt-2 bg-linear-to-b from-transparent to-surface-muted/60">
-					<div className="bg-surface-muted p-1 rounded-2xl flex gap-1">
-						<Button
-							type="button"
-							onClick={() => setIsImportModalOpen(true)}
-							title={m.sidebar_import_button_title()}
-							variant="secondary"
-							size="sm"
-							className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated/90 hover:shadow-sm rounded-l-xl transition-all cursor-pointer"
-						>
-							<UploadCloud size={14} />
-							<span>{m.sidebar_import_button_label()}</span>
-						</Button>
+					<div className="bg-surface-muted p-1 rounded-2xl flex flex-col gap-1">
+						<div className="flex gap-1">
+							<Button
+								onClick={() => setIsImportModalOpen(true)}
+								title={m.sidebar_import_button_title()}
+								variant="secondary"
+								size="sm"
+								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated hover:shadow-[0_0_16px_-2px_var(--color-accent-soft)] hover:scale-[1.02] rounded-xl transition-all duration-200 cursor-pointer"
+							>
+								<UploadCloud size={14} />
+								<span>{m.sidebar_import_button_label()}</span>
+							</Button>
+							<Button
+								onClick={() => {
+									try {
+										exportAllData();
+										toast.success("Data exported successfully");
+									} catch (error) {
+										console.error("Export failed:", error);
+										toast.error("Export failed. Please try again.");
+									}
+								}}
+								title={m.sidebar_export_button_title()}
+								variant="secondary"
+								size="sm"
+								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-secondary bg-surface-elevated hover:bg-surface-elevated hover:shadow-[0_0_16px_-2px_var(--color-accent-soft)] hover:scale-[1.02] rounded-xl transition-all duration-200 cursor-pointer"
+							>
+								<Download size={14} />
+								<span>{m.sidebar_export_button_label()}</span>
+							</Button>
+						</div>
 						<User
 							currentUserEmail={currentUserEmail}
 							onOpenAuth={onOpenAuth}
 							onSignOut={onSignOut}
+							syncStatus={syncStatus}
+							onSync={syncWithServer}
 						/>
 					</div>
-					{!currentUserEmail ? (
-						<div className="mt-2 px-3 text-xs text-center text-primary/60">
-							{m.sidebar_login_prompt()}
-						</div>
-					) : (
-						<Button
-							type="button"
-							onClick={() => syncWithServer({ source: "manual" })}
-							disabled={syncStatus === "syncing"}
-							variant="link"
-							size="sm"
-							className={`mt-2 w-full px-3 py-1 text-xs text-center transition-colors ${
-								syncStatus === "error"
-									? "text-danger hover:text-danger/80 cursor-pointer"
-									: syncStatus === "syncing"
-										? "text-green/50 cursor-not-allowed"
-										: "text-green-600/80 hover:text-green-600 cursor-pointer"
-							}`}
-						>
-							{syncStatus === "idle" || syncStatus === "success"
-								? m.sidebar_sync_status_synced()
-								: syncStatus === "syncing"
-									? m.sidebar_sync_status_syncing()
-									: m.sidebar_sync_status_error()}
-						</Button>
-					)}
 				</div>
 			</Card>
 

@@ -187,5 +187,14 @@
 	"tab_pin_title": "Pin tab",
 	"tab_unpin_title": "Unpin tab",
 	"popup_breadcrumb_home": "Aura",
-	"popup_close_tabs_error": "Failed to close some tabs. Please check your browser or extension permissions."
+	"popup_close_tabs_error": "Failed to close some tabs. Please check your browser or extension permissions.",
+	"sidebar_export_button_title": "Export All Data",
+	"sidebar_export_button_label": "Export",
+	"sidebar_workspace_export_title": "Export",
+	"sidebar_workspace_export_aria": "Export space",
+	"collection_export_label": "Export Collection",
+	"sidebar_data_button_title": "Manage Data",
+	"sidebar_data_button_label": "Data",
+	"sidebar_import_menu_label": "Import Data",
+	"sidebar_export_menu_label": "Export All Data"
 }

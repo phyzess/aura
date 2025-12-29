@@ -5,7 +5,14 @@ import {
 	useSortable,
 } from "@dnd-kit/sortable";
 import { useSetAtom } from "jotai";
-import { Link2, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+	Download,
+	Link2,
+	MoreHorizontal,
+	Pencil,
+	Plus,
+	Trash2,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { OpenTabsButton } from "@/components/OpenTabsButton";
@@ -19,7 +26,7 @@ import { HStack } from "@/components/ui/Stack";
 import { TextField } from "@/components/ui/TextField";
 import { cn } from "@/lib/utils";
 import * as m from "@/paraglide/messages";
-import { checkMultipleLinksAtom } from "@/store/actions";
+import { checkMultipleLinksAtom, exportCollectionAtom } from "@/store/actions";
 import type { Collection, TabItem } from "@/types";
 import { ConfirmModal } from "./ConfirmModal";
 import { TabCard } from "./TabCard";
@@ -75,6 +82,7 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 	const [isCheckingLinks, setIsCheckingLinks] = useState(false);
 	const [checkProgress, setCheckProgress] = useState({ total: 0, checked: 0 });
 	const checkLinks = useSetAtom(checkMultipleLinksAtom);
+	const exportCollection = useSetAtom(exportCollectionAtom);
 	const {
 		attributes,
 		listeners,
@@ -322,6 +330,25 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 										>
 											<Pencil size={14} /> Rename
 										</Button>
+										<Button
+											onClick={() => {
+												try {
+													exportCollection(collection.id);
+													toast.success(
+														`Collection "${collection.name}" exported`,
+													);
+													setIsMenuOpen(false);
+												} catch (error) {
+													console.error("Export collection failed:", error);
+													toast.error("Export failed. Please try again.");
+												}
+											}}
+											variant="ghost"
+											size="sm"
+											className="w-full flex items-center gap-2 px-3 py-2 text-body font-semibold text-secondary hover:bg-surface-muted hover:text-accent rounded-lg transition-colors text-left justify-start"
+										>
+											<Download size={14} /> {m.collection_export_label()}
+										</Button>
 										<div className="h-px bg-surface-muted my-1 mx-1" />
 										<Button
 											onClick={() => {
@@ -385,30 +412,32 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 							</div>
 						</SortableContext>
 					) : (
-						<div
-							className={cn(
-								"my-4 min-h-[120px] rounded-2xl transition-all duration-200",
-								isDropTarget &&
-									"bg-accent-soft/20 border-2 border-dashed border-accent",
-							)}
-						>
-							<EmptyState
-								icon="🍃"
-								title={m.workspace_collection_empty_title()}
-								description={m.workspace_collection_empty_body()}
-								className="bg-transparent border-none"
-								action={
-									<Button
-										onClick={() => onAddTab(collection.id)}
-										variant="secondary"
-										size="sm"
-										className="flex items-center gap-2"
-									>
-										<Plus size={12} strokeWidth={3} />
-										{m.workspace_collection_empty_button()}
-									</Button>
-								}
-							/>
+						<div className="flex items-center justify-center my-4">
+							<div
+								className={cn(
+									"min-h-30 rounded-2xl transition-all duration-200",
+									isDropTarget &&
+										"bg-accent-soft/20 border-2 border-dashed border-accent",
+								)}
+							>
+								<EmptyState
+									icon="🍃"
+									title={m.workspace_collection_empty_title()}
+									description={m.workspace_collection_empty_body()}
+									className="bg-transparent border-none"
+									action={
+										<Button
+											onClick={() => onAddTab(collection.id)}
+											variant="secondary"
+											size="sm"
+											className="flex items-center gap-2"
+										>
+											<Plus size={12} strokeWidth={3} />
+											{m.workspace_collection_empty_button()}
+										</Button>
+									}
+								/>
+							</div>
 						</div>
 					)}
 				</CardBody>
