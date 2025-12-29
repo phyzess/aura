@@ -12,7 +12,7 @@ BETTER_AUTH_TRUSTED_ORIGINS = "http://localhost:5173,chrome-extension://*"
 # Production-specific environment variables
 [env.production.vars]
 BETTER_AUTH_URL = "https://aura-api.phyzess.me"
-BETTER_AUTH_TRUSTED_ORIGINS = "chrome-extension://*"
+BETTER_AUTH_TRUSTED_ORIGINS = "chrome-extension://ojpnnkcmnbpnkhlohnkbdopkhfgjfhph"
 
 # Optional: use a separate D1 database for production (uncomment and fill if needed)
 [[env.production.d1_databases]]
