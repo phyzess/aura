@@ -1,5 +1,10 @@
 import { Layout } from "lucide-react";
+import { motion } from "motion/react";
 import type React from "react";
+import {
+	staggerContainerVariants,
+	staggerItemVariants,
+} from "@/config/animations";
 import type { TabSearchGroup } from "@/hooks/useTabSearch";
 import type { Collection, TabItem, Workspace } from "@/types";
 import { GroupedTabSearchResults } from "./GroupedTabSearchResults";
@@ -27,9 +32,14 @@ export const TabSearchResultList: React.FC<TabSearchResultListProps> = ({
 	// If workspace groups are provided, use workspace-based grouping
 	if (groups && groups.length > 0) {
 		return (
-			<div className="space-y-4 animate-in slide-in-from-bottom-2 duration-300">
+			<motion.div
+				variants={staggerContainerVariants}
+				initial="hidden"
+				animate="visible"
+				className="space-y-4"
+			>
 				{groups.map((group) => (
-					<div key={group.type}>
+					<motion.div key={group.type} variants={staggerItemVariants}>
 						{/* Group header */}
 						<div className="flex items-center gap-2 mb-2 px-1">
 							<Layout size={12} className="text-accent" />
@@ -63,9 +73,9 @@ export const TabSearchResultList: React.FC<TabSearchResultListProps> = ({
 								);
 							})}
 						</div>
-					</div>
+					</motion.div>
 				))}
-			</div>
+			</motion.div>
 		);
 	}
 

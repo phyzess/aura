@@ -1,6 +1,11 @@
 import { Folder, Pin } from "lucide-react";
+import { motion } from "motion/react";
 import type React from "react";
 import { useMemo } from "react";
+import {
+	staggerContainerVariants,
+	staggerItemVariants,
+} from "@/config/animations";
 import * as m from "@/paraglide/messages";
 import type { Collection, TabItem, Workspace } from "@/types";
 import { TabSearchResultItem } from "./TabSearchResultItem";
@@ -113,10 +118,18 @@ export const GroupedTabSearchResults: React.FC<
 	};
 
 	return (
-		<div className="space-y-4 animate-in slide-in-from-bottom-2 duration-300">
+		<motion.div
+			variants={staggerContainerVariants}
+			initial="hidden"
+			animate="visible"
+			className="space-y-4"
+		>
 			{/* Smart filter hint */}
 			{dominantGroup && groups.length > 2 && (
-				<div className="bg-accent/10 border border-accent/20 rounded-xl p-3 flex items-start gap-2.5">
+				<motion.div
+					variants={staggerItemVariants}
+					className="bg-accent/10 border border-accent/20 rounded-xl p-3 flex items-start gap-2.5"
+				>
 					<div className="text-accent mt-0.5">💡</div>
 					<div className="flex-1 min-w-0">
 						<div className="text-xs font-semibold text-accent mb-1">
@@ -129,12 +142,12 @@ export const GroupedTabSearchResults: React.FC<
 							})}
 						</div>
 					</div>
-				</div>
+				</motion.div>
 			)}
 
 			{/* Grouped results */}
 			{groups.map((group) => (
-				<div key={group.id}>
+				<motion.div key={group.id} variants={staggerItemVariants}>
 					{/* Group header */}
 					<div className="flex items-center gap-2 mb-2 px-1">
 						{group.icon}
@@ -150,8 +163,8 @@ export const GroupedTabSearchResults: React.FC<
 					<div className="space-y-1">
 						{group.tabs.map((tab) => renderItem(tab, group))}
 					</div>
-				</div>
+				</motion.div>
 			))}
-		</div>
+		</motion.div>
 	);
 };

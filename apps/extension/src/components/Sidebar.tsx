@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Download, Pencil, Plus, Trash2, UploadCloud } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -13,6 +14,7 @@ import {
 	createWorkspaceAtom,
 	deleteWorkspaceAtom,
 	exportAllDataAtom,
+	exportWorkspaceAtom,
 	importTobyDataAtom,
 	syncWithServerAtom,
 	updateWorkspaceNameAtom,
@@ -57,6 +59,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 	const deleteWorkspace = useSetAtom(deleteWorkspaceAtom);
 	const importTobyData = useSetAtom(importTobyDataAtom);
 	const exportAllData = useSetAtom(exportAllDataAtom);
+	const exportWorkspace = useSetAtom(exportWorkspaceAtom);
 	const syncWithServer = useSetAtom(syncWithServerAtom);
 
 	const [editingId, setEditingId] = useState<string | null>(null);
@@ -73,10 +76,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 		id: null,
 	});
 
-	const clickStateRef = useRef<{
-		id: string;
-		timer: ReturnType<typeof setTimeout>;
-	} | null>(null);
+	const [workspaceListRef] = useAutoAnimate({
+		duration: 150,
+	});
 
 	const startEditing = (ws: Workspace) => {
 		setEditingId(ws.id);
@@ -111,23 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 	const handleWorkspaceClick = (ws: Workspace) => {
 		if (editingId === ws.id) return;
-
-		if (clickStateRef.current && clickStateRef.current.id === ws.id) {
-			clearTimeout(clickStateRef.current.timer);
-			clickStateRef.current = null;
-			startEditing(ws);
-		} else {
-			if (clickStateRef.current) {
-				clearTimeout(clickStateRef.current.timer);
-			}
-
-			const timer = setTimeout(() => {
-				setActiveWorkspaceId(ws.id);
-				clickStateRef.current = null;
-			}, 200);
-
-			clickStateRef.current = { id: ws.id, timer };
-		}
+		setActiveWorkspaceId(ws.id);
 	};
 
 	useEffect(() => {
@@ -144,14 +130,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 			toast.error(syncError);
 		}
 	}, [syncStatus, syncError, syncLastSource]);
-
-	useEffect(() => {
-		return () => {
-			if (clickStateRef.current) {
-				clearTimeout(clickStateRef.current.timer);
-			}
-		};
-	}, []);
 
 	return (
 		<div className="w-72 p-4 flex flex-col z-20 h-full">
@@ -185,64 +163,89 @@ export const Sidebar: React.FC<SidebarProps> = ({
 					/>
 				</CardHeader>
 
-				<CardBody className="flex-1 overflow-y-auto px-4 space-y-2 custom-scrollbar">
-					{workspaces.map((ws) => (
-						<div
-							key={ws.id}
-							className={`group w-full px-4 py-3 rounded-2xl text-body font-semibold transition-all duration-200 flex items-center justify-between cursor-pointer border ${
-								activeWorkspaceId === ws.id
-									? "bg-surface-elevated border-surface-border text-primary shadow-soft translate-x-1"
-									: "border-transparent text-secondary hover:bg-surface-muted hover:text-accent"
-							}`}
-							onClick={() => handleWorkspaceClick(ws)}
-						>
-							{editingId === ws.id ? (
-								<Input
-									ref={inputRef}
-									type="text"
-									value={editName}
-									onChange={(e) => setEditName(e.target.value)}
-									onBlur={saveEditing}
-									onKeyDown={(e) => e.key === "Enter" && saveEditing()}
-									className="truncate flex-1 text-inherit font-semibold h-6"
-									onClick={(e) => e.stopPropagation()}
-								/>
-							) : (
-								<>
-									<span className="truncate flex-1">{ws.name}</span>
-									<div
-										className="flex items-center gap-1"
+				<CardBody className="flex-1 overflow-y-auto px-4 custom-scrollbar">
+					<div ref={workspaceListRef} className="space-y-2">
+						{workspaces.map((ws) => (
+							<div
+								key={ws.id}
+								className={`group w-full px-4 py-3 rounded-2xl text-body font-semibold transition-all duration-200 flex items-center justify-between cursor-pointer border ${
+									activeWorkspaceId === ws.id
+										? "bg-surface-elevated border-surface-border text-primary shadow-soft translate-x-1"
+										: "border-transparent text-secondary hover:bg-surface-muted hover:text-accent"
+								}`}
+								onClick={() => handleWorkspaceClick(ws)}
+							>
+								{editingId === ws.id ? (
+									<Input
+										ref={inputRef}
+										type="text"
+										value={editName}
+										onChange={(e) => setEditName(e.target.value)}
+										onBlur={saveEditing}
+										onKeyDown={(e) => e.key === "Enter" && saveEditing()}
+										className="truncate flex-1 text-inherit font-semibold h-6"
 										onClick={(e) => e.stopPropagation()}
-										onMouseDown={(e) => e.stopPropagation()}
-									>
-										<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 relative z-10">
-											<IconButton
-												type="button"
-												onClick={() => startEditing(ws)}
-												variant="subtle"
-												size="sm"
-												title={m.sidebar_workspace_rename_title()}
-												aria-label={m.sidebar_workspace_rename_aria()}
-												className="text-current"
-											>
-												<Pencil size={12} />
-											</IconButton>
-											<IconButton
-												type="button"
-												onClick={() => handleDeleteClick(ws.id)}
-												variant="danger"
-												size="sm"
-												title={m.sidebar_workspace_delete_title()}
-												aria-label={m.sidebar_workspace_delete_aria()}
-											>
-												<Trash2 size={12} />
-											</IconButton>
+									/>
+								) : (
+									<>
+										<span className="truncate flex-1">{ws.name}</span>
+										<div
+											className="flex items-center gap-1"
+											onClick={(e) => e.stopPropagation()}
+											onMouseDown={(e) => e.stopPropagation()}
+										>
+											<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 relative z-10">
+												<IconButton
+													type="button"
+													onClick={() => {
+														try {
+															exportWorkspace(ws.id);
+															toast.success(
+																m.sidebar_workspace_export_success_toast(),
+															);
+														} catch (error) {
+															console.error("Export workspace failed:", error);
+															toast.error(
+																m.sidebar_workspace_export_error_toast(),
+															);
+														}
+													}}
+													variant="subtle"
+													size="sm"
+													title={m.sidebar_workspace_export_title()}
+													aria-label={m.sidebar_workspace_export_aria()}
+													className="text-current"
+												>
+													<Download size={12} />
+												</IconButton>
+												<IconButton
+													type="button"
+													onClick={() => startEditing(ws)}
+													variant="subtle"
+													size="sm"
+													title={m.sidebar_workspace_rename_title()}
+													aria-label={m.sidebar_workspace_rename_aria()}
+													className="text-current"
+												>
+													<Pencil size={12} />
+												</IconButton>
+												<IconButton
+													type="button"
+													onClick={() => handleDeleteClick(ws.id)}
+													variant="danger"
+													size="sm"
+													title={m.sidebar_workspace_delete_title()}
+													aria-label={m.sidebar_workspace_delete_aria()}
+												>
+													<Trash2 size={12} />
+												</IconButton>
+											</div>
 										</div>
-									</div>
-								</>
-							)}
-						</div>
-					))}
+									</>
+								)}
+							</div>
+						))}
+					</div>
 				</CardBody>
 
 				<div className="p-4 mt-2 bg-linear-to-b from-transparent to-surface-muted/60">
@@ -309,15 +312,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
 					newWsName,
 					targetColId,
 					newColName,
-				) =>
-					importTobyData({
-						data: JSON.parse(content),
-						targetWorkspaceId: targetWsId,
-						newWorkspaceName: newWsName,
-						targetCollectionId: targetColId,
-						newCollectionName: newColName,
-					})
-				}
+				) => {
+					try {
+						await importTobyData({
+							data: JSON.parse(content),
+							targetWorkspaceId: targetWsId,
+							newWorkspaceName: newWsName,
+							targetCollectionId: targetColId,
+							newCollectionName: newColName,
+						});
+						toast.success(m.sidebar_import_success_toast());
+					} catch (error) {
+						console.error("Import failed:", error);
+						toast.error(m.sidebar_import_error_toast());
+					}
+				}}
 			/>
 		</div>
 	);

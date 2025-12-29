@@ -12,8 +12,10 @@ import {
 	Pin,
 	X,
 } from "lucide-react";
+import { motion } from "motion/react";
 import { Badge } from "@/components/ui/Badge";
 import { IconButton } from "@/components/ui/IconButton";
+import { EASINGS, TRANSITIONS } from "@/config/animations";
 import { cn } from "@/lib/utils";
 import * as m from "@/paraglide/messages";
 import { toggleTabPinAtom } from "@/store/actions";
@@ -124,15 +126,25 @@ export const TabCard: React.FC<TabCardProps> = ({
 	};
 
 	return (
-		<div
+		<motion.div
 			ref={setNodeRef}
 			style={style}
 			{...attributes}
 			{...listeners}
 			id={`tab-${tab.id}`}
+			layout
+			initial={{ opacity: 0, y: 10 }}
+			animate={{ opacity: getOpacity(), y: 0 }}
+			exit={{ opacity: 0, scale: 0.95 }}
+			whileHover={!isDragging ? { y: -2, scale: 1.005 } : undefined}
+			whileTap={!isDragging ? { scale: 0.995 } : undefined}
+			transition={{
+				layout: { duration: 0.3, ease: EASINGS.smooth },
+				default: TRANSITIONS.fast,
+			}}
 			className={cn(
-				"group relative flex items-center gap-3 bg-surface-muted px-3 py-2.5 rounded-xl overflow-hidden border shadow-none cursor-grab active:cursor-grabbing transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-surface-elevated hover:shadow-soft-hover hover:-translate-y-0.5",
-				isHighlighted && "ring-2 ring-accent-soft ring-offset-0 scale-[1.01]",
+				"group relative flex items-center gap-3 bg-surface-muted px-3 py-2.5 rounded-xl overflow-hidden border shadow-none cursor-grab active:cursor-grabbing",
+				isHighlighted && "ring-2 ring-accent-soft ring-offset-0",
 				isDragging && "z-50",
 				tab.linkStatus === "broken" && "border-red-500/50",
 				tab.linkStatus === "uncertain" && "border-yellow-500/30",
@@ -143,14 +155,16 @@ export const TabCard: React.FC<TabCardProps> = ({
 			)}
 			title={formatLastVisited(tab.updatedAt)}
 		>
-			<div
+			<motion.div
 				style={{ backgroundColor: stripColor }}
-				className={cn(
-					"pointer-events-none absolute inset-y-0 left-0 w-1.5 transform origin-left transition-transform duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
-					isHighlighted
-						? "scale-x-100 shadow-glow"
-						: "scale-x-0 group-hover:scale-x-110",
-				)}
+				initial={{ scaleX: 0 }}
+				animate={{ scaleX: isHighlighted ? 1 : 0 }}
+				whileHover={{ scaleX: 1.1 }}
+				transition={{
+					duration: 0.25,
+					ease: EASINGS.bounce,
+				}}
+				className="pointer-events-none absolute inset-y-0 left-0 w-1.5 origin-left shadow-glow"
 			/>
 			{!isDragOverlay && (
 				<button
@@ -269,6 +283,6 @@ export const TabCard: React.FC<TabCardProps> = ({
 					</div>
 				</div>
 			)}
-		</div>
+		</motion.div>
 	);
 };

@@ -38,10 +38,6 @@
 	"sidebar_workspace_rename_aria": "重命名空间",
 	"sidebar_workspace_delete_title": "删除",
 	"sidebar_workspace_delete_aria": "删除空间",
-	"sidebar_data_button_title": "管理数据",
-	"sidebar_data_button_label": "数据",
-	"sidebar_import_menu_label": "导入数据",
-	"sidebar_export_menu_label": "导出全部数据",
 	"sidebar_import_button_title": "导入数据",
 	"sidebar_import_button_label": "导入",
 	"sidebar_sync_button_title": "同步数据",
@@ -195,5 +191,13 @@
 	"sidebar_export_button_title": "导出全部数据",
 	"sidebar_export_button_label": "导出",
 	"sidebar_workspace_export_title": "导出",
-	"sidebar_workspace_export_aria": "导出空间"
+	"sidebar_workspace_export_aria": "导出空间",
+	"sidebar_workspace_export_success_toast": "空间导出成功",
+	"sidebar_workspace_export_error_toast": "空间导出失败",
+	"sidebar_import_success_toast": "数据导入成功",
+	"sidebar_import_error_toast": "数据导入失败",
+	"sidebar_data_button_title": "管理数据",
+	"sidebar_data_button_label": "数据",
+	"sidebar_import_menu_label": "导入数据",
+	"sidebar_export_menu_label": "导出全部数据"
 }

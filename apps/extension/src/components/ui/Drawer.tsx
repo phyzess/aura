@@ -1,5 +1,7 @@
+import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 import { createPortal } from "react-dom";
+import { overlayAnimation, TRANSITIONS } from "@/config/animations";
 import { cn } from "@/lib/utils";
 
 interface DrawerProps {
@@ -10,7 +12,8 @@ interface DrawerProps {
 	overlayClassName?: string;
 	closeOnOverlayClick?: boolean;
 	closeOnEsc?: boolean;
-	animationDurationMs?: number;
+	/** Drawer 方向 */
+	direction?: "bottom" | "right" | "left";
 }
 
 export const Drawer: React.FC<DrawerProps> = ({
@@ -21,28 +24,12 @@ export const Drawer: React.FC<DrawerProps> = ({
 	overlayClassName,
 	closeOnOverlayClick = true,
 	closeOnEsc = true,
-	animationDurationMs = 300,
+	direction = "bottom",
 }) => {
-	const [isMounted, setIsMounted] = React.useState(isOpen);
-
 	React.useEffect(() => {
-		if (isOpen) {
-			setIsMounted(true);
-			return;
-		}
-		const timeoutId = window.setTimeout(() => {
-			setIsMounted(false);
-		}, animationDurationMs);
-		return () => {
-			window.clearTimeout(timeoutId);
-		};
-	}, [isOpen, animationDurationMs]);
-
-	React.useEffect(() => {
-		if (!isMounted || !closeOnEsc) return;
+		if (!isOpen || !closeOnEsc) return;
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "Escape") {
-				// Avoid interfering with other handlers
 				event.preventDefault();
 				onClose();
 			}
@@ -51,35 +38,64 @@ export const Drawer: React.FC<DrawerProps> = ({
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
 		};
-	}, [isMounted, closeOnEsc, onClose]);
+	}, [isOpen, closeOnEsc, onClose]);
 
-	if (!isMounted) return null;
+	const directionVariants = {
+		bottom: {
+			hidden: { y: "100%" },
+			visible: { y: 0 },
+			exit: { y: "100%" },
+		},
+		right: {
+			hidden: { x: "100%" },
+			visible: { x: 0 },
+			exit: { x: "100%" },
+		},
+		left: {
+			hidden: { x: "-100%" },
+			visible: { x: 0 },
+			exit: { x: "-100%" },
+		},
+	};
 
-	const overlayBase =
-		"fixed inset-0 bg-surface-overlay/70 backdrop-blur-sm transition-opacity duration-300";
-	const overlayClasses = cn(
-		overlayBase,
-		isOpen ? "opacity-100" : "opacity-0",
-		overlayClassName,
-	);
-
-	const panelBase =
-		"fixed bottom-0 left-0 w-full transition-transform duration-300 ease-out";
-	const panelClasses = cn(
-		panelBase,
-		isOpen ? "translate-y-0" : "translate-y-full",
-		className,
-		"pointer-events-auto",
-	);
+	const directionClasses = {
+		bottom: "bottom-0 left-0 w-full",
+		right: "right-0 top-0 h-full",
+		left: "left-0 top-0 h-full",
+	};
 
 	const content = (
-		<div className="fixed inset-0 z-120">
-			<div
-				className={overlayClasses}
-				onClick={closeOnOverlayClick ? onClose : undefined}
-			/>
-			<div className={panelClasses}>{children}</div>
-		</div>
+		<AnimatePresence mode="wait">
+			{isOpen && (
+				<div className="fixed inset-0 z-120">
+					{/* 遮罩层 */}
+					<motion.div
+						{...overlayAnimation}
+						className={cn(
+							"fixed inset-0 bg-surface-overlay/70 backdrop-blur-sm",
+							overlayClassName,
+						)}
+						onClick={closeOnOverlayClick ? onClose : undefined}
+					/>
+
+					{/* Drawer 主体 */}
+					<motion.div
+						variants={directionVariants[direction]}
+						initial="hidden"
+						animate="visible"
+						exit="exit"
+						transition={TRANSITIONS.spring}
+						className={cn(
+							"fixed pointer-events-auto",
+							directionClasses[direction],
+							className,
+						)}
+					>
+						{children}
+					</motion.div>
+				</div>
+			)}
+		</AnimatePresence>
 	);
 
 	return createPortal(content, document.body);

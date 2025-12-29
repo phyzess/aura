@@ -27,7 +27,5 @@
 		"@biomejs/biome": "2.3.9",
 		"@changesets/cli": "^2.29.8"
 	},
-	"dependencies": {
-		"valibot": "^1.2.0"
-	}
+	"dependencies": {}
 }

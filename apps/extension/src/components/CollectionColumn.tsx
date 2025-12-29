@@ -4,6 +4,7 @@ import {
 	SortableContext,
 	useSortable,
 } from "@dnd-kit/sortable";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useSetAtom } from "jotai";
 import {
 	Download,
@@ -71,6 +72,7 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 	const pinnedTabs = sortedTabs.filter((t) => !!t.isPinned);
 	const regularTabs = sortedTabs.filter((t) => !t.isPinned);
 
+	const [tabListRef] = useAutoAnimate();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	const [isRenaming, setIsRenaming] = useState(false);
@@ -389,7 +391,10 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 							items={sortedTabs.map((t) => t.id)}
 							strategy={rectSortingStrategy}
 						>
-							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4">
+							<div
+								ref={tabListRef}
+								className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4"
+							>
 								{pinnedTabs.map((tab) => (
 									<TabCard
 										key={tab.id}

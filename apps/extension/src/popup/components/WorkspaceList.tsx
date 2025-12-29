@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Layout } from "lucide-react";
 import type React from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -16,6 +17,8 @@ export const WorkspaceList: React.FC<WorkspaceListProps> = ({
 	collections,
 	onWorkspaceClick,
 }) => {
+	const [listRef] = useAutoAnimate();
+
 	if (workspaces.length === 0) {
 		return (
 			<EmptyState
@@ -25,7 +28,10 @@ export const WorkspaceList: React.FC<WorkspaceListProps> = ({
 		);
 	}
 	return (
-		<div className="grid gap-2 animate-in slide-in-from-right-4 duration-300">
+		<div
+			ref={listRef}
+			className="grid gap-2 animate-in slide-in-from-right-4 duration-300"
+		>
 			{workspaces.map((ws) => {
 				const colCount = collections.filter(
 					(c) => c.workspaceId === ws.id,

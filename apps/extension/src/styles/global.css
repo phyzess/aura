@@ -7,6 +7,28 @@ body {
 	font-feature-settings: 'rlig' 1, 'calt' 1;
 }
 
+/* ========== 性能优化 ========== */
+/* 为动画元素启用 GPU 加速 */
+.will-change-transform {
+	will-change: transform;
+}
+
+.will-change-opacity {
+	will-change: opacity;
+}
+
+/* 无障碍支持: 尊重用户的动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
 /* 全局光标语义：确保表单控件和交互元素符合 Web 习惯 */
 button,
 [role="button"],

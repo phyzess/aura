@@ -22,8 +22,10 @@ import {
 	SortableContext,
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Plus, Stars } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { BottomShadow } from "@/components/ui/BottomShadow";
@@ -102,6 +104,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 	});
 
 	const [highlightedTabId, setHighlightedTabId] = useState<string | null>(null);
+	const [collectionsRef] = useAutoAnimate();
 
 	// Reset the recently moved flag after items change
 	useEffect(() => {
@@ -490,8 +493,17 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 			onDragEnd={handleDragEnd}
 			onDragCancel={handleDragCancel}
 		>
-			<div className="flex-1 overflow-y-auto bg-surface p-8 transition-colors duration-300">
-				<div className="flex flex-col gap-6 items-stretch max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-360 mx-auto pb-24">
+			<motion.div
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				exit={{ opacity: 0 }}
+				transition={{ duration: 0.2 }}
+				className="flex-1 overflow-y-auto bg-surface p-8 transition-colors duration-300"
+			>
+				<div
+					ref={collectionsRef}
+					className="flex flex-col gap-6 items-stretch max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-360 mx-auto pb-24"
+				>
 					<SortableContext
 						items={workspaceCollections.map((c) => c.id)}
 						strategy={verticalListSortingStrategy}
@@ -581,7 +593,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 					onClose={() => setAddTabModal({ ...addTabModal, isOpen: false })}
 					onConfirm={handleConfirmAddTab}
 				/>
-			</div>
+			</motion.div>
 			<DragOverlay dropAnimation={dropAnimation}>
 				{activeId
 					? (() => {

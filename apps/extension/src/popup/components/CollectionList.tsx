@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Folder } from "lucide-react";
 import type React from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -16,11 +17,16 @@ export const CollectionList: React.FC<CollectionListProps> = ({
 	tabs,
 	onCollectionClick,
 }) => {
+	const [listRef] = useAutoAnimate();
+
 	if (collections.length === 0) {
 		return <EmptyState title={m.popup_collection_list_empty_title()} />;
 	}
 	return (
-		<div className="grid gap-2 animate-in slide-in-from-right-4 duration-300">
+		<div
+			ref={listRef}
+			className="grid gap-2 animate-in slide-in-from-right-4 duration-300"
+		>
 			{collections.map((col) => {
 				const tabCount = tabs.filter((t) => t.collectionId === col.id).length;
 				return (

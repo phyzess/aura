@@ -1,5 +1,7 @@
+import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 import { createPortal } from "react-dom";
+import { modalAnimation, overlayAnimation } from "@/config/animations";
 import { cn } from "@/lib/utils";
 
 export type DialogSize = "sm" | "md" | "lg" | "xl";
@@ -42,8 +44,6 @@ export const Dialog: React.FC<DialogProps> = ({
 		};
 	}, [isOpen, closeOnEsc, onClose]);
 
-	if (!isOpen) return null;
-
 	const sizeClass =
 		size === "sm"
 			? "max-w-xs"
@@ -56,31 +56,40 @@ export const Dialog: React.FC<DialogProps> = ({
 	const positionClass =
 		position === "top" ? "items-start pt-24" : "items-center";
 
-	const overlayBase =
-		"absolute inset-0 bg-surface-overlay backdrop-blur-sm transition-opacity duration-200";
-
-	const cardBase =
-		"relative w-full bg-surface-elevated rounded-3xl overflow-hidden";
-
-	const overlayClasses = cn(overlayBase, overlayClassName);
-
-	const cardClasses = cn(cardBase, sizeClass, className);
-
 	const content = (
-		<div
-			className={cn(
-				"fixed inset-0 z-[120] flex justify-center p-4",
-				positionClass,
+		<AnimatePresence mode="wait">
+			{isOpen && (
+				<div
+					className={cn(
+						"fixed inset-0 z-120 flex justify-center p-4",
+						positionClass,
+					)}
+				>
+					{/* 遮罩层 */}
+					<motion.div
+						{...overlayAnimation}
+						className={cn(
+							"absolute inset-0 bg-surface-overlay backdrop-blur-sm",
+							overlayClassName,
+						)}
+						onClick={closeOnOverlayClick ? onClose : undefined}
+					/>
+
+					{/* Dialog 主体 */}
+					<motion.div
+						{...modalAnimation}
+						className={cn(
+							"relative w-full bg-surface-elevated rounded-3xl overflow-hidden",
+							sizeClass,
+							className,
+						)}
+						onClick={(event) => event.stopPropagation()}
+					>
+						{children}
+					</motion.div>
+				</div>
 			)}
-		>
-			<div
-				className={overlayClasses}
-				onClick={closeOnOverlayClick ? onClose : undefined}
-			/>
-			<div className={cardClasses} onClick={(event) => event.stopPropagation()}>
-				{children}
-			</div>
-		</div>
+		</AnimatePresence>
 	);
 
 	return createPortal(content, document.body);
