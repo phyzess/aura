@@ -25,7 +25,7 @@ import {
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Plus, Stars } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { BottomShadow } from "@/components/ui/BottomShadow";
