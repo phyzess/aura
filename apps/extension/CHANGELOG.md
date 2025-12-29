@@ -1,5 +1,11 @@
 # @aura/extension
 
+## 1.1.1
+
+### Patch Changes
+
+- fix for pipeline errors
+
 ## 1.1.0
 
 ### Minor Changes
