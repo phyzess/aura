@@ -1,7 +1,9 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
+import { changeLocale } from "@/config/locale";
 import * as m from "@/paraglide/messages";
 import { ChromeService } from "@/services/chrome";
+import { offlineDetector } from "@/services/offlineDetector";
 import {
 	captureSessionAtom,
 	initDataAtom,
@@ -12,7 +14,9 @@ import {
 	collectionsAtom,
 	currentUserAtom,
 	isLoadingAtom,
+	localeAtom,
 	tabsAtom,
+	themeModeAtom,
 	workspacesAtom,
 } from "@/store/atoms";
 import { ExtensionPopup } from "./components/ExtensionPopup";
@@ -28,12 +32,42 @@ export default function App() {
 	const initTheme = useSetAtom(initThemeAtom);
 	const loadCurrentUser = useSetAtom(loadCurrentUserAtom);
 	const captureSession = useSetAtom(captureSessionAtom);
+	const setThemeMode = useSetAtom(themeModeAtom);
+	const setLocale = useSetAtom(localeAtom);
 
 	useEffect(() => {
 		initData();
 		initTheme();
 		loadCurrentUser();
+
+		// Initialize offline detector
+		offlineDetector.getStatus();
 	}, [initData, initTheme, loadCurrentUser]);
+
+	// 监听设置变化
+	useEffect(() => {
+		const handleStorageChange = (
+			changes: { [key: string]: chrome.storage.StorageChange },
+			areaName: string,
+		) => {
+			if (areaName !== "local") return;
+
+			if (changes["aura-theme"]) {
+				const newTheme = changes["aura-theme"].newValue as "light" | "dark";
+				setThemeMode(newTheme);
+				document.documentElement.classList.toggle("dark", newTheme === "dark");
+			}
+
+			if (changes["aura-locale"]) {
+				const newLocale = changes["aura-locale"].newValue as "en" | "zh-CN";
+				setLocale(newLocale);
+				changeLocale(newLocale);
+			}
+		};
+
+		chrome.storage.onChanged.addListener(handleStorageChange);
+		return () => chrome.storage.onChanged.removeListener(handleStorageChange);
+	}, []);
 
 	const handleCapture = (payload: any) => {
 		captureSession(payload);

@@ -1,4 +1,4 @@
-import { LogIn, User as UserIcon } from "lucide-react";
+import { LogIn, Settings, User as UserIcon } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
@@ -25,22 +25,33 @@ export const User: React.FC<UserProps> = ({
 
 	if (!isLoggedIn) {
 		return (
-			<button
-				type="button"
-				onClick={() => onOpenAuth?.()}
-				title={m.sidebar_login_button_title()}
-				className="flex-1 inline-flex flex-col items-center justify-center gap-1.5 m-1 px-3 py-3 bg-surface-muted hover:bg-surface-elevated hover:shadow-[0_0_16px_-2px_var(--color-accent-soft)] hover:scale-[1.02] rounded-xl transition-all duration-200 cursor-pointer border-0 font-medium"
-			>
-				<div className="flex items-center gap-2">
-					<LogIn size={14} className="text-accent" />
-					<span className="text-xs font-semibold text-secondary">
-						{m.sidebar_login_button_label()}
+			<div className="flex-1 flex flex-col gap-2">
+				<button
+					type="button"
+					onClick={() => onOpenAuth?.()}
+					title={m.sidebar_login_button_title()}
+					className="w-full inline-flex flex-col items-center justify-center gap-1.5 px-3 py-3 bg-surface-muted hover:bg-surface-elevated hover:shadow-[0_0_16px_-2px_var(--color-accent-soft)] hover:scale-[1.02] rounded-xl transition-all duration-200 cursor-pointer border-0 font-medium"
+				>
+					<div className="flex items-center gap-2">
+						<LogIn size={14} className="text-accent" />
+						<span className="text-xs font-semibold text-secondary">
+							{m.sidebar_login_button_label()}
+						</span>
+					</div>
+					<span className="text-[10px] text-muted leading-tight text-center">
+						{m.sidebar_login_prompt()}
 					</span>
-				</div>
-				<span className="text-[10px] text-muted leading-tight text-center">
-					{m.sidebar_login_prompt()}
-				</span>
-			</button>
+				</button>
+				<Button
+					onClick={() => chrome.runtime.openOptionsPage()}
+					variant="link"
+					size="sm"
+					className="w-full px-3 py-1 text-xs text-center text-secondary hover:text-primary transition-colors"
+				>
+					<Settings size={12} className="inline mr-1" />
+					{m.user_menu_settings()}
+				</Button>
+			</div>
 		);
 	}
 
@@ -64,6 +75,19 @@ export const User: React.FC<UserProps> = ({
 							</div>
 						)}
 						<div className="p-1">
+							<Button
+								type="button"
+								onClick={() => {
+									setIsAccountMenuOpen(false);
+									chrome.runtime.openOptionsPage();
+								}}
+								variant="ghost"
+								size="sm"
+								className="w-full justify-start gap-3"
+							>
+								<Settings size={16} />
+								<span>{m.user_menu_settings()}</span>
+							</Button>
 							<Button
 								type="button"
 								onClick={() => {

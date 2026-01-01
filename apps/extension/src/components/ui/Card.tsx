@@ -14,6 +14,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	interactive?: boolean;
 	selected?: boolean;
 	border?: boolean;
+	overflow?: "visible" | "hidden";
 }
 
 const variantClassName: Record<CardVariant, string> = {
@@ -42,17 +43,18 @@ export const Card: React.FC<CardProps> = ({
 	interactive = false,
 	selected = false,
 	border = true,
+	overflow = "visible",
 	className,
 	...props
 }) => {
-	const baseClasses =
-		"flex flex-col shadow-soft overflow-hidden transition-all duration-300";
+	const baseClasses = "flex flex-col shadow-soft transition-all duration-300";
 
 	const classes = cn(
 		baseClasses,
 		variantClassName[variant],
 		paddingClassName[padding],
 		radiusClassName[radius],
+		overflow === "hidden" && "overflow-hidden",
 		interactive &&
 			"cursor-pointer hover:shadow-soft-hover hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft",
 		selected && "ring-2 ring-accent-soft ring-offset-0",

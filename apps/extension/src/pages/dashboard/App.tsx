@@ -6,8 +6,10 @@ import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { Sidebar } from "@/components/Sidebar";
 import { GlobalTabSearchModal } from "@/components/tab-search";
 import { WorkspaceView } from "@/components/WorkspaceView";
+import { changeLocale } from "@/config/locale";
 import { useHotkey } from "@/hooks/useHotkey";
 import * as m from "@/paraglide/messages";
+import { offlineDetector } from "@/services/offlineDetector";
 import {
 	clearLocalDataAtom,
 	initDataAtom,
@@ -23,6 +25,7 @@ import {
 	isLoadingAtom,
 	localeAtom,
 	tabsAtom,
+	themeModeAtom,
 	workspacesAtom,
 } from "@/store/atoms";
 import { activeWorkspaceAtom } from "@/store/selectors";
@@ -47,6 +50,8 @@ export default function App() {
 	const syncWithServer = useSetAtom(syncWithServerAtom);
 	const signOut = useSetAtom(signOutAtom);
 	const clearLocalData = useSetAtom(clearLocalDataAtom);
+	const setThemeMode = useSetAtom(themeModeAtom);
+	const setLocale = useSetAtom(localeAtom);
 	const [isSearchOpen, setIsSearchOpen] = useState(false);
 	const [focusedTabId, setFocusedTabId] = useState<string | null>(null);
 	const setActiveWorkspaceId = useSetAtom(activeWorkspaceIdAtom);
@@ -57,7 +62,35 @@ export default function App() {
 		initData();
 		initTheme();
 		loadCurrentUser();
+
+		// Initialize offline detector
+		offlineDetector.getStatus();
 	}, [initData, initTheme, loadCurrentUser]);
+
+	// 监听设置变化
+	useEffect(() => {
+		const handleStorageChange = (
+			changes: { [key: string]: chrome.storage.StorageChange },
+			areaName: string,
+		) => {
+			if (areaName !== "local") return;
+
+			if (changes["aura-theme"]) {
+				const newTheme = changes["aura-theme"].newValue as "light" | "dark";
+				setThemeMode(newTheme);
+				document.documentElement.classList.toggle("dark", newTheme === "dark");
+			}
+
+			if (changes["aura-locale"]) {
+				const newLocale = changes["aura-locale"].newValue as "en" | "zh-CN";
+				setLocale(newLocale);
+				changeLocale(newLocale);
+			}
+		};
+
+		chrome.storage.onChanged.addListener(handleStorageChange);
+		return () => chrome.storage.onChanged.removeListener(handleStorageChange);
+	}, [setThemeMode, setLocale]);
 
 	useEffect(() => {
 		if (!currentUser) return;

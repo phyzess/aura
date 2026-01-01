@@ -2,6 +2,17 @@
 
 Aura is a tab and workspace manager that lives as a Chrome extension and syncs data through a Cloudflare Worker API.
 
+### Key Features
+
+- 📑 **Workspace & Collection Management** – Organize tabs into workspaces and collections
+- 🔄 **Cross-device Sync** – Sync your data across devices via Cloudflare Worker API
+- 🆕 **New Tab Override** – Replace Chrome's new tab page with Aura dashboard for instant access
+- 🔍 **Quick Search** – Search all saved tabs with `Cmd+K` (or `Ctrl+K`)
+- 💾 **Offline Support** – Works offline with IndexedDB local storage
+- 🌐 **i18n** – Multi-language support (English, 中文)
+- 🎨 **Dark Mode** – Beautiful dark/light theme support
+- 📤 **Import/Export** – Export workspaces, collections, or all data as JSON
+
 The repo is a pnpm monorepo with:
 
 - A Cloudflare Worker API used for auth and sync

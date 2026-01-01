@@ -8,6 +8,8 @@ import {
 	exportWorkspace,
 } from "@/services/export";
 import { linkCheckService } from "@/services/linkCheck";
+import { notificationService } from "@/services/notifications";
+import { offlineDetector } from "@/services/offlineDetector";
 import type {
 	Collection,
 	LinkStatus,
@@ -695,12 +697,40 @@ export const syncWithServerAtom = atom(
 				set(syncDirtyAtom, true);
 			}
 			set(syncStatusAtom, "success");
+
+			// Show notification for manual sync
+			if (source === "manual") {
+				await notificationService.success(
+					"Sync Complete",
+					"Your data has been synced successfully",
+				);
+			}
 		} else if (result === "unauthorized") {
 			set(syncStatusAtom, "error");
 			set(syncErrorAtom, "Please sign in to sync.");
+
+			if (source === "manual") {
+				await notificationService.error(
+					"Sync Failed",
+					"Please sign in to sync your data",
+				);
+			}
 		} else {
 			set(syncStatusAtom, "error");
 			set(syncErrorAtom, "Sync failed, please try again.");
+
+			// Check if offline
+			if (!offlineDetector.getStatus()) {
+				set(
+					syncErrorAtom,
+					"You are offline. Changes will sync when you're back online.",
+				);
+			} else if (source === "manual") {
+				await notificationService.error(
+					"Sync Failed",
+					"Please try again later",
+				);
+			}
 		}
 
 		if (typeof window !== "undefined") {

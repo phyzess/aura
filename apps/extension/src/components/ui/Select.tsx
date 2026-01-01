@@ -53,7 +53,7 @@ export const Select: React.FC<SelectProps> = ({
 	const optionTextSize = size === "sm" ? "text-xs" : "text-body";
 
 	return (
-		<div ref={containerRef} className="relative">
+		<div ref={containerRef} className="relative z-10">
 			<FieldShell
 				size={size}
 				variant="default"
@@ -84,7 +84,7 @@ export const Select: React.FC<SelectProps> = ({
 			</FieldShell>
 
 			{open && (
-				<div className="absolute top-full left-0 w-full mt-1 bg-surface-elevated border border-surface rounded-xl shadow-soft max-h-48 overflow-y-auto z-50 custom-scrollbar">
+				<div className="absolute top-full left-0 w-full mt-1 bg-surface-elevated border border-surface rounded-xl shadow-soft max-h-48 overflow-y-auto z-100 custom-scrollbar">
 					{options.length > 0 ? (
 						<div className="p-1">
 							{options.map((opt) => (

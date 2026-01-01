@@ -47,8 +47,10 @@ export default defineConfig(({ mode }) => {
 		build: {
 			rollupOptions: {
 				input: {
-					// Ensure the dashboard HTML is processed by Vite/CRXJS in production builds
+					// Ensure the dashboard, newtab, and options HTML are processed by Vite/CRXJS in production builds
 					dashboard: path.resolve(__dirname, "pages/dashboard.html"),
+					newtab: path.resolve(__dirname, "pages/newtab.html"),
+					options: path.resolve(__dirname, "pages/options.html"),
 				},
 			},
 		},

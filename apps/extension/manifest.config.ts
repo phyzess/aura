@@ -14,7 +14,11 @@ export default defineManifest({
 		},
 		default_popup: "src/popup/index.html",
 	},
-	permissions: ["tabs"],
+	chrome_url_overrides: {
+		newtab: "pages/newtab.html",
+	},
+	options_page: "pages/options.html",
+	permissions: ["tabs", "notifications", "storage"],
 	host_permissions: [
 		"http://localhost:8787/*",
 		"https://aura-api.phyzess.me/*",
