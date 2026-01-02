@@ -2,6 +2,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import {
 	CheckCircle2,
 	ExternalLink,
+	Github,
 	Moon,
 	Pin,
 	Sparkles,
@@ -13,6 +14,7 @@ import { BottomShadow } from "@/components/ui/BottomShadow";
 import { Button } from "@/components/ui/Button/Button";
 import { Card } from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/IconButton";
+import { GITHUB_REPO_URL } from "@/config/constants";
 import { changeLocale } from "@/config/locale";
 import * as m from "@/paraglide/messages";
 import { initThemeAtom } from "@/store/actions";
@@ -113,6 +115,17 @@ export default function App() {
 				>
 					{locale === "en" ? "中文" : "English"}
 				</button>
+				<IconButton
+					type="button"
+					variant="subtle"
+					size="sm"
+					onClick={() => window.open(GITHUB_REPO_URL, "_blank")}
+					aria-label={m.header_github_link_aria()}
+					className="hover:text-secondary hover:bg-surface-muted/60"
+					title={m.header_github_link_title()}
+				>
+					<Github size={18} />
+				</IconButton>
 				<IconButton
 					type="button"
 					variant="subtle"

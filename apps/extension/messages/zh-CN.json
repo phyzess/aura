@@ -33,6 +33,8 @@
 	"header_search_icon_aria": "搜索已保存的标签页",
 	"header_theme_toggle_aria": "切换主题",
 	"header_theme_toggle_title": "切换主题",
+	"header_github_link_aria": "在 GitHub 上查看",
+	"header_github_link_title": "在 GitHub 上查看",
 	"sidebar_my_spaces_title": "我的空间",
 	"sidebar_create_space_aria": "创建新空间",
 	"sidebar_workspace_rename_title": "重命名",

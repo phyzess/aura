@@ -245,5 +245,7 @@
 	"onboarding_pin_done": "Done",
 	"onboarding_finish_title": "You're all set!",
 	"onboarding_finish_description": "Start organizing your tabs into workspaces and collections.",
-	"onboarding_finish_button": "Get Started"
+	"onboarding_finish_button": "Get Started",
+	"header_github_link_aria": "View on GitHub",
+	"header_github_link_title": "View on GitHub"
 }
