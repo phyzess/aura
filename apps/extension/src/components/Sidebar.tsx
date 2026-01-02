@@ -133,8 +133,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 	return (
 		<div className="w-72 p-4 flex flex-col z-20 h-full">
-			<Card variant="glass" radius="4xl" className="flex-1 backdrop-blur-xl">
-				<CardHeader className="p-6 pb-2 flex-col items-stretch gap-6">
+			<Card
+				variant="glass"
+				radius="4xl"
+				className="flex-1 flex flex-col backdrop-blur-xl overflow-hidden"
+			>
+				<CardHeader className="p-6 pb-2 flex-col items-stretch gap-6 shrink-0">
 					<HStack className="mb-8">
 						<div className="w-10 h-10 relative shrink-0">
 							<AuraLogo className="w-full h-full drop-shadow-md transform hover:scale-110 transition-transform duration-300" />
@@ -163,7 +167,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 					/>
 				</CardHeader>
 
-				<CardBody className="flex-1 overflow-y-auto px-4 custom-scrollbar">
+				<CardBody className="flex-1 overflow-y-auto px-4 pb-2 custom-scrollbar min-h-0">
 					<div ref={workspaceListRef} className="space-y-2">
 						{workspaces.map((ws) => (
 							<div
@@ -248,7 +252,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 					</div>
 				</CardBody>
 
-				<div className="p-4 mt-2 bg-linear-to-b from-transparent to-surface-muted/60">
+				<div className="p-4 pt-2 shrink-0">
 					<div className="bg-surface-muted p-1 rounded-2xl flex flex-col gap-1">
 						<div className="flex gap-1">
 							<Button
