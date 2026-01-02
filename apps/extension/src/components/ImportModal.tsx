@@ -182,7 +182,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 				radius="3xl"
 				className="shadow-2xl border border-surface flex flex-col max-h-[90vh]"
 			>
-				<CardHeader className="p-6 border-b border-surface bg-surface-elevated z-10">
+				<CardHeader className="p-6 border-b border-surface bg-surface-elevated z-10 rounded-t-3xl">
 					<div>
 						<h3 className="text-xl font-bold text-primary">
 							{m.import_modal_title()}
