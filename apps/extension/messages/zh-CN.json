@@ -230,5 +230,19 @@
 	"notification_sync_success": "同步成功完成",
 	"notification_sync_error": "同步失败，请重试",
 	"notification_offline": "你已离线。更改将在重新联网后同步。",
-	"notification_online": "你已重新联网"
+	"notification_online": "你已重新联网",
+	"onboarding_welcome_title": "欢迎使用 Aura! 🎉",
+	"onboarding_welcome_subtitle": "让我们设置你的工作区管理器",
+	"onboarding_newtab_title": "替换新标签页",
+	"onboarding_newtab_description": "每次打开新标签页时自动显示 Aura 仪表板,即时访问你的工作区和集合。",
+	"onboarding_newtab_enable": "启用新标签页覆盖",
+	"onboarding_newtab_skip": "暂时跳过",
+	"onboarding_pin_title": "固定到工具栏",
+	"onboarding_pin_description": "将 Aura 固定到浏览器工具栏,方便随时访问。",
+	"onboarding_pin_instruction": "点击工具栏中的拼图图标,然后点击 Aura 旁边的固定图标。",
+	"onboarding_pin_open_extensions": "打开扩展管理",
+	"onboarding_pin_done": "完成",
+	"onboarding_finish_title": "一切就绪!",
+	"onboarding_finish_description": "开始将你的标签页整理到工作区和集合中吧。",
+	"onboarding_finish_button": "开始使用"
 }

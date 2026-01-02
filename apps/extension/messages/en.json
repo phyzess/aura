@@ -231,5 +231,19 @@
 	"notification_sync_error": "Sync failed. Please try again.",
 	"notification_offline": "You are offline. Changes will sync when you're back online.",
 	"notification_online": "You are back online",
-	"user_menu_settings": "Settings"
+	"user_menu_settings": "Settings",
+	"onboarding_welcome_title": "Welcome to Aura! 🎉",
+	"onboarding_welcome_subtitle": "Let's set up your workspace manager",
+	"onboarding_newtab_title": "Replace New Tab Page",
+	"onboarding_newtab_description": "Open Aura dashboard every time you create a new tab for instant access to your workspaces and collections.",
+	"onboarding_newtab_enable": "Enable New Tab Override",
+	"onboarding_newtab_skip": "Skip for now",
+	"onboarding_pin_title": "Pin to Toolbar",
+	"onboarding_pin_description": "Keep Aura easily accessible by pinning it to your browser toolbar.",
+	"onboarding_pin_instruction": "Click the puzzle icon in your toolbar, then click the pin icon next to Aura.",
+	"onboarding_pin_open_extensions": "Open Extensions",
+	"onboarding_pin_done": "Done",
+	"onboarding_finish_title": "You're all set!",
+	"onboarding_finish_description": "Start organizing your tabs into workspaces and collections.",
+	"onboarding_finish_button": "Get Started"
 }

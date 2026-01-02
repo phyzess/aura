@@ -14,6 +14,10 @@ export default defineManifest({
 		},
 		default_popup: "src/popup/index.html",
 	},
+	background: {
+		service_worker: "src/background/index.ts",
+		type: "module",
+	},
 	chrome_url_overrides: {
 		newtab: "pages/newtab.html",
 	},

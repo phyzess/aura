@@ -44,10 +44,10 @@ export default function App() {
 	useEffect(() => {
 		const loadSettings = async () => {
 			const result = await chrome.storage.local.get([
-				"newTabEnabled",
+				"aura-newtab-enabled",
 				"notificationsEnabled",
 			]);
-			setNewTabEnabled((result.newTabEnabled as boolean) ?? true);
+			setNewTabEnabled((result["aura-newtab-enabled"] as boolean) ?? false);
 			setNotificationsEnabled((result.notificationsEnabled as boolean) ?? true);
 		};
 		loadSettings();
@@ -79,7 +79,7 @@ export default function App() {
 	const handleNewTabToggle = async () => {
 		const newValue = !newTabEnabled;
 		setNewTabEnabled(newValue);
-		await chrome.storage.local.set({ newTabEnabled: newValue });
+		await chrome.storage.local.set({ "aura-newtab-enabled": newValue });
 		toast.success(
 			newValue ? m.options_newtab_enabled() : m.options_newtab_disabled(),
 		);
