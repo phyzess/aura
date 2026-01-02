@@ -1,5 +1,31 @@
 # @aura/extension
 
+## 1.2.0
+
+### Minor Changes
+
+- minor
+
+  Features:
+
+  - Added onboarding page for new users with multi-language support
+  - Implemented options/settings page with customizable configurations
+  - Added new tab override functionality
+  - Introduced error handler service for better error management
+  - Introduced notifications system for user alerts
+  - Introduced offline detector for network status monitoring
+  - Added Toggle UI component
+
+  Bug Fixes:
+
+  - Fixed header count display issue
+  - Fixed sidebar overflow problem
+
+  Infrastructure:
+
+  - Updated API version
+  - Updated Better Auth trusted origins configuration
+
 ## 1.1.1
 
 ### Patch Changes
