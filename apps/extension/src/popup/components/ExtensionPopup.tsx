@@ -1,7 +1,7 @@
 import { useSetAtom } from "jotai";
 import { ExternalLink } from "lucide-react";
 import type React from "react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/Button";
 import { useTabSearch } from "@/hooks/useTabSearch";
@@ -21,6 +21,16 @@ import { ExtensionPopupLogoutDrawer } from "./ExtensionPopupLogoutDrawer";
 import { ExtensionPopupMainContent } from "./ExtensionPopupMainContent";
 import { ExtensionPopupSaveDrawer } from "./ExtensionPopupSaveDrawer";
 
+interface SaveRequest {
+	mode: "current-tab" | "link" | "all-tabs";
+	timestamp: number;
+	data?: {
+		url?: string;
+		title?: string;
+		favicon?: string;
+	};
+}
+
 interface ExtensionPopupProps {
 	workspaces: Workspace[];
 	collections: Collection[];
@@ -28,6 +38,7 @@ interface ExtensionPopupProps {
 	currentUser: User | null;
 	onCapture: (payload: any) => void;
 	onClose: () => void;
+	saveRequest?: SaveRequest | null;
 }
 
 type ViewLevel = "workspaces" | "collections" | "tabs";
@@ -39,6 +50,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 	currentUser,
 	onCapture,
 	onClose,
+	saveRequest,
 }) => {
 	const [viewLevel, setViewLevel] = useState<ViewLevel>("workspaces");
 	const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(
@@ -77,6 +89,14 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 	);
 	const [targetColId, setTargetColId] = useState<string>("new");
 	const [newColName, setNewColName] = useState("");
+
+	// Handle save request from context menu
+	useEffect(() => {
+		if (saveRequest) {
+			handleSaveRequestFromContextMenu(saveRequest);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [saveRequest]);
 
 	// Derived Data
 
@@ -189,6 +209,52 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			await clearLocalData();
 		}
 		setIsLogoutDrawerOpen(false);
+	};
+
+	const handleSaveRequestFromContextMenu = async (request: SaveRequest) => {
+		if (request.mode === "current-tab" && request.data) {
+			// Save single tab
+			const tab: SessionTab = {
+				url: request.data.url || "",
+				title: request.data.title || "Untitled",
+				faviconUrl: request.data.favicon,
+			};
+			setSessionTabs([tab]);
+			setCheckedTabs(new Set([0]));
+		} else if (request.mode === "link" && request.data) {
+			// Save link
+			const tab: SessionTab = {
+				url: request.data.url || "",
+				title: request.data.title || "Untitled",
+				faviconUrl: request.data.favicon,
+			};
+			setSessionTabs([tab]);
+			setCheckedTabs(new Set([0]));
+		} else if (request.mode === "all-tabs") {
+			// Save all tabs
+			const allTabs = await ChromeService.getCurrentTabs();
+			setSessionTabs(allTabs);
+			setCheckedTabs(new Set(allTabs.map((_, i) => i)));
+		}
+
+		// Set default workspace and collection
+		if (selectedWorkspaceId) {
+			setTargetWsId(selectedWorkspaceId);
+			setTargetColId("new");
+		} else if (workspaces.length > 0) {
+			setTargetWsId(workspaces[0].id);
+			setTargetColId("new");
+		} else {
+			setTargetWsId("new");
+			setTargetColId("new");
+		}
+
+		setNewColName(
+			`Session ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
+		);
+
+		// Open the save drawer
+		setIsDrawerOpen(true);
 	};
 
 	// Options for Drawer Selects

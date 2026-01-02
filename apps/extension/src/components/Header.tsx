@@ -1,6 +1,14 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { Github, Moon, Search as SearchIcon, Sun } from "lucide-react";
+import {
+	Github,
+	Moon,
+	Search as SearchIcon,
+	Sparkles,
+	Sun,
+} from "lucide-react";
 import type React from "react";
+import { useEffect, useState } from "react";
+import { ChangelogDialog } from "@/components/ChangelogDialog";
 import { OpenTabsButton } from "@/components/OpenTabsButton";
 import { BottomShadow } from "@/components/ui/BottomShadow";
 import { IconButton } from "@/components/ui/IconButton";
@@ -33,6 +41,39 @@ export const Header: React.FC<HeaderProps> = ({
 	const toggleTheme = useSetAtom(toggleThemeAtom);
 	const locale = useAtomValue(localeAtom);
 	const setLocale = useSetAtom(localeAtom);
+
+	const [showNewBadge, setShowNewBadge] = useState(false);
+	const [changelogOpen, setChangelogOpen] = useState(false);
+	const currentVersion = chrome.runtime.getManifest().version;
+
+	useEffect(() => {
+		checkChangelogStatus();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const checkChangelogStatus = async () => {
+		const result = await chrome.storage.local.get([
+			"aura-last-version",
+			"aura-changelog-seen",
+		]);
+
+		if (
+			result["aura-last-version"] === currentVersion &&
+			result["aura-changelog-seen"] === false
+		) {
+			setShowNewBadge(true);
+		}
+	};
+
+	const handleOpenChangelog = async () => {
+		setChangelogOpen(true);
+		await chrome.storage.local.set({ "aura-changelog-seen": true });
+		setShowNewBadge(false);
+	};
+
+	const handleCloseChangelog = () => {
+		setChangelogOpen(false);
+	};
 
 	const handleLocaleChange = (next: Locale) => {
 		setLocale(next);
@@ -107,6 +148,19 @@ export const Header: React.FC<HeaderProps> = ({
 					)}
 					<button
 						type="button"
+						onClick={handleOpenChangelog}
+						className="relative hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] text-muted hover:text-secondary hover:bg-surface-muted/60 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-vibrant-cyan/70"
+						aria-label="What's New"
+						title="View changelog"
+					>
+						<Sparkles size={12} />
+						<span>What's New</span>
+						{showNewBadge && (
+							<span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-vibrant-pink rounded-full animate-pulse" />
+						)}
+					</button>
+					<button
+						type="button"
 						onClick={() => handleLocaleChange(locale === "en" ? "zh-CN" : "en")}
 						className="hidden sm:inline-flex items-center px-2 py-1 rounded-full text-[11px] text-muted hover:text-secondary hover:bg-surface-muted/60 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-vibrant-cyan/70"
 						aria-label={m.user_menu_language_label()}
@@ -137,6 +191,9 @@ export const Header: React.FC<HeaderProps> = ({
 					</IconButton>
 				</div>
 			</div>
+
+			{/* Changelog Dialog */}
+			<ChangelogDialog isOpen={changelogOpen} onClose={handleCloseChangelog} />
 		</header>
 	);
 };

@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { crx } from "@crxjs/vite-plugin";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
@@ -76,6 +77,18 @@ export default defineConfig(({ mode }) => {
 				outDir: "release",
 				outFileName: zipFileName,
 			}),
+			// Copy CHANGELOG.md to dist
+			{
+				name: "copy-changelog",
+				writeBundle() {
+					const changelogSrc = path.resolve(__dirname, "CHANGELOG.md");
+					const changelogDest = path.resolve(__dirname, "dist/CHANGELOG.md");
+					if (fs.existsSync(changelogSrc)) {
+						fs.copyFileSync(changelogSrc, changelogDest);
+						console.log("✓ Copied CHANGELOG.md to dist");
+					}
+				},
+			},
 		],
 		server: {
 			cors: {

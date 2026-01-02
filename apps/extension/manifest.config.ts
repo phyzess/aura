@@ -22,7 +22,7 @@ export default defineManifest({
 		newtab: "pages/newtab.html",
 	},
 	options_page: "pages/options.html",
-	permissions: ["tabs", "notifications", "storage"],
+	permissions: ["tabs", "notifications", "storage", "contextMenus"],
 	host_permissions: [
 		"http://localhost:8787/*",
 		"https://aura-api.phyzess.me/*",
