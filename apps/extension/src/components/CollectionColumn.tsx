@@ -342,7 +342,14 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 													setIsMenuOpen(false);
 												} catch (error) {
 													console.error("Export collection failed:", error);
-													toast.error("Export failed. Please try again.");
+													if (
+														error instanceof Error &&
+														error.message === "NO_DATA_TO_EXPORT"
+													) {
+														toast.error(m.collection_export_no_data_error());
+													} else {
+														toast.error("Export failed. Please try again.");
+													}
 												}
 											}}
 											variant="ghost"

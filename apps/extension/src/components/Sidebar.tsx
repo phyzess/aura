@@ -209,9 +209,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 															);
 														} catch (error) {
 															console.error("Export workspace failed:", error);
-															toast.error(
-																m.sidebar_workspace_export_error_toast(),
-															);
+															if (
+																error instanceof Error &&
+																error.message === "NO_DATA_TO_EXPORT"
+															) {
+																toast.error(m.workspace_export_no_data_error());
+															} else {
+																toast.error(
+																	m.sidebar_workspace_export_error_toast(),
+																);
+															}
 														}
 													}}
 													variant="subtle"
@@ -272,7 +279,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 										toast.success("Data exported successfully");
 									} catch (error) {
 										console.error("Export failed:", error);
-										toast.error("Export failed. Please try again.");
+										if (
+											error instanceof Error &&
+											error.message === "NO_DATA_TO_EXPORT"
+										) {
+											toast.error(m.export_all_no_data_error());
+										} else {
+											toast.error("Export failed. Please try again.");
+										}
 									}
 								}}
 								title={m.sidebar_export_button_title()}

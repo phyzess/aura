@@ -67,6 +67,10 @@ export function exportCollection(
 		(t) => t.collectionId === collection.id && !t.deletedAt,
 	);
 
+	if (collectionTabs.length === 0) {
+		throw new Error("NO_DATA_TO_EXPORT");
+	}
+
 	const exportData: ExportData = {
 		version: "1.0.0",
 		exportedAt: Date.now(),
@@ -105,6 +109,10 @@ export function exportWorkspace(
 		(t) => collectionIds.has(t.collectionId) && !t.deletedAt,
 	);
 
+	if (workspaceTabs.length === 0) {
+		throw new Error("NO_DATA_TO_EXPORT");
+	}
+
 	const exportData: ExportData = {
 		version: "1.0.0",
 		exportedAt: Date.now(),
@@ -138,6 +146,10 @@ export function exportAllData(
 	const activeCollections = collections.filter((c) => !c.deletedAt);
 	const activeTabs = tabs.filter((t) => !t.deletedAt);
 
+	if (activeTabs.length === 0) {
+		throw new Error("NO_DATA_TO_EXPORT");
+	}
+
 	const exportData: ExportData = {
 		version: "1.0.0",
 		exportedAt: Date.now(),
@@ -156,4 +168,3 @@ export function exportAllData(
 
 	downloadJSON(exportData, filename);
 }
-
