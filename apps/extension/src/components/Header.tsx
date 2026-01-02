@@ -7,7 +7,7 @@ import {
 	Sun,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChangelogDialog } from "@/components/ChangelogDialog";
 import { OpenTabsButton } from "@/components/OpenTabsButton";
 import { BottomShadow } from "@/components/ui/BottomShadow";
@@ -46,12 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
 	const [changelogOpen, setChangelogOpen] = useState(false);
 	const currentVersion = chrome.runtime.getManifest().version;
 
-	useEffect(() => {
-		checkChangelogStatus();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	const checkChangelogStatus = async () => {
+	const checkChangelogStatus = useCallback(async () => {
 		const result = await chrome.storage.local.get([
 			"aura-last-version",
 			"aura-changelog-seen",
@@ -63,7 +58,11 @@ export const Header: React.FC<HeaderProps> = ({
 		) {
 			setShowNewBadge(true);
 		}
-	};
+	}, [currentVersion]);
+
+	useEffect(() => {
+		checkChangelogStatus();
+	}, [checkChangelogStatus]);
 
 	const handleOpenChangelog = async () => {
 		setChangelogOpen(true);
