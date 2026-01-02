@@ -45,6 +45,7 @@ export const Card: React.FC<CardProps> = ({
 	border = true,
 	overflow = "visible",
 	className,
+	onClick,
 	...props
 }) => {
 	const baseClasses = "flex flex-col shadow-soft transition-all duration-300";
@@ -62,7 +63,28 @@ export const Card: React.FC<CardProps> = ({
 		className,
 	);
 
-	return <div className={classes} {...props} />;
+	// Handle keyboard interaction for interactive cards
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+		if (
+			interactive &&
+			onClick &&
+			(event.key === "Enter" || event.key === " ")
+		) {
+			event.preventDefault();
+			onClick(event as unknown as React.MouseEvent<HTMLDivElement>);
+		}
+	};
+
+	return (
+		<div
+			className={classes}
+			onClick={onClick}
+			onKeyDown={handleKeyDown}
+			role={interactive ? "button" : undefined}
+			tabIndex={interactive ? 0 : undefined}
+			{...props}
+		/>
+	);
 };
 
 export interface CardSectionProps

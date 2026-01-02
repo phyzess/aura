@@ -5,7 +5,9 @@ import { initLocale } from "@/config/locale";
 import App from "./App.tsx";
 import "@/styles/global.css";
 
-initLocale();
+// Initialize locale and set HTML lang attribute
+const locale = initLocale();
+document.documentElement.lang = locale;
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>

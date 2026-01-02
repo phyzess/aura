@@ -166,6 +166,11 @@ export default function App() {
 
 	return (
 		<div className="relative flex h-screen bg-cloud-50 dark:bg-slate-950 overflow-hidden">
+			{/* Skip to main content link for keyboard navigation */}
+			<a href="#main-content" className="skip-to-main">
+				Skip to main content
+			</a>
+
 			<Sidebar
 				workspaces={workspaces}
 				collections={collections}

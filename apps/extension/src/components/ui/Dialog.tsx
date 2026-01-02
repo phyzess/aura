@@ -17,6 +17,12 @@ interface DialogProps {
 	closeOnEsc?: boolean;
 	className?: string;
 	overlayClassName?: string;
+	/** ARIA label for the dialog */
+	"aria-label"?: string;
+	/** ID of the element that labels the dialog */
+	"aria-labelledby"?: string;
+	/** ID of the element that describes the dialog */
+	"aria-describedby"?: string;
 }
 
 export const Dialog: React.FC<DialogProps> = ({
@@ -29,7 +35,14 @@ export const Dialog: React.FC<DialogProps> = ({
 	closeOnEsc = true,
 	className,
 	overlayClassName,
+	"aria-label": ariaLabel,
+	"aria-labelledby": ariaLabelledby,
+	"aria-describedby": ariaDescribedby,
 }) => {
+	const dialogRef = React.useRef<HTMLDivElement>(null);
+	const previousActiveElement = React.useRef<HTMLElement | null>(null);
+
+	// Handle Escape key
 	React.useEffect(() => {
 		if (!isOpen || !closeOnEsc) return;
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -43,6 +56,68 @@ export const Dialog: React.FC<DialogProps> = ({
 			window.removeEventListener("keydown", handleKeyDown);
 		};
 	}, [isOpen, closeOnEsc, onClose]);
+
+	// Focus management and focus trap
+	React.useEffect(() => {
+		if (!isOpen) return;
+
+		// Save the currently focused element
+		previousActiveElement.current = document.activeElement as HTMLElement;
+
+		// Focus the dialog after a short delay to ensure it's rendered
+		const timeoutId = setTimeout(() => {
+			if (dialogRef.current) {
+				const focusableElements =
+					dialogRef.current.querySelectorAll<HTMLElement>(
+						'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+					);
+				if (focusableElements.length > 0) {
+					focusableElements[0].focus();
+				} else {
+					dialogRef.current.focus();
+				}
+			}
+		}, 100);
+
+		// Focus trap
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key !== "Tab" || !dialogRef.current) return;
+
+			const focusableElements = dialogRef.current.querySelectorAll<HTMLElement>(
+				'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+			);
+
+			if (focusableElements.length === 0) return;
+
+			const firstElement = focusableElements[0];
+			const lastElement = focusableElements[focusableElements.length - 1];
+
+			if (event.shiftKey) {
+				// Shift + Tab
+				if (document.activeElement === firstElement) {
+					event.preventDefault();
+					lastElement.focus();
+				}
+			} else {
+				// Tab
+				if (document.activeElement === lastElement) {
+					event.preventDefault();
+					firstElement.focus();
+				}
+			}
+		};
+
+		document.addEventListener("keydown", handleKeyDown);
+
+		return () => {
+			clearTimeout(timeoutId);
+			document.removeEventListener("keydown", handleKeyDown);
+			// Restore focus when dialog closes
+			if (previousActiveElement.current) {
+				previousActiveElement.current.focus();
+			}
+		};
+	}, [isOpen]);
 
 	const sizeClass =
 		size === "sm"
@@ -77,6 +152,13 @@ export const Dialog: React.FC<DialogProps> = ({
 
 					{/* Dialog 主体 */}
 					<motion.div
+						ref={dialogRef}
+						role="dialog"
+						aria-modal="true"
+						aria-label={ariaLabel}
+						aria-labelledby={ariaLabelledby}
+						aria-describedby={ariaDescribedby}
+						tabIndex={-1}
 						{...modalAnimation}
 						className={cn(
 							"relative w-full bg-surface-elevated rounded-3xl overflow-hidden",

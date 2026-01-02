@@ -54,6 +54,8 @@ export default function App() {
 				const newLocale = changes["aura-locale"].newValue as "en" | "zh-CN";
 				setLocale(newLocale);
 				changeLocale(newLocale);
+				// Update HTML lang attribute
+				document.documentElement.lang = newLocale;
 			}
 		};
 
@@ -106,7 +108,7 @@ export default function App() {
 	return (
 		<div className="min-h-screen bg-surface flex flex-col">
 			{/* Settings Bar */}
-			<div className="fixed top-0 right-0 p-4 flex items-center gap-2 z-50">
+			<header className="fixed top-0 right-0 p-4 flex items-center gap-2 z-50">
 				<button
 					type="button"
 					onClick={handleLocaleChange}
@@ -136,10 +138,10 @@ export default function App() {
 				>
 					{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
 				</IconButton>
-			</div>
+			</header>
 
 			{/* Main Content */}
-			<div className="flex-1 flex items-center justify-center p-6">
+			<main className="flex-1 flex items-center justify-center p-6">
 				<div className="w-full max-w-2xl">
 					{/* Welcome Step */}
 					{step === "welcome" && (
@@ -313,7 +315,7 @@ export default function App() {
 						</BottomShadow>
 					)}
 				</div>
-			</div>
+			</main>
 		</div>
 	);
 }
