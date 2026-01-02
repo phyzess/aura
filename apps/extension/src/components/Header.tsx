@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
 					<h2 className="text-2xl font-bold text-primary tracking-tight transition-colors">
 						{workspaceName}
 					</h2>
-					{workspaceTabsCount && workspaceTabsCount > 0 && (
+					{workspaceTabsCount !== undefined && workspaceTabsCount > 0 && (
 						<div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-secondary">
 							<span className="text-sm text-secondary">
 								{workspaceTabsCount} tabs · {workspaceCollectionsCount ?? 0}{" "}
