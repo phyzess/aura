@@ -1,6 +1,7 @@
 import type {
 	D1Database,
 	IncomingRequestCfProperties,
+	KVNamespace,
 } from "@cloudflare/workers-types";
 import { and, eq, gt, inArray, or } from "drizzle-orm";
 import { Hono } from "hono";
@@ -10,15 +11,28 @@ import type {
 } from "../../packages/domain/src";
 
 import { createAuth } from "./auth";
+import {
+	generateVerificationCode,
+	generateVerificationEmailHTML,
+	sendEmail,
+} from "./auth/email";
+import { verifyTurnstile } from "./auth/turnstile";
+import authCallbackHtml from "./auth-callback.html";
 import { createDb } from "./db";
 import { collections, tabs, workspaces } from "./db/app.schema";
 import { PRIVACY_HTML } from "./privacy";
 
 export interface Env {
 	DB: D1Database;
+	AUTH_KV: KVNamespace;
 	BETTER_AUTH_SECRET: string;
 	BETTER_AUTH_URL: string;
 	BETTER_AUTH_TRUSTED_ORIGINS: string;
+	TURNSTILE_SECRET_KEY?: string;
+	GOOGLE_CLIENT_ID?: string;
+	GOOGLE_CLIENT_SECRET?: string;
+	GITHUB_CLIENT_ID?: string;
+	GITHUB_CLIENT_SECRET?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -44,6 +58,8 @@ const chunk = <T>(items: T[], size: number): T[][] => {
 	}
 	return result;
 };
+
+app.get("/", (c) => c.html(authCallbackHtml));
 
 app.get("/privacy", (c) => c.html(PRIVACY_HTML));
 
@@ -473,6 +489,85 @@ app.post("/api/app/sync/push", async (c) => {
 		});
 		throw error;
 	}
+});
+
+app.post("/api/auth/verify-turnstile", async (c) => {
+	const body = (await c.req.json().catch(() => null)) as {
+		token?: string;
+	} | null;
+
+	if (!body || typeof body.token !== "string") {
+		return c.json({ error: "Missing turnstile token" }, 400);
+	}
+
+	const secretKey = c.env.TURNSTILE_SECRET_KEY;
+	if (!secretKey) {
+		return c.json({ success: true });
+	}
+
+	const remoteIp = c.req.header("CF-Connecting-IP");
+	const result = await verifyTurnstile(body.token, secretKey, remoteIp);
+
+	if (!result.success) {
+		return c.json({ error: result.error || "Verification failed" }, 400);
+	}
+
+	return c.json({ success: true });
+});
+
+app.post("/api/auth/email/send-code", async (c) => {
+	const body = (await c.req.json().catch(() => null)) as {
+		email?: string;
+	} | null;
+
+	if (!body || typeof body.email !== "string" || !body.email.includes("@")) {
+		return c.json({ error: "Invalid email address" }, 400);
+	}
+
+	const email = body.email.toLowerCase().trim();
+	const code = generateVerificationCode();
+
+	await c.env.AUTH_KV.put(`email-verify:${email}`, code, {
+		expirationTtl: 600,
+	});
+
+	const emailResult = await sendEmail({
+		to: email,
+		subject: "Verify your email - Aura",
+		html: generateVerificationEmailHTML(code),
+	});
+
+	if (!emailResult.success) {
+		return c.json({ error: emailResult.error || "Failed to send email" }, 500);
+	}
+
+	return c.json({ success: true });
+});
+
+app.post("/api/auth/email/verify-code", async (c) => {
+	const body = (await c.req.json().catch(() => null)) as {
+		email?: string;
+		code?: string;
+	} | null;
+
+	if (
+		!body ||
+		typeof body.email !== "string" ||
+		typeof body.code !== "string"
+	) {
+		return c.json({ error: "Invalid request" }, 400);
+	}
+
+	const email = body.email.toLowerCase().trim();
+	const storedCode = await c.env.AUTH_KV.get(`email-verify:${email}`);
+
+	if (!storedCode || storedCode !== body.code) {
+		return c.json({ error: "Invalid or expired verification code" }, 400);
+	}
+
+	await c.env.AUTH_KV.delete(`email-verify:${email}`);
+
+	return c.json({ success: true, email });
 });
 
 app.on("GET", "/api/auth/*", (c) => {

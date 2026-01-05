@@ -2,7 +2,8 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
-import { parseChangelog, type ChangelogEntry } from "@/utils/changelogParser";
+import * as m from "@/paraglide/messages";
+import { type ChangelogEntry, parseChangelog } from "@/utils/changelogParser";
 
 interface ChangelogDialogProps {
 	isOpen: boolean;
@@ -39,16 +40,18 @@ export function ChangelogDialog({ isOpen, onClose }: ChangelogDialogProps) {
 				{/* Header */}
 				<div className="flex items-center justify-between px-6 py-4 border-b border-surface-border">
 					<div>
-						<h2 className="text-xl font-bold text-primary">What's New</h2>
+						<h2 className="text-xl font-bold text-primary">
+							{m.changelog_dialog_title()}
+						</h2>
 						<p className="text-sm text-secondary mt-0.5">
-							Version {currentVersion}
+							{m.changelog_dialog_version_label({ version: currentVersion })}
 						</p>
 					</div>
 					<IconButton
 						variant="subtle"
 						size="sm"
 						onClick={onClose}
-						aria-label="Close"
+						aria-label={m.changelog_dialog_close_aria()}
 					>
 						<X size={18} />
 					</IconButton>
@@ -60,7 +63,7 @@ export function ChangelogDialog({ isOpen, onClose }: ChangelogDialogProps) {
 					{currentEntry && (
 						<div className="mb-6">
 							<h3 className="text-sm font-semibold text-accent uppercase tracking-wide mb-3">
-								Latest Updates
+								{m.changelog_dialog_latest_updates_heading()}
 							</h3>
 							<ChangelogVersion entry={currentEntry} highlight={true} />
 						</div>
@@ -70,7 +73,7 @@ export function ChangelogDialog({ isOpen, onClose }: ChangelogDialogProps) {
 					{otherEntries.length > 0 && (
 						<details className="group">
 							<summary className="cursor-pointer text-secondary hover:text-primary transition-colors list-none flex items-center gap-2 mb-4 text-sm font-semibold">
-								<span>View previous versions</span>
+								<span>{m.changelog_dialog_view_previous_versions()}</span>
 								<svg
 									className="w-4 h-4 transition-transform group-open:rotate-180"
 									fill="none"
@@ -112,9 +115,7 @@ function ChangelogVersion({ entry, highlight }: ChangelogVersionProps) {
 				>
 					v{entry.version}
 				</h4>
-				{entry.date && (
-					<span className="text-xs text-muted">{entry.date}</span>
-				)}
+				{entry.date && <span className="text-xs text-muted">{entry.date}</span>}
 			</div>
 
 			{entry.changes.map((changeGroup, idx) => (
@@ -138,4 +139,3 @@ function ChangelogVersion({ entry, highlight }: ChangelogVersionProps) {
 		</div>
 	);
 }
-

@@ -7,12 +7,40 @@ compatibility_flags = ["nodejs_als"]
 BETTER_AUTH_URL = "http://localhost:8787"
 BETTER_AUTH_TRUSTED_ORIGINS = "http://localhost:5173,chrome-extension://*"
 
+# OAuth Client IDs (public, safe to commit)
+# Development environment - for local testing
+GOOGLE_CLIENT_ID = "479453408178-k3rqd5eg7hrjbf97aljkvnrkabd8fvab.apps.googleusercontent.com"
+GITHUB_CLIENT_ID = "Ov23liqER5n9iRD0qAAO"
+
+# Secrets (DO NOT put secret values here!)
+#
+# For LOCAL DEVELOPMENT:
+#   Put secrets in .dev.vars file (already in .gitignore)
+#   Example: GITHUB_CLIENT_SECRET="your-secret"
+#
+# For PRODUCTION:
+#   Use `wrangler secret put` command:
+#   - wrangler secret put BETTER_AUTH_SECRET --env production
+#   - wrangler secret put GOOGLE_CLIENT_SECRET --env production
+#   - wrangler secret put GITHUB_CLIENT_SECRET --env production
+#   - wrangler secret put TURNSTILE_SECRET_KEY --env production
+
 [env.production]
 
 # Production-specific environment variables
 [env.production.vars]
 BETTER_AUTH_URL = "https://aura-api.phyzess.me"
 BETTER_AUTH_TRUSTED_ORIGINS = "chrome-extension://ojpnnkcmnbpnkhlohnkbdopkhfgjfhph"
+
+# Production OAuth Client IDs (create separate OAuth apps for production)
+GOOGLE_CLIENT_ID = "479453408178-k3rqd5eg7hrjbf97aljkvnrkabd8fvab.apps.googleusercontent.com"
+GITHUB_CLIENT_ID = "Ov23lil0E4lOjv9EoSls"
+
+# Production secrets: Use `wrangler secret put --env production` command
+# - wrangler secret put BETTER_AUTH_SECRET --env production
+# - wrangler secret put GOOGLE_CLIENT_SECRET --env production
+# - wrangler secret put GITHUB_CLIENT_SECRET --env production
+# - wrangler secret put TURNSTILE_SECRET_KEY --env production
 
 # Optional: use a separate D1 database for production (uncomment and fill if needed)
 [[env.production.d1_databases]]
@@ -26,4 +54,14 @@ binding = "DB"
 database_name = "aura-db-dev"
 database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "drizzle"
+
+# KV namespace for auth verification codes and temporary data
+[[kv_namespaces]]
+binding = "AUTH_KV"
+id = "cd3ce3547f9a48d69c25594d6244d11f"
+preview_id = "1b6227ee2d074ce7ac47f42bb785ca0d"
+
+[[env.production.kv_namespaces]]
+binding = "AUTH_KV"
+id = "production_kv_id"  # Replace with actual production KV namespace ID when deploying
 

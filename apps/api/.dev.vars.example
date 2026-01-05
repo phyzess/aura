@@ -1,0 +1,23 @@
+# Local development secrets
+# Copy this file to .dev.vars and fill in your actual secret values
+# DO NOT commit .dev.vars to git!
+
+# Required: Authentication secret (at least 32 characters)
+# Generate with: openssl rand -base64 32
+BETTER_AUTH_SECRET="your-secret-here-at-least-32-characters"
+
+# Optional: Google OAuth (if you need Google login)
+# Get from: https://console.cloud.google.com/apis/credentials
+# Create a DEVELOPMENT OAuth app with callback URL: http://localhost:8787/api/auth/callback/google
+# GOOGLE_CLIENT_SECRET="your-dev-google-client-secret"
+
+# Optional: GitHub OAuth (if you need GitHub login)
+# Get from: https://github.com/settings/developers
+# Create a DEVELOPMENT OAuth app with callback URL: http://localhost:8787/api/auth/callback/github
+# IMPORTANT: Create separate OAuth apps for development and production!
+# GITHUB_CLIENT_SECRET="your-dev-github-client-secret"
+
+# Optional: Cloudflare Turnstile (if you need CAPTCHA)
+# Get from: https://dash.cloudflare.com/?to=/:account/turnstile
+# TURNSTILE_SECRET_KEY="your-turnstile-secret-key"
+

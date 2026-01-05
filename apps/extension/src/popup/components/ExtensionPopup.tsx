@@ -216,7 +216,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			// Save single tab
 			const tab: SessionTab = {
 				url: request.data.url || "",
-				title: request.data.title || "Untitled",
+				title: request.data.title || m.popup_save_untitled_tab_title(),
 				faviconUrl: request.data.favicon,
 			};
 			setSessionTabs([tab]);
@@ -225,7 +225,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			// Save link
 			const tab: SessionTab = {
 				url: request.data.url || "",
-				title: request.data.title || "Untitled",
+				title: request.data.title || m.popup_save_untitled_tab_title(),
 				faviconUrl: request.data.favicon,
 			};
 			setSessionTabs([tab]);

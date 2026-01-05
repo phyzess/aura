@@ -1,5 +1,6 @@
 import { Check, ChevronDown } from "lucide-react";
 import * as React from "react";
+import * as m from "@/paraglide/messages";
 import { FieldShell } from "./FieldShell";
 
 export interface SelectOption {
@@ -23,10 +24,10 @@ export const Select: React.FC<SelectProps> = ({
 	options,
 	value,
 	onChange,
-	placeholder = "Select...",
+	placeholder = m.select_default_placeholder(),
 	icon,
 	size = "md",
-	emptyMessage = "No options available",
+	emptyMessage = m.select_empty_message(),
 }) => {
 	const [open, setOpen] = React.useState(false);
 	const [focusedIndex, setFocusedIndex] = React.useState(-1);
@@ -118,7 +119,7 @@ export const Select: React.FC<SelectProps> = ({
 	const optionTextSize = size === "sm" ? "text-xs" : "text-body";
 
 	return (
-		<div ref={containerRef} className="relative z-10">
+		<div ref={containerRef} className="relative">
 			<FieldShell
 				size={size}
 				variant="default"
@@ -135,11 +136,11 @@ export const Select: React.FC<SelectProps> = ({
 					aria-label={
 						options.find((o) => o.value === value)
 							? undefined
-							: `Select ${placeholder}`
+							: m.select_aria_label({ placeholder })
 					}
 					onClick={() => setOpen((prev) => !prev)}
 					onKeyDown={handleKeyDown}
-					className={`w-full flex items-center justify-between text-secondary ${buttonTextSize}`}
+					className={`w-full flex items-center justify-between text-secondary focus-visible:outline-none ${buttonTextSize}`}
 				>
 					<div className="flex items-center gap-2 min-w-0">
 						{icon && <span className="text-muted">{icon}</span>}

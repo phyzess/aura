@@ -1,6 +1,7 @@
 import { Search, X } from "lucide-react";
 import type * as React from "react";
 import { cn } from "@/lib/utils";
+import * as m from "@/paraglide/messages";
 import { FieldShell } from "./FieldShell";
 import { IconButton } from "./IconButton";
 import { Input } from "./Input";
@@ -23,7 +24,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 	onClear,
 	shortcutHint,
 	inputRef,
-	placeholder = "Search...",
+	placeholder = m.common_search_input_placeholder(),
 	className,
 	...props
 }) => {
@@ -43,7 +44,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 					onClick={onClear}
 					size="sm"
 					variant="subtle"
-					aria-label="Clear search"
+					aria-label={m.search_input_clear_aria()}
 					className="w-5 h-5 border border-surface-border bg-surface-muted hover:bg-vibrant-pink hover:text-white hover:border-black"
 				>
 					<X size={12} strokeWidth={3} />

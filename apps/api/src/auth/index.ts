@@ -13,6 +13,37 @@ import { hashPassword, verifyPassword } from "./password";
 export function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
 	const db = env ? createDb(env.DB) : ({} as unknown);
 
+	let secret: string | undefined;
+	let baseURL: string | undefined;
+	let trustedOrigins: string[] = [];
+	let appConfig: ReturnType<typeof getAuthConfig> | undefined;
+
+	if (env) {
+		appConfig = getAuthConfig(env);
+		secret = appConfig.auth.secret;
+		baseURL = appConfig.auth.baseURL;
+		trustedOrigins = appConfig.auth.trustedOrigins;
+	}
+
+	const socialProviders: Record<
+		string,
+		{ clientId: string; clientSecret: string }
+	> = {};
+
+	if (appConfig?.auth.oauth.google) {
+		socialProviders.google = {
+			clientId: appConfig.auth.oauth.google.clientId,
+			clientSecret: appConfig.auth.oauth.google.clientSecret,
+		};
+	}
+
+	if (appConfig?.auth.oauth.github) {
+		socialProviders.github = {
+			clientId: appConfig.auth.oauth.github.clientId,
+			clientSecret: appConfig.auth.oauth.github.clientSecret,
+		};
+	}
+
 	const baseConfig = withCloudflare(
 		{
 			autoDetectIpAddress: true,
@@ -36,19 +67,10 @@ export function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
 					verify: verifyPassword,
 				},
 			},
+			socialProviders:
+				Object.keys(socialProviders).length > 0 ? socialProviders : undefined,
 		},
 	);
-
-	let secret: string | undefined;
-	let baseURL: string | undefined;
-	let trustedOrigins: string[] = [];
-
-	if (env) {
-		const appConfig = getAuthConfig(env);
-		secret = appConfig.auth.secret;
-		baseURL = appConfig.auth.baseURL;
-		trustedOrigins = appConfig.auth.trustedOrigins;
-	}
 
 	if (!secret) {
 		console.error("[auth][config] Missing BETTER_AUTH_SECRET in env");

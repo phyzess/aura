@@ -30,23 +30,26 @@ body {
 }
 
 /* 无障碍支持: 增强焦点可见性 */
-/* 确保所有可聚焦元素在键盘导航时有清晰的焦点指示器 */
+/* 保持键盘导航的焦点指示，但为文本输入使用组件内样式 */
 :focus-visible {
-	outline: 2px solid var(--color-accent);
 	outline-offset: 2px;
 }
 
-/* 为特定元素提供更好的焦点样式 */
+/* 为主要交互元素提供清晰的焦点样式 */
 button:focus-visible,
 a:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
 [role="button"]:focus-visible,
 [role="link"]:focus-visible,
 [tabindex]:not([tabindex="-1"]):focus-visible {
 	outline: 2px solid var(--color-accent);
 	outline-offset: 2px;
+}
+
+/* 文本输入控件不使用全局高亮描边 */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+	outline: none;
 }
 
 /* Skip to main content link */
@@ -154,6 +157,11 @@ textarea[readonly] {
 
 .text-on-accent {
 	color: var(--color-text-on-accent);
+}
+
+/* Brand text - follows primary color (coral in light, lime in dark) */
+.text-brand {
+	color: var(--color-primary);
 }
 
 	/* Typography utilities */

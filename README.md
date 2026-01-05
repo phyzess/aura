@@ -6,12 +6,14 @@ Aura is a tab and workspace manager that lives as a Chrome extension and syncs d
 
 - 📑 **Workspace & Collection Management** – Organize tabs into workspaces and collections
 - 🔄 **Cross-device Sync** – Sync your data across devices via Cloudflare Worker API
+- 🔐 **Multiple Auth Methods** – Email/password, Google OAuth, GitHub OAuth, and email verification
 - 🆕 **New Tab Override** – Replace Chrome's new tab page with Aura dashboard for instant access
 - 🔍 **Quick Search** – Search all saved tabs with `Cmd+K` (or `Ctrl+K`)
 - 💾 **Offline Support** – Works offline with IndexedDB local storage
 - 🌐 **i18n** – Multi-language support (English, 中文)
 - 🎨 **Dark Mode** – Beautiful dark/light theme support
 - 📤 **Import/Export** – Export workspaces, collections, or all data as JSON
+- 🛡️ **Bot Protection** – Cloudflare Turnstile integration for security
 
 The repo is a pnpm monorepo with:
 
@@ -56,13 +58,25 @@ Environment is treated as data, not hard‑coded defaults. All critical values a
 
 The Worker binds these variables (see `apps/api/src/index.ts`):
 
+**Required:**
 - `BETTER_AUTH_SECRET` – auth secret (must be set via Cloudflare Secrets)
 - `BETTER_AUTH_URL` – public base URL of the auth endpoints
 - `BETTER_AUTH_TRUSTED_ORIGINS` – comma‑separated list of allowed origins (e.g. extension and local dev UI)
 
+**Optional (for OAuth and security features):**
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – Google OAuth credentials
+- `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` – GitHub OAuth credentials
+- `TURNSTILE_SECRET_KEY` – Cloudflare Turnstile secret for bot protection
+
+**Cloudflare Bindings:**
+- `DB` – D1 database binding
+- `AUTH_KV` – KV namespace for verification codes
+
 `@aura/config` exposes a Valibot schema and `buildWorkerConfig(env)` helper. `apps/api/src/auth/config.ts` parses the Worker `Env` into a typed `AppConfig`. Missing or empty values will throw at runtime when `createAuth` is constructed, so a misconfigured Worker fails fast.
 
 Defaults for local development live in `apps/api/wrangler.toml` under `[vars]`. Production values belong in `[env.production.vars]` and in the Cloudflare dashboard / `wrangler secret`.
+
+For detailed authentication setup, see `docs/auth-setup.md`.
 
 ### Extension (Vite + CRXJS)
 

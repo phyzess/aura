@@ -149,11 +149,11 @@ export const Header: React.FC<HeaderProps> = ({
 						type="button"
 						onClick={handleOpenChangelog}
 						className="relative hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] text-muted hover:text-secondary hover:bg-surface-muted/60 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-vibrant-cyan/70"
-						aria-label="What's New"
-						title="View changelog"
+						aria-label={m.header_changelog_button_aria()}
+						title={m.header_changelog_button_title()}
 					>
 						<Sparkles size={12} />
-						<span>What's New</span>
+						<span>{m.header_changelog_button_label()}</span>
 						{showNewBadge && (
 							<span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-vibrant-pink rounded-full animate-pulse" />
 						)}

@@ -45,28 +45,28 @@ const getLinkStatusInfo = (status?: string) => {
 			return {
 				icon: CheckCircle2,
 				color: "text-green-500",
-				label: "Valid",
+				label: m.tab_link_status_valid(),
 				show: false, // Don't show valid status by default
 			};
 		case "broken":
 			return {
 				icon: AlertTriangle,
 				color: "text-red-500",
-				label: "Broken",
+				label: m.tab_link_status_broken(),
 				show: true,
 			};
 		case "uncertain":
 			return {
 				icon: HelpCircle,
 				color: "text-yellow-500",
-				label: "Uncertain",
+				label: m.tab_link_status_uncertain(),
 				show: true,
 			};
 		case "checking":
 			return {
 				icon: Loader2,
 				color: "text-blue-500",
-				label: "Checking...",
+				label: m.tab_link_status_checking(),
 				show: true,
 			};
 		default:
