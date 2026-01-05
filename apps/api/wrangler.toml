@@ -63,5 +63,5 @@ preview_id = "1b6227ee2d074ce7ac47f42bb785ca0d"
 
 [[env.production.kv_namespaces]]
 binding = "AUTH_KV"
-id = "production_kv_id"  # Replace with actual production KV namespace ID when deploying
+id = "cd3ce3547f9a48d69c25594d6244d11f"  # Replace with actual production KV namespace ID when deploying
 
