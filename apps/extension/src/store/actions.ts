@@ -86,15 +86,25 @@ const updateFavicon = () => {
 
 type SyncResult = "success" | "unauthorized" | "error";
 
-const AUTO_SYNC_DEBOUNCE_MS = 2000;
-const AUTO_SYNC_MIN_INTERVAL_MS = 5000;
-const AUTO_SYNC_INITIAL_RETRY_DELAY_MS = 10000;
-const AUTO_SYNC_MAX_RETRY_DELAY_MS = 60000;
+// Sync timing configuration - optimized for offline-first architecture
+const AUTO_SYNC_DEBOUNCE_MS = 1000; // Reduced from 2000ms - faster initial sync
+const AUTO_SYNC_MIN_INTERVAL_MS = 3000; // Reduced from 5000ms - more responsive
+const AUTO_SYNC_INITIAL_RETRY_DELAY_MS = 5000; // Reduced from 10000ms - faster retry
+const AUTO_SYNC_MAX_RETRY_DELAY_MS = 30000; // Reduced from 60000ms - don't wait too long
+const AUTO_SYNC_BATCH_WINDOW_MS = 500; // New: batch multiple operations within this window
 
 let autoSyncTimeout: ReturnType<typeof setTimeout> | null = null;
 let lastAutoSyncAt = 0;
 let autoSyncRetryDelayMs = 0;
 let lastSyncRunLocalChangeAt: number | null = null;
+
+// Batch operation tracking
+let lastOperationAt = 0;
+let pendingOperationsCount = 0;
+
+// Sync queue to prevent concurrent syncs
+const syncQueue: Array<() => Promise<void>> = [];
+let isProcessingQueue = false;
 
 const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 	const currentUser = get(currentUserAtom);
@@ -525,6 +535,50 @@ export const addTabAtom = atom(
 	},
 );
 
+/**
+ * Batch add tabs to a collection without triggering sync for each tab
+ * This is more efficient for importing multiple tabs at once
+ */
+export const batchAddTabsAtom = atom(
+	null,
+	async (
+		get,
+		set,
+		args: {
+			collectionId: string;
+			tabs: Array<{ url: string; title: string }>;
+		},
+	) => {
+		const existingTabs = get(tabsAtom);
+		const collectionTabs = existingTabs.filter(
+			(t) => t.collectionId === args.collectionId,
+		);
+
+		const now = Date.now();
+		const newTabs: TabItem[] = args.tabs.map((tab, index) => ({
+			id: crypto.randomUUID(),
+			collectionId: args.collectionId,
+			url: tab.url,
+			title: tab.title,
+			faviconUrl: `https://www.google.com/s2/favicons?domain=${new URL(tab.url).hostname}&sz=64`,
+			order: collectionTabs.length + index,
+			createdAt: now,
+			updatedAt: now,
+		}));
+
+		// Save all tabs to local DB
+		await Promise.all(newTabs.map((tab) => LocalDB.saveTab(tab)));
+
+		// Update state once
+		set(tabsAtom, [...existingTabs, ...newTabs]);
+		set(syncDirtyAtom, true);
+		set(lastLocalChangeAtAtom, Date.now());
+		set(scheduleAutoSyncAtom);
+
+		return newTabs;
+	},
+);
+
 export const deleteTabAtom = atom(null, async (get, set, id: string) => {
 	const tabs = get(tabsAtom);
 	const tab = tabs.find((t) => t.id === id);
@@ -664,10 +718,17 @@ export const syncWithServerAtom = atom(
 		set,
 		options?: {
 			source?: "auto" | "manual";
+			skipQueue?: boolean;
 		},
 	) => {
-		if (get(syncStatusAtom) === "syncing") {
-			return;
+		// If already syncing and not skipping queue, add to queue
+		if (get(syncStatusAtom) === "syncing" && !options?.skipQueue) {
+			return new Promise<void>((resolve) => {
+				syncQueue.push(async () => {
+					await set(syncWithServerAtom, { ...options, skipQueue: true });
+					resolve();
+				});
+			});
 		}
 
 		const source = options?.source ?? "manual";
@@ -737,13 +798,38 @@ export const syncWithServerAtom = atom(
 			setTimeout(() => {
 				set(syncStatusAtom, "idle");
 				set(syncErrorAtom, null);
+				processNextInQueue(get, set);
 			}, 1500);
 		} else {
 			set(syncStatusAtom, "idle");
 			set(syncErrorAtom, null);
+			processNextInQueue(get, set);
 		}
 	},
 );
+
+// Process next item in sync queue
+const processNextInQueue = async (get: any, set: any) => {
+	if (isProcessingQueue || syncQueue.length === 0) {
+		return;
+	}
+
+	isProcessingQueue = true;
+	const nextTask = syncQueue.shift();
+	if (nextTask) {
+		try {
+			await nextTask();
+		} catch (error) {
+			console.error("[sync] queue task error", error);
+		}
+	}
+	isProcessingQueue = false;
+
+	// Continue processing if there are more items
+	if (syncQueue.length > 0) {
+		processNextInQueue(get, set);
+	}
+};
 
 export const scheduleAutoSyncAtom = atom(null, (get, set) => {
 	if (typeof window === "undefined") {
@@ -759,6 +845,11 @@ export const scheduleAutoSyncAtom = atom(null, (get, set) => {
 		return;
 	}
 
+	// Track operation for batching
+	const now = Date.now();
+	pendingOperationsCount++;
+	lastOperationAt = now;
+
 	const schedule = (delay: number) => {
 		if (autoSyncTimeout) {
 			clearTimeout(autoSyncTimeout);
@@ -771,16 +862,28 @@ export const scheduleAutoSyncAtom = atom(null, (get, set) => {
 				const user = get(currentUserAtom);
 				if (!user) {
 					autoSyncRetryDelayMs = 0;
+					pendingOperationsCount = 0;
 					return;
 				}
 
 				if (!get(syncDirtyAtom)) {
 					autoSyncRetryDelayMs = 0;
+					pendingOperationsCount = 0;
 					return;
 				}
 
-				const now = Date.now();
-				const sinceLast = now - lastAutoSyncAt;
+				// Check if we're still in batch window
+				const timeSinceLastOp = Date.now() - lastOperationAt;
+				if (
+					timeSinceLastOp < AUTO_SYNC_BATCH_WINDOW_MS &&
+					pendingOperationsCount > 0
+				) {
+					// Still receiving operations, wait a bit more
+					schedule(AUTO_SYNC_BATCH_WINDOW_MS);
+					return;
+				}
+
+				const sinceLast = Date.now() - lastAutoSyncAt;
 				if (lastAutoSyncAt && sinceLast < AUTO_SYNC_MIN_INTERVAL_MS) {
 					schedule(AUTO_SYNC_MIN_INTERVAL_MS - sinceLast);
 					return;
@@ -791,7 +894,11 @@ export const scheduleAutoSyncAtom = atom(null, (get, set) => {
 					return;
 				}
 
-				lastAutoSyncAt = now;
+				lastAutoSyncAt = Date.now();
+				const opsCount = pendingOperationsCount;
+				pendingOperationsCount = 0;
+
+				console.log(`[sync] Syncing ${opsCount} pending operations`);
 
 				await set(syncWithServerAtom, { source: "auto" });
 
@@ -917,14 +1024,20 @@ export const captureSessionAtom = atom(
 
 		if (collectionId === "new") return;
 
+		// Collect all valid tabs
+		const validTabs: Array<{ url: string; title: string }> = [];
 		for (const tab of payload.tabs) {
 			if (tab.url && tab.title) {
-				await set(addTabAtom, {
-					collectionId,
-					url: tab.url,
-					title: tab.title,
-				});
+				validTabs.push({ url: tab.url, title: tab.title });
 			}
+		}
+
+		// Batch add all tabs at once
+		if (validTabs.length > 0) {
+			await set(batchAddTabsAtom, {
+				collectionId,
+				tabs: validTabs,
+			});
 		}
 	},
 );
@@ -969,23 +1082,30 @@ export const importTobyDataAtom = atom(
 		}
 
 		if (targetCollectionId) {
+			// Collect all tabs from all lists
+			const allTabs: Array<{ url: string; title: string }> = [];
 			for (const list of tobyData.lists) {
 				if (!list.cards || !Array.isArray(list.cards)) continue;
 
 				for (const card of list.cards) {
 					if (card.url && card.title) {
-						await set(addTabAtom, {
-							collectionId: targetCollectionId,
-							url: card.url,
-							title: card.title,
-						});
+						allTabs.push({ url: card.url, title: card.title });
 					}
 				}
+			}
+
+			// Batch add all tabs at once
+			if (allTabs.length > 0) {
+				await set(batchAddTabsAtom, {
+					collectionId: targetCollectionId,
+					tabs: allTabs,
+				});
 			}
 
 			return;
 		}
 
+		// Create one collection per list
 		for (const list of tobyData.lists) {
 			if (!list.title || !list.cards || !Array.isArray(list.cards)) continue;
 
@@ -994,14 +1114,20 @@ export const importTobyDataAtom = atom(
 				name: list.title,
 			});
 
+			// Collect tabs for this list
+			const listTabs: Array<{ url: string; title: string }> = [];
 			for (const card of list.cards) {
 				if (card.url && card.title) {
-					await set(addTabAtom, {
-						collectionId: collection.id,
-						url: card.url,
-						title: card.title,
-					});
+					listTabs.push({ url: card.url, title: card.title });
 				}
+			}
+
+			// Batch add tabs for this collection
+			if (listTabs.length > 0) {
+				await set(batchAddTabsAtom, {
+					collectionId: collection.id,
+					tabs: listTabs,
+				});
 			}
 		}
 	},
