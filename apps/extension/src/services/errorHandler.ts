@@ -47,23 +47,70 @@ class ErrorHandler {
 	}
 
 	/**
-	 * Get user-friendly error message
+	 * Get user-friendly error message with actionable suggestions
 	 */
 	private getUserFriendlyMessage(context: ErrorContext): string {
 		switch (context.type) {
 			case "network":
-				return "Network error. Please check your connection and try again.";
+				return this.getNetworkErrorMessage(context);
 			case "auth":
-				return "Authentication failed. Please sign in again.";
+				return this.getAuthErrorMessage(context);
 			case "sync":
-				return (
-					context.message || "Sync failed. Your changes are saved locally."
-				);
+				return this.getSyncErrorMessage(context);
 			case "storage":
-				return "Storage error. Please try again.";
+				return this.getStorageErrorMessage(context);
 			default:
-				return context.message || "An unexpected error occurred.";
+				return (
+					context.message || "An unexpected error occurred. Please try again."
+				);
 		}
+	}
+
+	private getNetworkErrorMessage(context: ErrorContext): string {
+		const baseMsg = "Network connection issue";
+		const suggestions = [];
+
+		if (context.originalError?.message.includes("timeout")) {
+			suggestions.push("The request timed out");
+			suggestions.push("Try again in a moment");
+		} else if (context.originalError?.message.includes("Failed to fetch")) {
+			suggestions.push("Unable to reach server");
+			suggestions.push("Check your internet connection");
+		} else {
+			suggestions.push("Check your connection and try again");
+		}
+
+		return `${baseMsg}. ${suggestions.join(". ")}.`;
+	}
+
+	private getAuthErrorMessage(context: ErrorContext): string {
+		if (context.originalError?.message.includes("401")) {
+			return "Session expired. Please sign in again to continue.";
+		}
+		if (context.originalError?.message.includes("403")) {
+			return "Access denied. You don't have permission for this action.";
+		}
+		if (context.originalError?.message.includes("invalid credentials")) {
+			return "Invalid email or password. Please check and try again.";
+		}
+		return "Authentication failed. Please sign in again.";
+	}
+
+	private getSyncErrorMessage(context: ErrorContext): string {
+		if (context.message) {
+			return `${context.message} Your changes are saved locally and will sync when connection is restored.`;
+		}
+		return "Sync failed. Your changes are saved locally and will sync automatically.";
+	}
+
+	private getStorageErrorMessage(context: ErrorContext): string {
+		if (context.originalError?.message.includes("quota")) {
+			return "Storage quota exceeded. Please free up some space by removing old tabs or collections.";
+		}
+		if (context.originalError?.message.includes("permission")) {
+			return "Storage permission denied. Please check browser settings and allow storage access.";
+		}
+		return "Storage error. Please try again or restart the extension.";
 	}
 
 	/**

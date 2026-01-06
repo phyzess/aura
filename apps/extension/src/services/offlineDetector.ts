@@ -47,9 +47,15 @@ class OfflineDetector {
 		this.isOnline = false;
 
 		if (!this.hasShownOfflineToast) {
-			toast.error(m.notification_offline(), {
-				duration: 5000,
-			});
+			toast.error(
+				`${m.notification_offline()}\n💾 Your changes will be saved locally and synced when you're back online.`,
+				{
+					duration: 6000,
+					style: {
+						maxWidth: "400px",
+					},
+				},
+			);
 			this.hasShownOfflineToast = true;
 		}
 

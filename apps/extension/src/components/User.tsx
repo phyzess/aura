@@ -10,14 +10,32 @@ interface UserProps {
 	onOpenAuth?: () => void;
 	onSignOut?: () => void;
 	syncStatus?: "idle" | "syncing" | "success" | "error";
+	lastSyncTimestamp?: number | null;
 	onSync?: (options: { source: "manual" }) => void;
 }
+
+const formatRelativeTime = (timestamp: number | null): string => {
+	if (!timestamp) return "";
+
+	const now = Date.now();
+	const diff = now - timestamp;
+	const seconds = Math.floor(diff / 1000);
+	const minutes = Math.floor(seconds / 60);
+	const hours = Math.floor(minutes / 60);
+	const days = Math.floor(hours / 24);
+
+	if (seconds < 60) return "just now";
+	if (minutes < 60) return `${minutes}m ago`;
+	if (hours < 24) return `${hours}h ago`;
+	return `${days}d ago`;
+};
 
 export const User: React.FC<UserProps> = ({
 	currentUserEmail,
 	onOpenAuth,
 	onSignOut,
 	syncStatus = "idle",
+	lastSyncTimestamp,
 	onSync,
 }) => {
 	const isLoggedIn = Boolean(currentUserEmail);
@@ -118,25 +136,32 @@ export const User: React.FC<UserProps> = ({
 				</button>
 			</Popover>
 
-			<Button
-				onClick={() => onSync?.({ source: "manual" })}
-				disabled={syncStatus === "syncing"}
-				variant="link"
-				size="sm"
-				className={`w-full px-3 py-1 text-xs text-center transition-colors ${
-					syncStatus === "error"
-						? "text-danger hover:text-danger/80 cursor-pointer"
+			<div className="flex flex-col gap-0.5">
+				<Button
+					onClick={() => onSync?.({ source: "manual" })}
+					disabled={syncStatus === "syncing"}
+					variant="link"
+					size="sm"
+					className={`w-full px-3 py-1 text-xs text-center transition-colors ${
+						syncStatus === "error"
+							? "text-danger hover:text-danger/80 cursor-pointer"
+							: syncStatus === "syncing"
+								? "text-accent/50 cursor-not-allowed"
+								: "text-accent/80 hover:text-accent cursor-pointer"
+					}`}
+				>
+					{syncStatus === "idle" || syncStatus === "success"
+						? m.sidebar_sync_status_synced()
 						: syncStatus === "syncing"
-							? "text-accent/50 cursor-not-allowed"
-							: "text-accent/80 hover:text-accent cursor-pointer"
-				}`}
-			>
-				{syncStatus === "idle" || syncStatus === "success"
-					? m.sidebar_sync_status_synced()
-					: syncStatus === "syncing"
-						? m.sidebar_sync_status_syncing()
-						: m.sidebar_sync_status_error()}
-			</Button>
+							? m.sidebar_sync_status_syncing()
+							: m.sidebar_sync_status_error()}
+				</Button>
+				{lastSyncTimestamp && syncStatus !== "syncing" && (
+					<div className="text-[10px] text-muted text-center px-3">
+						{formatRelativeTime(lastSyncTimestamp)}
+					</div>
+				)}
+			</div>
 		</div>
 	);
 };

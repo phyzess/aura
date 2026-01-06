@@ -1,5 +1,6 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { changeLocale } from "@/config/locale";
 import * as m from "@/paraglide/messages";
 import { ChromeService } from "@/services/chrome";
@@ -14,6 +15,8 @@ import {
 	collectionsAtom,
 	currentUserAtom,
 	isLoadingAtom,
+	loadingMessageAtom,
+	loadingStageAtom,
 	localeAtom,
 	tabsAtom,
 	themeModeAtom,
@@ -33,6 +36,8 @@ interface SaveRequest {
 
 export default function App() {
 	const isLoading = useAtomValue(isLoadingAtom);
+	const loadingStage = useAtomValue(loadingStageAtom);
+	const loadingMessage = useAtomValue(loadingMessageAtom);
 	const workspaces = useAtomValue(workspacesAtom);
 	const collections = useAtomValue(collectionsAtom);
 	const tabs = useAtomValue(tabsAtom);
@@ -121,23 +126,37 @@ export default function App() {
 
 	if (isLoading) {
 		return (
-			<div className="w-100 h-150 flex items-center justify-center bg-cloud-50 dark:bg-cloud-950">
-				<div className="text-cloud-600 dark:text-cloud-400">
-					{m.popup_loading()}
+			<div className="w-100 h-150 flex flex-col items-center justify-center gap-3 bg-cloud-50 dark:bg-cloud-950">
+				<div className="flex flex-col items-center gap-2">
+					<div className="w-8 h-8 border-3 border-accent/30 border-t-accent rounded-full animate-spin" />
+					<div className="text-sm font-medium text-cloud-600 dark:text-cloud-400">
+						{loadingMessage || m.popup_loading()}
+					</div>
+					{loadingStage !== "ready" && (
+						<div className="text-xs text-cloud-500 dark:text-cloud-500">
+							{loadingStage === "initializing" && "Initializing..."}
+							{loadingStage === "loading-db" && "Loading data..."}
+							{loadingStage === "loading-user" && "Loading user..."}
+							{loadingStage === "syncing" && "Syncing..."}
+						</div>
+					)}
 				</div>
 			</div>
 		);
 	}
 
 	return (
-		<ExtensionPopup
-			workspaces={workspaces}
-			collections={collections}
-			tabs={tabs}
-			currentUser={currentUser}
-			onCapture={handleCapture}
-			onClose={handleClose}
-			saveRequest={saveRequest}
-		/>
+		<>
+			<ExtensionPopup
+				workspaces={workspaces}
+				collections={collections}
+				tabs={tabs}
+				currentUser={currentUser}
+				onCapture={handleCapture}
+				onClose={handleClose}
+				saveRequest={saveRequest}
+			/>
+			<OfflineIndicator />
+		</>
 	);
 }

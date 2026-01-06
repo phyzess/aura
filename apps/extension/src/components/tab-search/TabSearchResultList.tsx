@@ -18,6 +18,7 @@ interface TabSearchResultListProps {
 	collections: Collection[];
 	variant?: TabSearchResultVariant;
 	groups?: TabSearchGroup[] | null;
+	searchQuery?: string;
 	onItemClick: (tab: TabItem, event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
@@ -27,6 +28,7 @@ export const TabSearchResultList: React.FC<TabSearchResultListProps> = ({
 	collections,
 	variant = "popup",
 	groups = null,
+	searchQuery = "",
 	onItemClick,
 }) => {
 	// If workspace groups are provided, use workspace-based grouping
@@ -68,6 +70,7 @@ export const TabSearchResultList: React.FC<TabSearchResultListProps> = ({
 										workspace={workspace || null}
 										collection={collection || null}
 										variant={variant}
+										searchQuery={searchQuery}
 										onClick={onItemClick}
 									/>
 								);
@@ -86,6 +89,7 @@ export const TabSearchResultList: React.FC<TabSearchResultListProps> = ({
 			workspaces={workspaces}
 			collections={collections}
 			variant={variant}
+			searchQuery={searchQuery}
 			onItemClick={onItemClick}
 		/>
 	);

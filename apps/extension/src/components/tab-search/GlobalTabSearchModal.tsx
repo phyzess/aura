@@ -46,7 +46,7 @@ export const GlobalTabSearchModal: React.FC<GlobalTabSearchModalProps> = ({
 		if (!isOpen) return;
 		const id = window.setTimeout(() => {
 			inputRef.current?.focus();
-		}, 0);
+		}, 100);
 		return () => {
 			window.clearTimeout(id);
 		};
@@ -137,6 +137,7 @@ export const GlobalTabSearchModal: React.FC<GlobalTabSearchModalProps> = ({
 							collections={collections}
 							variant="dashboard"
 							groups={groupedResults}
+							searchQuery={query}
 							onItemClick={(tab, event) => {
 								if (event.metaKey || event.ctrlKey) {
 									onSelectTab(tab.id);

@@ -28,7 +28,17 @@ const getInitialLocale = (): Locale => {
 
 const initialLocale = getInitialLocale();
 
+export type LoadingStage =
+	| "idle"
+	| "initializing"
+	| "loading-db"
+	| "loading-user"
+	| "syncing"
+	| "ready";
+
 export const isLoadingAtom = atom<boolean>(true);
+export const loadingStageAtom = atom<LoadingStage>("initializing");
+export const loadingMessageAtom = atom<string | null>(null);
 
 export const themeModeAtom = atom<"light" | "dark">(initialTheme);
 
@@ -54,3 +64,5 @@ export const syncDirtyAtom = atom<boolean>(false);
 export const lastLocalChangeAtAtom = atom<number | null>(null);
 
 export const syncLastSourceAtom = atom<"auto" | "manual" | null>(null);
+
+export const lastSyncTimestampAtom = atom<number | null>(null);

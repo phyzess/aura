@@ -22,19 +22,50 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 }) => {
 	const [url, setUrl] = useState("");
 	const [title, setTitle] = useState("");
+	const [urlError, setUrlError] = useState<string | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		if (isOpen) {
 			setUrl("");
 			setTitle("");
+			setUrlError(null);
 			setTimeout(() => inputRef.current?.focus(), 50);
 		}
 	}, [isOpen]);
 
+	const validateUrl = (value: string): string | null => {
+		if (!value.trim()) {
+			return "URL is required";
+		}
+
+		try {
+			const testUrl = value.startsWith("http") ? value : `https://${value}`;
+			new URL(testUrl);
+			return null;
+		} catch {
+			return "Please enter a valid URL";
+		}
+	};
+
+	const handleUrlChange = (value: string) => {
+		setUrl(value);
+		if (value.trim()) {
+			setUrlError(validateUrl(value));
+		} else {
+			setUrlError(null);
+		}
+	};
+
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!url.trim()) return;
+
+		const urlErr = validateUrl(url);
+		setUrlError(urlErr);
+
+		if (urlErr) {
+			return;
+		}
 
 		let finalTitle = title.trim();
 		if (!finalTitle) {
@@ -95,11 +126,12 @@ export const AddTabModal: React.FC<AddTabModalProps> = ({
 						labelClassName="text-xs font-bold text-secondary uppercase tracking-wider mb-1.5 ml-1"
 						type="text"
 						value={url}
-						onChange={(e) => setUrl(e.target.value)}
+						onChange={(e) => handleUrlChange(e.target.value)}
 						placeholder={m.add_tab_modal_url_placeholder()}
 						prefix={<Link2 size={18} />}
 						containerClassName="group"
 						ref={inputRef}
+						error={urlError}
 					/>
 
 					<TextField

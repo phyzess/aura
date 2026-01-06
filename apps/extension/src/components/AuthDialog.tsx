@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Divider } from "@/components/ui/Divider";
+import { InlineError } from "@/components/ui/ErrorMessage";
 import { IconButton } from "@/components/ui/IconButton";
 import { TextField } from "@/components/ui/TextField";
 import { API_BASE_URL } from "@/config/env";
@@ -25,6 +26,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 	const [password, setPassword] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	// Field-level validation errors
+	const [nameError, setNameError] = useState<string | null>(null);
+	const [emailError, setEmailError] = useState<string | null>(null);
+	const [passwordError, setPasswordError] = useState<string | null>(null);
 
 	const signIn = useSetAtom(signInAtom);
 	const signUp = useSetAtom(signUpAtom);
@@ -146,12 +152,70 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 		}
 	};
 
+	const validateName = (value: string): string | null => {
+		if (!value.trim()) {
+			return "Name is required";
+		}
+		if (value.trim().length < 2) {
+			return "Name must be at least 2 characters";
+		}
+		return null;
+	};
+
+	const validateEmail = (value: string): string | null => {
+		if (!value.trim()) {
+			return "Email is required";
+		}
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(value)) {
+			return "Please enter a valid email address";
+		}
+		return null;
+	};
+
+	const validatePassword = (value: string): string | null => {
+		if (!value) {
+			return "Password is required";
+		}
+		if (value.length < 6) {
+			return "Password must be at least 6 characters";
+		}
+		return null;
+	};
+
+	const handleNameChange = (value: string) => {
+		setName(value);
+		if (mode === "register") {
+			setNameError(validateName(value));
+		}
+	};
+
+	const handleEmailChange = (value: string) => {
+		setEmail(value);
+		setEmailError(validateEmail(value));
+	};
+
+	const handlePasswordChange = (value: string) => {
+		setPassword(value);
+		setPasswordError(validatePassword(value));
+	};
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
 
-		if (!email.trim() || !password.trim()) return;
-		if (mode === "register" && !name.trim()) return;
+		// Validate all fields
+		const emailErr = validateEmail(email);
+		const passwordErr = validatePassword(password);
+		const nameErr = mode === "register" ? validateName(name) : null;
+
+		setEmailError(emailErr);
+		setPasswordError(passwordErr);
+		setNameError(nameErr);
+
+		if (emailErr || passwordErr || nameErr) {
+			return;
+		}
 
 		setIsSubmitting(true);
 		try {
@@ -168,9 +232,23 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 			}
 			onSuccess();
 		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : m.auth_dialog_error_generic(),
-			);
+			const errorMessage =
+				err instanceof Error ? err.message : m.auth_dialog_error_generic();
+
+			// Provide more specific error messages
+			if (errorMessage.includes("invalid credentials")) {
+				setError(
+					"Invalid email or password. Please check your credentials and try again.",
+				);
+			} else if (errorMessage.includes("already exists")) {
+				setError(
+					"An account with this email already exists. Try signing in instead.",
+				);
+			} else if (errorMessage.includes("network")) {
+				setError("Network error. Please check your connection and try again.");
+			} else {
+				setError(errorMessage);
+			}
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -275,10 +353,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 							label={m.auth_dialog_name_label()}
 							type="text"
 							value={name}
-							onChange={(e) => setName(e.target.value)}
+							onChange={(e) => handleNameChange(e.target.value)}
 							placeholder={m.auth_dialog_name_placeholder()}
 							size="md"
 							prefix={<User size={16} />}
+							error={nameError}
 						/>
 					)}
 
@@ -286,27 +365,25 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onClose }) => {
 						label={m.auth_dialog_email_label()}
 						type="email"
 						value={email}
-						onChange={(e) => setEmail(e.target.value)}
+						onChange={(e) => handleEmailChange(e.target.value)}
 						placeholder={m.auth_dialog_email_placeholder()}
 						size="md"
 						prefix={<Mail size={16} />}
+						error={emailError}
 					/>
 
 					<TextField
 						label={m.auth_dialog_password_label()}
 						type="password"
 						value={password}
-						onChange={(e) => setPassword(e.target.value)}
+						onChange={(e) => handlePasswordChange(e.target.value)}
 						placeholder={m.auth_dialog_password_placeholder()}
 						size="md"
 						prefix={<Lock size={16} />}
+						error={passwordError}
 					/>
 
-					{error && (
-						<div className="text-xs text-danger bg-danger-soft/70 border border-danger/20 rounded-xl px-3 py-2">
-							{error}
-						</div>
-					)}
+					{error && <InlineError message={error} className="mt-2" />}
 
 					<Button
 						type="submit"

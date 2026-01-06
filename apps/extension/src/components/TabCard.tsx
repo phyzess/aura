@@ -145,7 +145,7 @@ export const TabCard: React.FC<TabCardProps> = ({
 			className={cn(
 				"group relative flex items-center gap-3 bg-surface-muted px-3 py-2.5 rounded-xl overflow-hidden border shadow-none cursor-grab active:cursor-grabbing",
 				isHighlighted && "ring-2 ring-accent-soft ring-offset-0",
-				isDragging && "z-50",
+				isDragging && "z-50 ring-2 ring-accent/50 shadow-xl rotate-2",
 				tab.linkStatus === "broken" && "border-red-500/50",
 				tab.linkStatus === "uncertain" && "border-yellow-500/30",
 				(!tab.linkStatus ||
@@ -155,6 +155,9 @@ export const TabCard: React.FC<TabCardProps> = ({
 			)}
 			title={formatLastVisited(tab.updatedAt)}
 		>
+			{isDragging && (
+				<div className="absolute inset-0 bg-linear-to-br from-accent/20 via-transparent to-accent/10 pointer-events-none" />
+			)}
 			<motion.div
 				style={{ backgroundColor: stripColor }}
 				initial={{ scaleX: 0 }}

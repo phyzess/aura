@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import {
 	Github,
+	HelpCircle,
 	Moon,
 	Search as SearchIcon,
 	Sparkles,
@@ -23,6 +24,7 @@ import type { Locale } from "@/types/paraglide";
 interface HeaderProps {
 	workspaceName: string;
 	onOpenSearch?: () => void;
+	onOpenShortcuts?: () => void;
 	workspaceTabsCount?: number;
 	workspaceCollectionsCount?: number;
 	getWorkspaceUrlsInDisplayOrder?: () => string[];
@@ -32,6 +34,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
 	workspaceName,
 	onOpenSearch,
+	onOpenShortcuts,
 	workspaceTabsCount,
 	workspaceCollectionsCount,
 	getWorkspaceUrlsInDisplayOrder,
@@ -166,6 +169,18 @@ export const Header: React.FC<HeaderProps> = ({
 					>
 						<span>{locale === "en" ? "中文" : "English"}</span>
 					</button>
+					{onOpenShortcuts && (
+						<IconButton
+							variant="subtle"
+							size="md"
+							onClick={onOpenShortcuts}
+							aria-label="Keyboard shortcuts"
+							title="Keyboard shortcuts (Shift + ?)"
+							className="hidden sm:inline-flex"
+						>
+							<HelpCircle size={16} className="text-muted" />
+						</IconButton>
+					)}
 					<IconButton
 						type="button"
 						variant="subtle"

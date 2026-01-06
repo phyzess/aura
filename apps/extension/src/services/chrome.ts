@@ -145,7 +145,10 @@ export const ChromeService = {
 	/**
 	 * Open multiple URLs in the current window.
 	 */
-	openTabs: async (urls: string[]): Promise<void> => {
+	openTabs: async (
+		urls: string[],
+		onProgress?: (progress: { total: number; opened: number }) => void,
+	): Promise<void> => {
 		const list = urls.filter(Boolean);
 		if (!list.length) return;
 
@@ -155,6 +158,9 @@ export const ChromeService = {
 			}
 			return;
 		}
+
+		let opened = 0;
+		const total = list.length;
 
 		for (const url of list) {
 			// eslint-disable-next-line no-await-in-loop
@@ -166,6 +172,8 @@ export const ChromeService = {
 							console.error("Error opening tab:", err.message);
 							reject(new Error(err.message));
 						} else {
+							opened++;
+							onProgress?.({ total, opened });
 							resolve();
 						}
 					});
@@ -179,7 +187,10 @@ export const ChromeService = {
 	/**
 	 * Open multiple URLs grouped in a dedicated browser window.
 	 */
-	openTabsInNewWindow: async (urls: string[]): Promise<void> => {
+	openTabsInNewWindow: async (
+		urls: string[],
+		onProgress?: (progress: { total: number; opened: number }) => void,
+	): Promise<void> => {
 		const list = urls.filter(Boolean);
 		if (!list.length) return;
 
@@ -193,6 +204,9 @@ export const ChromeService = {
 		const [first, ...rest] = list;
 		if (!first) return;
 
+		const opened = 1;
+		const total = list.length;
+
 		const createdWindow: any = await new Promise((resolve, reject) => {
 			try {
 				chrome.windows.create({ url: first, focused: true }, (win: any) => {
@@ -201,6 +215,7 @@ export const ChromeService = {
 						console.error("Error creating window:", err.message);
 						reject(new Error(err.message));
 					} else {
+						onProgress?.({ total, opened });
 						resolve(win);
 					}
 				});
@@ -212,6 +227,8 @@ export const ChromeService = {
 		const windowId = createdWindow?.id;
 		if (!windowId) return;
 
+		let currentOpened = opened;
+
 		for (const url of rest) {
 			// eslint-disable-next-line no-await-in-loop
 			await new Promise<void>((resolve, reject) => {
@@ -222,6 +239,8 @@ export const ChromeService = {
 							console.error("Error opening tab in new window:", err.message);
 							reject(new Error(err.message));
 						} else {
+							currentOpened++;
+							onProgress?.({ total, opened: currentOpened });
 							resolve();
 						}
 					});

@@ -606,7 +606,9 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 											transform: "rotate(3deg) scale(1.05)",
 											cursor: "grabbing",
 										}}
+										className="relative"
 									>
+										<div className="absolute -inset-2 bg-accent/20 blur-xl rounded-2xl" />
 										<TabCard
 											tab={activeTab}
 											onDelete={() => {}}
@@ -631,11 +633,13 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 											cursor: "grabbing",
 											width: "320px",
 										}}
+										className="relative"
 									>
+										<div className="absolute -inset-3 bg-accent/20 blur-2xl rounded-3xl" />
 										<Card
 											variant="glass"
 											interactive
-											className="shadow-2xl border-accent/20"
+											className="shadow-2xl border-accent/20 ring-2 ring-accent/30 relative"
 										>
 											<CardHeader className="p-4">
 												<div className="flex items-center gap-2.5">

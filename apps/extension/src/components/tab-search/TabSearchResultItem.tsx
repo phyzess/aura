@@ -1,6 +1,7 @@
 import { useSetAtom } from "jotai";
 import { ExternalLink, Folder, Globe, Layout, Pin } from "lucide-react";
 import type React from "react";
+import { HighlightText } from "@/components/ui/HighlightText";
 import * as m from "@/paraglide/messages";
 import { toggleTabPinAtom } from "@/store/actions";
 import type { Collection, TabItem, Workspace } from "@/types";
@@ -12,6 +13,7 @@ interface TabSearchResultItemProps {
 	workspace?: Workspace | null;
 	collection?: Collection | null;
 	variant?: TabSearchResultVariant;
+	searchQuery?: string;
 	onClick: (tab: TabItem, event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
@@ -28,6 +30,7 @@ export const TabSearchResultItem: React.FC<TabSearchResultItemProps> = ({
 	workspace,
 	collection,
 	variant = "popup",
+	searchQuery = "",
 	onClick,
 }) => {
 	let hostname = "";
@@ -79,10 +82,10 @@ export const TabSearchResultItem: React.FC<TabSearchResultItemProps> = ({
 					<div
 						className={`${baseText} font-semibold text-primary truncate transition-colors`}
 					>
-						{tab.title}
+						<HighlightText text={tab.title} query={searchQuery} />
 					</div>
 					<div className="text-label text-muted truncate opacity-80 mt-0.5">
-						{hostname}
+						<HighlightText text={hostname} query={searchQuery} />
 					</div>
 					<div className="flex items-center gap-1.5 mt-1.5 overflow-hidden">
 						{workspace && (

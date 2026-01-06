@@ -15,6 +15,7 @@ interface GroupedTabSearchResultsProps {
 	workspaces: Workspace[];
 	collections: Collection[];
 	variant?: "popup" | "dashboard";
+	searchQuery?: string;
 	onItemClick: (tab: TabItem, event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
@@ -29,7 +30,14 @@ interface TabGroup {
 
 export const GroupedTabSearchResults: React.FC<
 	GroupedTabSearchResultsProps
-> = ({ tabs, workspaces, collections, variant = "popup", onItemClick }) => {
+> = ({
+	tabs,
+	workspaces,
+	collections,
+	variant = "popup",
+	searchQuery = "",
+	onItemClick,
+}) => {
 	// Group tabs by category
 	const groups = useMemo<TabGroup[]>(() => {
 		const result: TabGroup[] = [];
@@ -112,6 +120,7 @@ export const GroupedTabSearchResults: React.FC<
 				workspace={parentWs}
 				collection={parentCol}
 				variant={variant}
+				searchQuery={searchQuery}
 				onClick={onItemClick}
 			/>
 		);

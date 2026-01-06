@@ -909,19 +909,27 @@ export const syncWithServerAtom = atom(
 			}
 		} else {
 			set(syncStatusAtom, "error");
-			set(syncErrorAtom, "Sync failed, please try again.");
 
 			// Check if offline
 			if (!offlineDetector.getStatus()) {
 				set(
 					syncErrorAtom,
-					"You are offline. Changes will sync when you're back online.",
+					"💾 Offline - Changes saved locally and will sync when you're back online",
 				);
-			} else if (source === "manual") {
-				await notificationService.error(
-					"Sync Failed",
-					"Please try again later",
-				);
+				if (source === "manual") {
+					await notificationService.info(
+						"Offline Mode",
+						"Your changes are saved locally and will sync when you're back online",
+					);
+				}
+			} else {
+				set(syncErrorAtom, "Sync failed, please try again.");
+				if (source === "manual") {
+					await notificationService.error(
+						"Sync Failed",
+						"Please try again later",
+					);
+				}
 			}
 		}
 

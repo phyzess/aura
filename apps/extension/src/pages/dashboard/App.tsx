@@ -2,7 +2,9 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { AuthDialog } from "@/components/AuthDialog";
 import { Header } from "@/components/Header";
+import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { Sidebar } from "@/components/Sidebar";
 import { GlobalTabSearchModal } from "@/components/tab-search";
 import { WorkspaceView } from "@/components/WorkspaceView";
@@ -23,6 +25,8 @@ import {
 	collectionsAtom,
 	currentUserAtom,
 	isLoadingAtom,
+	loadingMessageAtom,
+	loadingStageAtom,
 	localeAtom,
 	tabsAtom,
 	themeModeAtom,
@@ -37,6 +41,8 @@ export default function App() {
 	useAtomValue(localeAtom);
 
 	const isLoading = useAtomValue(isLoadingAtom);
+	const loadingStage = useAtomValue(loadingStageAtom);
+	const loadingMessage = useAtomValue(loadingMessageAtom);
 	const workspaces = useAtomValue(workspacesAtom);
 	const collections = useAtomValue(collectionsAtom);
 	const tabs = useAtomValue(tabsAtom);
@@ -57,6 +63,7 @@ export default function App() {
 	const setActiveWorkspaceId = useSetAtom(activeWorkspaceIdAtom);
 	const [isAuthOpen, setIsAuthOpen] = useState(false);
 	const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+	const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
 	useEffect(() => {
 		initData();
@@ -116,11 +123,27 @@ export default function App() {
 		setIsSearchOpen(true);
 	});
 
+	useHotkey("shift+/", (event) => {
+		event.preventDefault();
+		setIsShortcutsOpen(true);
+	});
+
 	if (isLoading) {
 		return (
-			<div className="flex h-screen items-center justify-center bg-cloud-50 dark:bg-cloud-950">
-				<div className="text-cloud-600 dark:text-cloud-400">
-					{m.dashboard_loading()}
+			<div className="flex h-screen flex-col items-center justify-center gap-4 bg-cloud-50 dark:bg-slate-950">
+				<div className="flex flex-col items-center gap-3">
+					<div className="w-12 h-12 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
+					<div className="text-base font-medium text-cloud-600 dark:text-cloud-400">
+						{loadingMessage || m.dashboard_loading()}
+					</div>
+					{loadingStage !== "ready" && (
+						<div className="text-sm text-cloud-500 dark:text-cloud-500">
+							{loadingStage === "initializing" && "Initializing application..."}
+							{loadingStage === "loading-db" && "Loading your workspaces..."}
+							{loadingStage === "loading-user" && "Loading user profile..."}
+							{loadingStage === "syncing" && "Syncing with server..."}
+						</div>
+					)}
 				</div>
 			</div>
 		);
@@ -184,6 +207,7 @@ export default function App() {
 				<Header
 					workspaceName={activeWorkspace?.name || ""}
 					onOpenSearch={() => setIsSearchOpen(true)}
+					onOpenShortcuts={() => setIsShortcutsOpen(true)}
 					workspaceTabsCount={workspaceTabsCount}
 					workspaceCollectionsCount={workspaceCollections.length}
 					getWorkspaceUrlsInDisplayOrder={getWorkspaceUrlsInDisplayOrder}
@@ -229,6 +253,11 @@ export default function App() {
 					setFocusedTabId(tabId);
 				}}
 			/>
+			<KeyboardShortcutsDialog
+				isOpen={isShortcutsOpen}
+				onClose={() => setIsShortcutsOpen(false)}
+			/>
+			<OfflineIndicator />
 		</div>
 	);
 }

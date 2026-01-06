@@ -111,15 +111,44 @@ export const OpenTabsButton: React.FC<OpenTabsButtonProps> = ({
 	const performOpen = async (urls: string[]) => {
 		if (!urls.length) return;
 		setIsOpening(true);
+
+		let toastId: string | null = null;
+
+		// Show progress toast for large batches
+		if (urls.length >= 5) {
+			toastId = toast.loading(`Opening tabs... 0 / ${urls.length}`, {
+				duration: Number.POSITIVE_INFINITY,
+			});
+		}
+
 		try {
+			const onProgress = (progress: { total: number; opened: number }) => {
+				if (toastId) {
+					toast.loading(
+						`Opening tabs... ${progress.opened} / ${progress.total}`,
+						{
+							id: toastId,
+						},
+					);
+				}
+			};
+
 			if (mode === "new-window") {
-				await ChromeService.openTabsInNewWindow(urls);
+				await ChromeService.openTabsInNewWindow(urls, onProgress);
 			} else {
-				await ChromeService.openTabs(urls);
+				await ChromeService.openTabs(urls, onProgress);
+			}
+
+			if (toastId) {
+				toast.success(`Opened ${urls.length} tabs`, { id: toastId });
 			}
 		} catch (error) {
 			console.error("Error opening tabs:", error);
-			toast.error(m.tabs_open_error_generic());
+			if (toastId) {
+				toast.error(m.tabs_open_error_generic(), { id: toastId });
+			} else {
+				toast.error(m.tabs_open_error_generic());
+			}
 		} finally {
 			setIsOpening(false);
 		}

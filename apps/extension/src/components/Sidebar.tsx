@@ -21,6 +21,7 @@ import {
 } from "@/store/actions";
 import {
 	activeWorkspaceIdAtom,
+	lastSyncTimestampAtom,
 	syncErrorAtom,
 	syncLastSourceAtom,
 	syncStatusAtom,
@@ -53,6 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 	const syncStatus = useAtomValue(syncStatusAtom);
 	const syncError = useAtomValue(syncErrorAtom);
 	const syncLastSource = useAtomValue(syncLastSourceAtom);
+	const lastSyncTimestamp = useAtomValue(lastSyncTimestampAtom);
 	const setActiveWorkspaceId = useSetAtom(activeWorkspaceIdAtom);
 	const createWorkspace = useSetAtom(createWorkspaceAtom);
 	const updateWorkspaceName = useSetAtom(updateWorkspaceNameAtom);
@@ -303,6 +305,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 							onOpenAuth={onOpenAuth}
 							onSignOut={onSignOut}
 							syncStatus={syncStatus}
+							lastSyncTimestamp={lastSyncTimestamp}
 							onSync={syncWithServer}
 						/>
 					</div>

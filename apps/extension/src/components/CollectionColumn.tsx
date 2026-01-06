@@ -147,14 +147,41 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 		setIsCheckingLinks(true);
 		setCheckProgress({ total: sortedTabs.length, checked: 0 });
 
+		// Show progress toast
+		let progressToastId: string | null = null;
+		const showProgress = sortedTabs.length >= 5; // Only show toast for 5+ tabs
+
+		if (showProgress) {
+			progressToastId = toast.loading(
+				`Checking ${sortedTabs.length} links...`,
+				{
+					duration: Number.POSITIVE_INFINITY,
+				},
+			);
+		}
+
 		try {
 			const tabIds = sortedTabs.map((t) => t.id);
 			const stats = await checkLinks({
 				tabIds,
 				onProgress: (progress) => {
 					setCheckProgress(progress);
+					if (showProgress && progressToastId) {
+						toast.loading(
+							`Checking links... ${progress.checked}/${progress.total}`,
+							{
+								id: progressToastId,
+								duration: Number.POSITIVE_INFINITY,
+							},
+						);
+					}
 				},
 			});
+
+			// Dismiss progress toast
+			if (progressToastId) {
+				toast.dismiss(progressToastId);
+			}
 
 			// Show completion toast with results
 			if (stats.broken > 0 || stats.uncertain > 0) {
@@ -171,6 +198,9 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 			}
 		} catch (error) {
 			console.error("Failed to check links:", error);
+			if (progressToastId) {
+				toast.dismiss(progressToastId);
+			}
 			toast.error("Failed to check links. Please try again.");
 		} finally {
 			// Keep the final progress visible for a moment
@@ -197,13 +227,19 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 				interactive
 				selected={isDropTarget}
 				className={cn(
-					"w-full pb-2 transition-all duration-200",
+					"w-full pb-2 transition-all duration-200 relative",
 					isDragging && "opacity-40 scale-95",
 					isDropTarget
-						? "bg-surface-elevated/90 shadow-soft-hover"
+						? "bg-surface-elevated/90 shadow-soft-hover ring-2 ring-accent/30 ring-offset-2 ring-offset-surface"
 						: "hover:bg-surface-elevated",
 				)}
 			>
+				{isDropTarget && (
+					<div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden">
+						<div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-accent/5 animate-pulse" />
+						<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent" />
+					</div>
+				)}
 				<CardHeader className="p-5 sticky top-0 z-30">
 					<div className="flex items-center gap-2 flex-1 min-w-0">
 						<div className="w-2 h-2 rounded-full bg-accent shadow-glow flex-shrink-0"></div>
@@ -436,6 +472,11 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 									icon="🍃"
 									title={m.workspace_collection_empty_title()}
 									description={m.workspace_collection_empty_body()}
+									suggestions={[
+										"Click the button below to add your first tab",
+										"Or drag and drop tabs from other collections",
+										"You can also paste URLs directly",
+									]}
 									className="bg-transparent border-none"
 									action={
 										<Button
