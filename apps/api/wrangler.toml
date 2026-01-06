@@ -12,6 +12,9 @@ BETTER_AUTH_TRUSTED_ORIGINS = "http://localhost:5173,chrome-extension://*"
 GOOGLE_CLIENT_ID = "479453408178-k3rqd5eg7hrjbf97aljkvnrkabd8fvab.apps.googleusercontent.com"
 GITHUB_CLIENT_ID = "Ov23liqER5n9iRD0qAAO"
 
+# Alert configuration (optional)
+ALERT_EMAIL = "phyzess@gmail.com"
+
 # Secrets (DO NOT put secret values here!)
 #
 # For LOCAL DEVELOPMENT:
@@ -35,6 +38,9 @@ BETTER_AUTH_TRUSTED_ORIGINS = "chrome-extension://ojpnnkcmnbpnkhlohnkbdopkhfgjfh
 # Production OAuth Client IDs (create separate OAuth apps for production)
 GOOGLE_CLIENT_ID = "479453408178-k3rqd5eg7hrjbf97aljkvnrkabd8fvab.apps.googleusercontent.com"
 GITHUB_CLIENT_ID = "Ov23lil0E4lOjv9EoSls"
+
+# Alert configuration (optional)
+ALERT_EMAIL = "phyzess@gmail.com"
 
 # Production secrets: Use `wrangler secret put --env production` command
 # - wrangler secret put BETTER_AUTH_SECRET --env production
