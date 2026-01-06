@@ -49,32 +49,25 @@ This is an automated alert from Aura sync monitoring.
 	`.trim();
 
 	try {
-		// 使用 Cloudflare Email Workers API
-		// 需要在 wrangler.toml 配置 send_email binding
-		if (env.EMAIL) {
-			await env.EMAIL.send({
-				from: `alerts@${env.EMAIL_DOMAIN || "aura.app"}`,
-				to: env.ALERT_EMAIL || "zimm.yu@example.com",
-				subject: `[Aura Alert] ${alert.type}`,
-				content: emailContent,
+		// 使用 Resend API 发送邮件
+		if (env.RESEND_API_KEY) {
+			const fromEmail = env.EMAIL_DOMAIN
+				? `Aura Alerts <alerts@${env.EMAIL_DOMAIN}>`
+				: "Aura Alerts <onboarding@resend.dev>";
+
+			await fetch("https://api.resend.com/emails", {
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${env.RESEND_API_KEY}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					from: fromEmail,
+					to: env.ALERT_EMAIL,
+					subject: `[Aura Alert] ${alert.type}`,
+					text: emailContent,
+				}),
 			});
-		} else {
-			// Fallback: 使用 fetch 调用外部邮件服务 (如 Resend)
-			if (env.RESEND_API_KEY) {
-				await fetch("https://api.resend.com/emails", {
-					method: "POST",
-					headers: {
-						Authorization: `Bearer ${env.RESEND_API_KEY}`,
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						from: `alerts@${env.EMAIL_DOMAIN || "aura.app"}`,
-						to: env.ALERT_EMAIL || "zimm.yu@example.com",
-						subject: `[Aura Alert] ${alert.type}`,
-						text: emailContent,
-					}),
-				});
-			}
 		}
 	} catch (error) {
 		console.error("[alerts] Failed to send email:", error);

@@ -41,6 +41,7 @@ GITHUB_CLIENT_ID = "Ov23lil0E4lOjv9EoSls"
 
 # Alert configuration (optional)
 ALERT_EMAIL = "phyzess@gmail.com"
+EMAIL_DOMAIN = "phyzess.me"
 
 # Production secrets: Use `wrangler secret put --env production` command
 # - wrangler secret put BETTER_AUTH_SECRET --env production
@@ -70,4 +71,3 @@ preview_id = "1b6227ee2d074ce7ac47f42bb785ca0d"
 [[env.production.kv_namespaces]]
 binding = "AUTH_KV"
 id = "cd3ce3547f9a48d69c25594d6244d11f"  # Replace with actual production KV namespace ID when deploying
-
