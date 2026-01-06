@@ -1,3 +1,4 @@
+import type { User as DomainUser, SyncPayload } from "@aura/domain";
 import type {
 	D1Database,
 	IncomingRequestCfProperties,
@@ -5,10 +6,6 @@ import type {
 } from "@cloudflare/workers-types";
 import { and, eq, gt, or } from "drizzle-orm";
 import { Hono } from "hono";
-import type {
-	User as DomainUser,
-	SyncPayload,
-} from "../../packages/domain/src";
 
 import { logToAnalytics, sendEmailAlert, shouldNotify } from "./alerts";
 import { createAuth } from "./auth";
