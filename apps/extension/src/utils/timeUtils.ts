@@ -75,7 +75,9 @@ export function getTimeAge(timestamp: number | null | undefined): TimeAgeInfo {
 /**
  * Format a timestamp to a readable date string
  */
-export function formatLastVisited(timestamp: number | null | undefined): string {
+export function formatLastVisited(
+	timestamp: number | null | undefined,
+): string {
 	if (!timestamp) return "Never visited";
 
 	const date = new Date(timestamp);
@@ -104,4 +106,3 @@ export function formatLastVisited(timestamp: number | null | undefined): string 
 		day: "numeric",
 	});
 }
-

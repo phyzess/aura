@@ -52,7 +52,7 @@ class NotificationService {
 
 		try {
 			const notificationId = `aura-${Date.now()}`;
-			
+
 			await chrome.notifications.create(notificationId, {
 				type: "basic",
 				iconUrl: options.iconUrl || this.DEFAULT_ICON,
@@ -101,7 +101,11 @@ class NotificationService {
 	/**
 	 * Show error notification
 	 */
-	async error(title: string, message: string, requireInteraction = false): Promise<string | null> {
+	async error(
+		title: string,
+		message: string,
+		requireInteraction = false,
+	): Promise<string | null> {
 		return this.show({
 			title,
 			message,
@@ -157,4 +161,3 @@ class NotificationService {
 }
 
 export const notificationService = new NotificationService();
-

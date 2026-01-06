@@ -11,7 +11,9 @@ export async function verifyTurnstile(
 	remoteIp?: string,
 ): Promise<{ success: boolean; error?: string }> {
 	if (!secretKey) {
-		console.warn("[turnstile] Secret key not configured, skipping verification");
+		console.warn(
+			"[turnstile] Secret key not configured, skipping verification",
+		);
 		return { success: true };
 	}
 
@@ -51,4 +53,3 @@ export async function verifyTurnstile(
 		};
 	}
 }
-

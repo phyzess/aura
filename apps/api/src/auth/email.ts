@@ -8,7 +8,9 @@ interface EmailOptions {
 	};
 }
 
-export async function sendEmail(options: EmailOptions): Promise<{ success: boolean; error?: string }> {
+export async function sendEmail(
+	options: EmailOptions,
+): Promise<{ success: boolean; error?: string }> {
 	const fromEmail = options.from?.email || "noreply@aura.app";
 	const fromName = options.from?.name || "Aura";
 
@@ -109,4 +111,3 @@ export function generateVerificationEmailHTML(code: string): string {
 </html>
 	`.trim();
 }
-

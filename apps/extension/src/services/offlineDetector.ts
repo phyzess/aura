@@ -135,4 +135,3 @@ class OfflineDetector {
 }
 
 export const offlineDetector = new OfflineDetector();
-

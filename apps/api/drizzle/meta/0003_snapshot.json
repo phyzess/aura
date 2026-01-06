@@ -1,9 +1,237 @@
 {
 	"version": "6",
 	"dialect": "sqlite",
-	"id": "e0c27d82-75fd-432c-a118-97dadbcffb51",
-	"prevId": "eb485cca-e9db-41dc-b512-10229c75b495",
+	"id": "43557496-d4b4-4836-9665-2be5ad2685b1",
+	"prevId": "059d789b-f228-4d6d-98e6-17bb7515bdcf",
 	"tables": {
+		"alerts": {
+			"name": "alerts",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"level": {
+					"name": "level",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"type": {
+					"name": "type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"message": {
+					"name": "message",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"device_info": {
+					"name": "device_info",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"metrics": {
+					"name": "metrics",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(cast(unixepoch('subsecond') * 1000 as integer))"
+				}
+			},
+			"indexes": {
+				"alerts_userId_idx": {
+					"name": "alerts_userId_idx",
+					"columns": ["user_id"],
+					"isUnique": false
+				},
+				"alerts_level_idx": {
+					"name": "alerts_level_idx",
+					"columns": ["level"],
+					"isUnique": false
+				},
+				"alerts_type_idx": {
+					"name": "alerts_type_idx",
+					"columns": ["type"],
+					"isUnique": false
+				},
+				"alerts_createdAt_idx": {
+					"name": "alerts_createdAt_idx",
+					"columns": ["created_at"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"alerts_user_id_users_id_fk": {
+					"name": "alerts_user_id_users_id_fk",
+					"tableFrom": "alerts",
+					"tableTo": "users",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "set null",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"sync_metrics": {
+			"name": "sync_metrics",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"workspaces_input": {
+					"name": "workspaces_input",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"collections_input": {
+					"name": "collections_input",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"tabs_input": {
+					"name": "tabs_input",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"workspaces_updated": {
+					"name": "workspaces_updated",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"workspaces_skipped": {
+					"name": "workspaces_skipped",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"collections_updated": {
+					"name": "collections_updated",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"collections_skipped": {
+					"name": "collections_skipped",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"tabs_updated": {
+					"name": "tabs_updated",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"tabs_skipped": {
+					"name": "tabs_skipped",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"duration": {
+					"name": "duration",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"db_operations": {
+					"name": "db_operations",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(cast(unixepoch('subsecond') * 1000 as integer))"
+				}
+			},
+			"indexes": {
+				"sync_metrics_userId_idx": {
+					"name": "sync_metrics_userId_idx",
+					"columns": ["user_id"],
+					"isUnique": false
+				},
+				"sync_metrics_createdAt_idx": {
+					"name": "sync_metrics_createdAt_idx",
+					"columns": ["created_at"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"sync_metrics_user_id_users_id_fk": {
+					"name": "sync_metrics_user_id_users_id_fk",
+					"tableFrom": "sync_metrics",
+					"tableTo": "users",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "set null",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
 		"collections": {
 			"name": "collections",
 			"columns": {
@@ -64,6 +292,13 @@
 					"notNull": true,
 					"autoincrement": false,
 					"default": "(cast(unixepoch('subsecond') * 1000 as integer))"
+				},
+				"deleted_at": {
+					"name": "deleted_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
 				}
 			},
 			"indexes": {
@@ -177,6 +412,13 @@
 					"notNull": true,
 					"autoincrement": false,
 					"default": "(cast(unixepoch('subsecond') * 1000 as integer))"
+				},
+				"deleted_at": {
+					"name": "deleted_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
 				}
 			},
 			"indexes": {
@@ -268,6 +510,13 @@
 					"notNull": true,
 					"autoincrement": false,
 					"default": "(cast(unixepoch('subsecond') * 1000 as integer))"
+				},
+				"deleted_at": {
+					"name": "deleted_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
 				}
 			},
 			"indexes": {

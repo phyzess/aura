@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { cn } from "@/lib/utils";
 
 export type StackGap = "none" | "xs" | "sm" | "md" | "lg";
@@ -10,7 +10,10 @@ export interface StackProps extends React.HTMLAttributes<HTMLDivElement> {
 	justify?: "start" | "center" | "end" | "between";
 }
 
-const directionClassName: Record<NonNullable<StackProps["direction"]>, string> = {
+const directionClassName: Record<
+	NonNullable<StackProps["direction"]>,
+	string
+> = {
 	row: "flex-row",
 	column: "flex-col",
 };
@@ -69,4 +72,3 @@ export const HStack: React.FC<HStackProps> = (props) => {
 export const VStack: React.FC<VStackProps> = (props) => {
 	return <Stack direction="column" {...props} />;
 };
-

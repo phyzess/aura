@@ -1,11 +1,6 @@
 import toast from "react-hot-toast";
 
-export type ErrorType =
-	| "network"
-	| "auth"
-	| "sync"
-	| "storage"
-	| "unknown";
+export type ErrorType = "network" | "auth" | "sync" | "storage" | "unknown";
 
 export interface ErrorContext {
 	type: ErrorType;
@@ -24,7 +19,11 @@ class ErrorHandler {
 	 * Handle an error with appropriate user feedback and retry logic
 	 */
 	async handleError(context: ErrorContext): Promise<void> {
-		console.error(`[ErrorHandler] ${context.type}:`, context.message, context.originalError);
+		console.error(
+			`[ErrorHandler] ${context.type}:`,
+			context.message,
+			context.originalError,
+		);
 
 		// Show user-friendly error message
 		this.showErrorToast(context);
@@ -41,7 +40,7 @@ class ErrorHandler {
 	 */
 	private showErrorToast(context: ErrorContext): void {
 		const message = this.getUserFriendlyMessage(context);
-		
+
 		toast.error(message, {
 			duration: context.retryable ? 5000 : 4000,
 		});
@@ -57,7 +56,9 @@ class ErrorHandler {
 			case "auth":
 				return "Authentication failed. Please sign in again.";
 			case "sync":
-				return context.message || "Sync failed. Your changes are saved locally.";
+				return (
+					context.message || "Sync failed. Your changes are saved locally."
+				);
 			case "storage":
 				return "Storage error. Please try again.";
 			default:
@@ -152,4 +153,3 @@ class ErrorHandler {
 }
 
 export const errorHandler = new ErrorHandler();
-

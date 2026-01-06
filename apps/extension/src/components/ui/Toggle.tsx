@@ -61,4 +61,3 @@ export const Toggle: React.FC<ToggleProps> = ({
 		</button>
 	);
 };
-

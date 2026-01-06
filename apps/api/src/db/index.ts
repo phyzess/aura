@@ -9,4 +9,3 @@ export function createDb(db: D1Database) {
 export type Db = ReturnType<typeof createDb>;
 
 export { schema };
-

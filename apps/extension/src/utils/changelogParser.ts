@@ -92,4 +92,3 @@ export function parseChangelog(markdown: string): ChangelogEntry[] {
 
 	return entries;
 }
-

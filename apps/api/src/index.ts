@@ -3,13 +3,14 @@ import type {
 	IncomingRequestCfProperties,
 	KVNamespace,
 } from "@cloudflare/workers-types";
-import { and, eq, gt, inArray, or } from "drizzle-orm";
+import { and, eq, gt, or } from "drizzle-orm";
 import { Hono } from "hono";
 import type {
 	User as DomainUser,
 	SyncPayload,
 } from "../../packages/domain/src";
 
+import { logToAnalytics, sendEmailAlert, shouldNotify } from "./alerts";
 import { createAuth } from "./auth";
 import {
 	generateVerificationCode,
@@ -19,12 +20,23 @@ import {
 import { verifyTurnstile } from "./auth/turnstile";
 import authCallbackHtml from "./auth-callback.html";
 import { createDb } from "./db";
+import { alerts, syncMetrics } from "./db/alerts.schema";
 import { collections, tabs, workspaces } from "./db/app.schema";
 import { PRIVACY_HTML } from "./privacy";
 
 export interface Env {
 	DB: D1Database;
 	AUTH_KV: KVNamespace;
+	KV?: KVNamespace; // For alert throttling
+	ANALYTICS?: AnalyticsEngineDataset;
+	EMAIL?: {
+		send: (message: {
+			from: string;
+			to: string;
+			subject: string;
+			content: string;
+		}) => Promise<void>;
+	};
 	BETTER_AUTH_SECRET: string;
 	BETTER_AUTH_URL: string;
 	BETTER_AUTH_TRUSTED_ORIGINS: string;
@@ -33,6 +45,10 @@ export interface Env {
 	GOOGLE_CLIENT_SECRET?: string;
 	GITHUB_CLIENT_ID?: string;
 	GITHUB_CLIENT_SECRET?: string;
+	// Alert configuration
+	ALERT_EMAIL?: string; // Your email for alerts
+	EMAIL_DOMAIN?: string; // Domain for sending emails
+	RESEND_API_KEY?: string; // Fallback email service
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -46,18 +62,7 @@ const toMillis = (value: unknown): number => {
 	return Number.isFinite(t) ? t : Date.now();
 };
 
-const WORKSPACES_INSERT_BATCH_SIZE = 10;
-const COLLECTIONS_INSERT_BATCH_SIZE = 10;
-const TABS_INSERT_BATCH_SIZE = 8;
-const IN_CLAUSE_BATCH_SIZE = 80;
-
-const chunk = <T>(items: T[], size: number): T[][] => {
-	const result: T[][] = [];
-	for (let i = 0; i < items.length; i += size) {
-		result.push(items.slice(i, i + size));
-	}
-	return result;
-};
+// Removed batch size constants - no longer needed with LWW upsert strategy
 
 app.get("/", (c) => c.html(authCallbackHtml));
 
@@ -215,6 +220,8 @@ app.post("/api/app/sync/pull", async (c) => {
 
 app.post("/api/app/sync/push", async (c) => {
 	try {
+		const startTime = Date.now();
+
 		const auth = createAuth(
 			c.env,
 			c.req.raw.cf as IncomingRequestCfProperties | undefined,
@@ -390,95 +397,191 @@ app.post("/api/app/sync/push", async (c) => {
 			return c.json({ ok: true });
 		}
 
-		if (collectionIds.size > 0) {
-			for (const ids of chunk([...collectionIds], IN_CLAUSE_BATCH_SIZE)) {
-				await db
-					.delete(tabs)
-					.where(and(eq(tabs.userId, userId), inArray(tabs.collectionId, ids)));
-			}
-		}
+		// Use Last-Write-Wins (LWW) strategy with upsert
+		// Only update server data if client data is newer
 
-		if (workspaceIds.size > 0) {
-			for (const ids of chunk([...workspaceIds], IN_CLAUSE_BATCH_SIZE)) {
-				await db
-					.delete(collections)
-					.where(
-						and(
-							eq(collections.userId, userId),
-							inArray(collections.workspaceId, ids),
-						),
-					);
-			}
+		let workspacesUpdated = 0;
+		let workspacesSkipped = 0;
+		let collectionsUpdated = 0;
+		let collectionsSkipped = 0;
+		let tabsUpdated = 0;
+		let tabsSkipped = 0;
 
-			for (const ids of chunk([...workspaceIds], IN_CLAUSE_BATCH_SIZE)) {
-				await db
-					.delete(workspaces)
-					.where(
-						and(eq(workspaces.userId, userId), inArray(workspaces.id, ids)),
-					);
-			}
-		}
-
+		// Process workspaces with LWW
 		if (workspacesInput.length > 0) {
-			for (const batch of chunk(
-				workspacesInput,
-				WORKSPACES_INSERT_BATCH_SIZE,
-			)) {
-				await db.insert(workspaces).values(
-					batch.map((w) => ({
-						id: w.id,
-						userId,
-						name: w.name,
-						description: w.description ?? null,
-						order: w.order,
-						createdAt: w.createdAt,
-						updatedAt: w.updatedAt,
-						deletedAt: w.deletedAt ?? null,
-					})),
-				);
+			for (const w of workspacesInput) {
+				// Check if workspace exists and compare timestamps
+				const existing = await db
+					.select()
+					.from(workspaces)
+					.where(and(eq(workspaces.id, w.id), eq(workspaces.userId, userId)))
+					.get();
+
+				const clientTime = w.deletedAt ?? w.updatedAt;
+				const serverTime = existing
+					? (existing.deletedAt ?? existing.updatedAt)
+					: 0;
+
+				if (!existing || clientTime > serverTime) {
+					// Client data is newer or doesn't exist on server, upsert it
+					await db
+						.insert(workspaces)
+						.values({
+							id: w.id,
+							userId,
+							name: w.name,
+							description: w.description ?? null,
+							order: w.order,
+							createdAt: w.createdAt,
+							updatedAt: w.updatedAt,
+							deletedAt: w.deletedAt ?? null,
+						})
+						.onConflictDoUpdate({
+							target: workspaces.id,
+							set: {
+								name: w.name,
+								description: w.description ?? null,
+								order: w.order,
+								updatedAt: w.updatedAt,
+								deletedAt: w.deletedAt ?? null,
+							},
+						});
+					workspacesUpdated++;
+				} else {
+					// Server data is newer, skip update
+					workspacesSkipped++;
+				}
 			}
 		}
 
+		// Process collections with LWW
 		if (collectionsInput.length > 0) {
-			for (const batch of chunk(
-				collectionsInput,
-				COLLECTIONS_INSERT_BATCH_SIZE,
-			)) {
-				await db.insert(collections).values(
-					batch.map((col) => ({
-						id: col.id,
-						workspaceId: col.workspaceId,
-						userId,
-						name: col.name,
-						description: col.description ?? null,
-						order: col.order,
-						createdAt: col.createdAt,
-						updatedAt: col.updatedAt,
-						deletedAt: col.deletedAt ?? null,
-					})),
-				);
+			for (const col of collectionsInput) {
+				const existing = await db
+					.select()
+					.from(collections)
+					.where(
+						and(eq(collections.id, col.id), eq(collections.userId, userId)),
+					)
+					.get();
+
+				const clientTime = col.deletedAt ?? col.updatedAt;
+				const serverTime = existing
+					? (existing.deletedAt ?? existing.updatedAt)
+					: 0;
+
+				if (!existing || clientTime > serverTime) {
+					await db
+						.insert(collections)
+						.values({
+							id: col.id,
+							workspaceId: col.workspaceId,
+							userId,
+							name: col.name,
+							description: col.description ?? null,
+							order: col.order,
+							createdAt: col.createdAt,
+							updatedAt: col.updatedAt,
+							deletedAt: col.deletedAt ?? null,
+						})
+						.onConflictDoUpdate({
+							target: collections.id,
+							set: {
+								workspaceId: col.workspaceId,
+								name: col.name,
+								description: col.description ?? null,
+								order: col.order,
+								updatedAt: col.updatedAt,
+								deletedAt: col.deletedAt ?? null,
+							},
+						});
+					collectionsUpdated++;
+				} else {
+					collectionsSkipped++;
+				}
 			}
 		}
 
+		// Process tabs with LWW
 		if (tabsInput.length > 0) {
-			for (const batch of chunk(tabsInput, TABS_INSERT_BATCH_SIZE)) {
-				await db.insert(tabs).values(
-					batch.map((t) => ({
-						id: t.id,
-						collectionId: t.collectionId,
-						userId,
-						url: t.url,
-						title: t.title,
-						faviconUrl: t.faviconUrl ?? null,
-						isPinned: t.isPinned ?? false,
-						order: t.order,
-						createdAt: t.createdAt,
-						updatedAt: t.updatedAt,
-						deletedAt: t.deletedAt ?? null,
-					})),
-				);
+			for (const t of tabsInput) {
+				const existing = await db
+					.select()
+					.from(tabs)
+					.where(and(eq(tabs.id, t.id), eq(tabs.userId, userId)))
+					.get();
+
+				const clientTime = t.deletedAt ?? t.updatedAt;
+				const serverTime = existing
+					? (existing.deletedAt ?? existing.updatedAt)
+					: 0;
+
+				if (!existing || clientTime > serverTime) {
+					await db
+						.insert(tabs)
+						.values({
+							id: t.id,
+							collectionId: t.collectionId,
+							userId,
+							url: t.url,
+							title: t.title,
+							faviconUrl: t.faviconUrl ?? null,
+							isPinned: t.isPinned ?? false,
+							order: t.order,
+							createdAt: t.createdAt,
+							updatedAt: t.updatedAt,
+							deletedAt: t.deletedAt ?? null,
+						})
+						.onConflictDoUpdate({
+							target: tabs.id,
+							set: {
+								collectionId: t.collectionId,
+								url: t.url,
+								title: t.title,
+								faviconUrl: t.faviconUrl ?? null,
+								isPinned: t.isPinned ?? false,
+								order: t.order,
+								updatedAt: t.updatedAt,
+								deletedAt: t.deletedAt ?? null,
+							},
+						});
+					tabsUpdated++;
+				} else {
+					tabsSkipped++;
+				}
 			}
 		}
+
+		const endTime = Date.now();
+		const duration = endTime - (startTime || endTime);
+
+		console.log("[sync/push] LWW results", {
+			workspaces: { updated: workspacesUpdated, skipped: workspacesSkipped },
+			collections: {
+				updated: collectionsUpdated,
+				skipped: collectionsSkipped,
+			},
+			tabs: { updated: tabsUpdated, skipped: tabsSkipped },
+			duration: `${duration}ms`,
+		});
+
+		// Save metrics to D1
+		await db.insert(syncMetrics).values({
+			id: crypto.randomUUID(),
+			userId,
+			workspacesInput: workspacesInput.length,
+			collectionsInput: collectionsInput.length,
+			tabsInput: tabsInput.length,
+			workspacesUpdated,
+			workspacesSkipped,
+			collectionsUpdated,
+			collectionsSkipped,
+			tabsUpdated,
+			tabsSkipped,
+			duration,
+			dbOperations:
+				workspacesInput.length + collectionsInput.length + tabsInput.length,
+		});
 
 		return c.json({ ok: true });
 	} catch (error) {
@@ -568,6 +671,124 @@ app.post("/api/auth/email/verify-code", async (c) => {
 	await c.env.AUTH_KV.delete(`email-verify:${email}`);
 
 	return c.json({ success: true, email });
+});
+
+// Alert API
+app.post("/api/app/alerts", async (c) => {
+	try {
+		const auth = createAuth(
+			c.env,
+			c.req.raw.cf as IncomingRequestCfProperties | undefined,
+		);
+
+		const session = await auth.api.getSession({
+			headers: c.req.raw.headers,
+		});
+
+		if (!session?.user) {
+			return c.json({ error: "Unauthorized" }, 401);
+		}
+
+		const body = (await c.req.json().catch(() => null)) as {
+			alerts?: Array<{
+				level: "info" | "warning" | "error";
+				type: string;
+				message: string;
+				deviceInfo?: {
+					browser: string;
+					os: string;
+					version: string;
+				};
+				metrics?: Record<string, unknown>;
+			}>;
+		} | null;
+
+		if (!body || !Array.isArray(body.alerts)) {
+			return c.json({ error: "Invalid payload" }, 400);
+		}
+
+		const userId = session.user.id;
+		const db = createDb(c.env.DB);
+
+		for (const alert of body.alerts) {
+			// Save to D1
+			await db.insert(alerts).values({
+				id: crypto.randomUUID(),
+				userId,
+				level: alert.level,
+				type: alert.type,
+				message: alert.message,
+				deviceInfo: alert.deviceInfo ? JSON.stringify(alert.deviceInfo) : null,
+				metrics: alert.metrics ? JSON.stringify(alert.metrics) : null,
+			});
+
+			// Log to Analytics Engine
+			await logToAnalytics(c.env, { ...alert, userId });
+
+			// Send email for critical alerts (with rate limiting)
+			if (
+				alert.level === "error" &&
+				(await shouldNotify(c.env, alert.type, userId))
+			) {
+				await sendEmailAlert(c.env, { ...alert, userId });
+			}
+
+			console.log("[alerts] Recorded alert:", {
+				userId,
+				level: alert.level,
+				type: alert.type,
+			});
+		}
+
+		return c.json({ ok: true });
+	} catch (error) {
+		console.error("[alerts] Error:", error);
+		return c.json({ error: "Internal server error" }, 500);
+	}
+});
+
+// Admin API - View recent alerts
+app.get("/api/admin/alerts", async (c) => {
+	const adminToken = c.req.header("X-Admin-Token");
+	if (!adminToken || adminToken !== c.env.BETTER_AUTH_SECRET) {
+		return c.json({ error: "Unauthorized" }, 401);
+	}
+
+	const db = createDb(c.env.DB);
+	const limit = Number.parseInt(c.req.query("limit") || "100", 10);
+	const level = c.req.query("level") as
+		| "info"
+		| "warning"
+		| "error"
+		| undefined;
+
+	const recentAlerts = await db
+		.select()
+		.from(alerts)
+		.where(level ? eq(alerts.level, level) : undefined)
+		.orderBy(alerts.createdAt)
+		.limit(limit);
+
+	return c.json({ alerts: recentAlerts });
+});
+
+// Admin API - View sync metrics
+app.get("/api/admin/metrics", async (c) => {
+	const adminToken = c.req.header("X-Admin-Token");
+	if (!adminToken || adminToken !== c.env.BETTER_AUTH_SECRET) {
+		return c.json({ error: "Unauthorized" }, 401);
+	}
+
+	const db = createDb(c.env.DB);
+	const limit = Number.parseInt(c.req.query("limit") || "100", 10);
+
+	const recentMetrics = await db
+		.select()
+		.from(syncMetrics)
+		.orderBy(syncMetrics.createdAt)
+		.limit(limit);
+
+	return c.json({ metrics: recentMetrics });
 });
 
 app.on("GET", "/api/auth/*", (c) => {

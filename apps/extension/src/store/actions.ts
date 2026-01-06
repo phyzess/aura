@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 import { API_BASE_URL } from "@/config/env";
+import { createAlert, sendAlerts, shouldSendAlert } from "@/services/alerts";
 import { authClient } from "@/services/authClient";
 import { initDB, LocalDB } from "@/services/db";
 import {
@@ -53,17 +54,60 @@ export interface ImportTobyPayload {
 
 const FAVICON_PATH = "/favicon.svg";
 
-const mergeWithTombstones = <T extends { id: string }>(
+interface MergeStats {
+	localWins: number;
+	serverWins: number;
+}
+
+/**
+ * Merge local and incoming data using Last-Write-Wins (LWW) strategy.
+ * The item with the latest updatedAt/deletedAt timestamp wins.
+ * This prevents old data from overwriting newer data during sync.
+ */
+const mergeWithTombstones = <
+	T extends { id: string; updatedAt: number; deletedAt?: number },
+>(
 	local: T[],
 	incoming: T[],
+	stats?: MergeStats,
 ): T[] => {
 	const byId = new Map<string, T>();
+
+	// First, add all local items
 	for (const item of local) {
 		byId.set(item.id, item);
 	}
+
+	// Then, merge incoming items using LWW strategy
 	for (const item of incoming) {
-		byId.set(item.id, item);
+		const existing = byId.get(item.id);
+
+		if (!existing) {
+			// No local version, use incoming
+			byId.set(item.id, item);
+		} else {
+			// Compare timestamps: use the most recent operation
+			const localTime = existing.deletedAt || existing.updatedAt;
+			const incomingTime = item.deletedAt || item.updatedAt;
+
+			if (incomingTime > localTime) {
+				// Incoming is newer, replace local
+				byId.set(item.id, item);
+				if (stats) stats.serverWins++;
+				console.log(
+					`[sync] Resolved conflict for ${item.id}: incoming (${incomingTime}) > local (${localTime})`,
+				);
+			} else if (incomingTime < localTime) {
+				// Local is newer, keep local
+				if (stats) stats.localWins++;
+				console.log(
+					`[sync] Resolved conflict for ${item.id}: local (${localTime}) > incoming (${incomingTime})`,
+				);
+			}
+			// If equal, keep existing (local) - no log needed
+		}
 	}
+
 	return Array.from(byId.values());
 };
 
@@ -122,32 +166,46 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 
 	const lastSync = (await LocalDB.getLastSyncTimestamp()) ?? 0;
 
-	const payload: SyncPayload = {
-		workspaces: allWorkspaces,
-		collections: allCollections,
-		tabs: allTabs,
-		lastSyncTimestamp: lastSync,
-	};
+	// Detect first sync: no local data and never synced before
+	const isFirstSync =
+		lastSync === 0 &&
+		allWorkspaces.length === 0 &&
+		allCollections.length === 0 &&
+		allTabs.length === 0;
 
-	let pushRes: Response;
-	try {
-		pushRes = await fetch(`${API_BASE_URL}/api/app/sync/push`, {
-			method: "POST",
-			credentials: "include",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(payload),
-		});
-	} catch (error) {
-		console.error("[sync] push request failed", error);
-		return "error";
-	}
+	if (isFirstSync) {
+		console.log(
+			"[sync] First sync detected - skipping push, will only pull from server",
+		);
+	} else {
+		// Normal sync: push local changes to server first
+		const payload: SyncPayload = {
+			workspaces: allWorkspaces,
+			collections: allCollections,
+			tabs: allTabs,
+			lastSyncTimestamp: lastSync,
+		};
 
-	if (pushRes.status === 401) {
-		return "unauthorized";
-	}
-	if (!pushRes.ok) {
-		console.error("[sync] push request not ok", pushRes.status);
-		return "error";
+		let pushRes: Response;
+		try {
+			pushRes = await fetch(`${API_BASE_URL}/api/app/sync/push`, {
+				method: "POST",
+				credentials: "include",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+		} catch (error) {
+			console.error("[sync] push request failed", error);
+			return "error";
+		}
+
+		if (pushRes.status === 401) {
+			return "unauthorized";
+		}
+		if (!pushRes.ok) {
+			console.error("[sync] push request not ok", pushRes.status);
+			return "error";
+		}
 	}
 
 	let pullRes: Response;
@@ -184,15 +242,26 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 	}
 
 	try {
+		// Track merge conflicts
+		const workspaceStats: MergeStats = { localWins: 0, serverWins: 0 };
+		const collectionStats: MergeStats = { localWins: 0, serverWins: 0 };
+		const tabStats: MergeStats = { localWins: 0, serverWins: 0 };
+
 		const mergedWorkspaces = mergeWithTombstones<Workspace>(
 			allWorkspaces,
 			pullPayload.workspaces,
+			workspaceStats,
 		);
 		const mergedCollections = mergeWithTombstones<Collection>(
 			allCollections,
 			pullPayload.collections,
+			collectionStats,
 		);
-		const mergedTabs = mergeWithTombstones<TabItem>(allTabs, pullPayload.tabs);
+		const mergedTabs = mergeWithTombstones<TabItem>(
+			allTabs,
+			pullPayload.tabs,
+			tabStats,
+		);
 
 		await Promise.all([
 			LocalDB.saveAllWorkspaces(mergedWorkspaces),
@@ -220,6 +289,68 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 				activeWorkspaceIdAtom,
 				activeWorkspaces.length > 0 ? activeWorkspaces[0].id : null,
 			);
+		}
+
+		// Check for alert conditions
+		const alerts = [];
+		const totalConflicts =
+			workspaceStats.localWins +
+			workspaceStats.serverWins +
+			collectionStats.localWins +
+			collectionStats.serverWins +
+			tabStats.localWins +
+			tabStats.serverWins;
+
+		// Alert 1: High conflict rate
+		if (
+			totalConflicts > 50 &&
+			shouldSendAlert("high_conflict_rate", "warning")
+		) {
+			alerts.push(
+				createAlert(
+					"warning",
+					"high_conflict_rate",
+					`High conflict rate detected: ${totalConflicts} conflicts`,
+					{
+						workspaces: workspaceStats,
+						collections: collectionStats,
+						tabs: tabStats,
+					},
+				),
+			);
+		}
+
+		// Alert 2: Clock skew detection (always losing)
+		const totalServerWins =
+			workspaceStats.serverWins +
+			collectionStats.serverWins +
+			tabStats.serverWins;
+		const totalLocalWins =
+			workspaceStats.localWins + collectionStats.localWins + tabStats.localWins;
+
+		if (
+			totalServerWins > 50 &&
+			totalLocalWins === 0 &&
+			shouldSendAlert("clock_skew", "error")
+		) {
+			alerts.push(
+				createAlert(
+					"error",
+					"clock_skew",
+					"Device clock may be incorrect - local changes always being overwritten",
+					{
+						serverWins: totalServerWins,
+						localWins: totalLocalWins,
+					},
+				),
+			);
+		}
+
+		// Send alerts if any
+		if (alerts.length > 0) {
+			sendAlerts(alerts).catch((error) => {
+				console.error("[sync] Failed to send alerts:", error);
+			});
 		}
 	} catch (error) {
 		console.error("[sync] failed to update local state", error);
