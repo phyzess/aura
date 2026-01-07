@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 export type DialogSize = "sm" | "md" | "lg" | "xl";
 export type DialogPosition = "center" | "top";
+export type DialogVariant = "default" | "elevated";
 
 interface DialogProps {
 	isOpen: boolean;
@@ -13,6 +14,7 @@ interface DialogProps {
 	children: React.ReactNode;
 	size?: DialogSize;
 	position?: DialogPosition;
+	variant?: DialogVariant;
 	closeOnOverlayClick?: boolean;
 	closeOnEsc?: boolean;
 	className?: string;
@@ -31,6 +33,7 @@ export const Dialog: React.FC<DialogProps> = ({
 	children,
 	size = "md",
 	position = "center",
+	variant = "default",
 	closeOnOverlayClick = true,
 	closeOnEsc = true,
 	className,
@@ -131,6 +134,13 @@ export const Dialog: React.FC<DialogProps> = ({
 	const positionClass =
 		position === "top" ? "items-start pt-24" : "items-center";
 
+	// Unified dialog styling with enhanced contrast for dark mode
+	// Using inner glow effect instead of border for better separation
+	const variantClass =
+		variant === "elevated"
+			? "shadow-[0_20px_25px_-5px_rgba(0,0,0,0.3),0_8px_10px_-6px_rgba(0,0,0,0.3),inset_0_0_0_1px_rgba(255,255,255,0.05)] dark:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_8px_10px_-6px_rgba(0,0,0,0.5),inset_0_0_0_1px_rgba(255,255,255,0.1)]"
+			: "shadow-2xl";
+
 	const content = (
 		<AnimatePresence mode="wait">
 			{isOpen && (
@@ -140,11 +150,11 @@ export const Dialog: React.FC<DialogProps> = ({
 						positionClass,
 					)}
 				>
-					{/* 遮罩层 */}
+					{/* 遮罩层 - Enhanced opacity for better contrast */}
 					<motion.div
 						{...overlayAnimation}
 						className={cn(
-							"absolute inset-0 bg-surface-overlay backdrop-blur-sm",
+							"absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm",
 							overlayClassName,
 						)}
 						onClick={closeOnOverlayClick ? onClose : undefined}
@@ -161,7 +171,8 @@ export const Dialog: React.FC<DialogProps> = ({
 						tabIndex={-1}
 						{...modalAnimation}
 						className={cn(
-							"relative w-full bg-surface-elevated rounded-3xl overflow-hidden",
+							"relative w-full bg-surface-elevated dark:bg-slate-800 rounded-3xl overflow-hidden",
+							variantClass,
 							sizeClass,
 							className,
 						)}

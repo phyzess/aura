@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { Card } from "./Card";
 
@@ -99,4 +99,3 @@ export const showProgressToast = (
 
 	return toastId;
 };
-

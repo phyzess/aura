@@ -449,12 +449,7 @@ interface AuthDialogProps {
 
 export const AuthDialog: React.FC<AuthDialogProps> = ({ isOpen, onClose }) => {
 	return (
-		<Dialog
-			isOpen={isOpen}
-			onClose={onClose}
-			size="md"
-			className="shadow-2xl ring-1 ring-white/50 dark:ring-slate-800 overflow-hidden"
-		>
+		<Dialog isOpen={isOpen} onClose={onClose} size="md" variant="elevated">
 			<AuthForm onSuccess={onClose} onClose={onClose} />
 		</Dialog>
 	);

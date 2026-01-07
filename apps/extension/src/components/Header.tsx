@@ -1,20 +1,13 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import {
-	Github,
-	HelpCircle,
-	Moon,
-	Search as SearchIcon,
-	Sparkles,
-	Sun,
-} from "lucide-react";
+import { Clock, Moon, Search as SearchIcon, Sun } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { ChangelogDialog } from "@/components/ChangelogDialog";
+import { MoreMenu } from "@/components/MoreMenu";
 import { OpenTabsButton } from "@/components/OpenTabsButton";
 import { BottomShadow } from "@/components/ui/BottomShadow";
 import { IconButton } from "@/components/ui/IconButton";
 import { ShortcutHint } from "@/components/ui/ShortcutHint";
-import { GITHUB_REPO_URL } from "@/config/constants";
 import { changeLocale } from "@/config/locale";
 import * as m from "@/paraglide/messages";
 import { toggleThemeAtom } from "@/store/actions";
@@ -22,6 +15,7 @@ import { localeAtom, themeModeAtom } from "@/store/atoms";
 import type { Locale } from "@/types/paraglide";
 
 interface HeaderProps {
+	onOpenHistory?: () => void;
 	workspaceName: string;
 	onOpenSearch?: () => void;
 	onOpenShortcuts?: () => void;
@@ -35,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
 	workspaceName,
 	onOpenSearch,
 	onOpenShortcuts,
+	onOpenHistory,
 	workspaceTabsCount,
 	workspaceCollectionsCount,
 	getWorkspaceUrlsInDisplayOrder,
@@ -116,6 +111,7 @@ export const Header: React.FC<HeaderProps> = ({
 					)}
 				</div>
 				<div className="flex items-center gap-3 sm:gap-4">
+					{/* Search - First */}
 					{onOpenSearch && (
 						<>
 							<BottomShadow
@@ -148,50 +144,23 @@ export const Header: React.FC<HeaderProps> = ({
 							</IconButton>
 						</>
 					)}
-					<button
-						type="button"
-						onClick={handleOpenChangelog}
-						className="relative hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] text-muted hover:text-secondary hover:bg-surface-muted/60 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-vibrant-cyan/70"
-						aria-label={m.header_changelog_button_aria()}
-						title={m.header_changelog_button_title()}
-					>
-						<Sparkles size={12} />
-						<span>{m.header_changelog_button_label()}</span>
-						{showNewBadge && (
-							<span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-vibrant-pink rounded-full animate-pulse" />
-						)}
-					</button>
-					<button
-						type="button"
-						onClick={() => handleLocaleChange(locale === "en" ? "zh-CN" : "en")}
-						className="hidden sm:inline-flex items-center px-2 py-1 rounded-full text-[11px] text-muted hover:text-secondary hover:bg-surface-muted/60 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-vibrant-cyan/70"
-						aria-label={m.user_menu_language_label()}
-					>
-						<span>{locale === "en" ? "中文" : "English"}</span>
-					</button>
-					{onOpenShortcuts && (
+
+					{/* History - Second */}
+					{onOpenHistory && (
 						<IconButton
+							type="button"
 							variant="subtle"
-							size="md"
-							onClick={onOpenShortcuts}
-							aria-label="Keyboard shortcuts"
-							title="Keyboard shortcuts (Shift + ?)"
-							className="hidden sm:inline-flex"
+							size="sm"
+							onClick={onOpenHistory}
+							aria-label="View operation history"
+							title="Operation History"
+							className="text-muted hover:text-accent transition-colors"
 						>
-							<HelpCircle size={16} className="text-muted" />
+							<Clock size={16} />
 						</IconButton>
 					)}
-					<IconButton
-						type="button"
-						variant="subtle"
-						size="sm"
-						onClick={() => window.open(GITHUB_REPO_URL, "_blank")}
-						aria-label={m.header_github_link_aria()}
-						className="hover:text-secondary hover:bg-surface-muted/60"
-						title={m.header_github_link_title()}
-					>
-						<Github size={18} />
-					</IconButton>
+
+					{/* Theme Toggle - Third */}
 					<IconButton
 						type="button"
 						variant="subtle"
@@ -203,6 +172,15 @@ export const Header: React.FC<HeaderProps> = ({
 					>
 						{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
 					</IconButton>
+
+					{/* More Menu - Fourth */}
+					<MoreMenu
+						locale={locale}
+						onLocaleChange={handleLocaleChange}
+						onOpenChangelog={handleOpenChangelog}
+						onOpenShortcuts={onOpenShortcuts}
+						showNewBadge={showNewBadge}
+					/>
 				</div>
 			</div>
 

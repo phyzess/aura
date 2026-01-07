@@ -7,6 +7,7 @@ import type {
 } from "@aura/domain";
 
 export type { User, Workspace, Collection, SyncPayload };
+export type { StateCommit } from "./history";
 
 export type LinkStatus =
 	| "valid"

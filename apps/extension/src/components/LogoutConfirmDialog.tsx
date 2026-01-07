@@ -108,13 +108,10 @@ export const LogoutConfirmDialog: React.FC<LogoutConfirmDialogProps> = ({
 	onConfirm,
 }) => {
 	return (
-		<Dialog
-			isOpen={isOpen}
-			onClose={onClose}
-			size="md"
-			className="shadow-soft border border-surface px-7 py-6 animate-in fade-in zoom-in-95 duration-200"
-		>
-			<LogoutConfirmContent onClose={onClose} onConfirm={onConfirm} />
+		<Dialog isOpen={isOpen} onClose={onClose} size="md" variant="elevated">
+			<div className="px-7 py-6">
+				<LogoutConfirmContent onClose={onClose} onConfirm={onConfirm} />
+			</div>
 		</Dialog>
 	);
 };

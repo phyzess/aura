@@ -2,6 +2,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { AuthDialog } from "@/components/AuthDialog";
 import { Header } from "@/components/Header";
+import { HistoryDrawer } from "@/components/HistoryDrawer";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
@@ -64,6 +65,7 @@ export default function App() {
 	const [isAuthOpen, setIsAuthOpen] = useState(false);
 	const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 	const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
 	useEffect(() => {
 		initData();
@@ -126,6 +128,11 @@ export default function App() {
 	useHotkey("shift+/", (event) => {
 		event.preventDefault();
 		setIsShortcutsOpen(true);
+	});
+
+	useHotkey("mod+h", (event) => {
+		event.preventDefault();
+		setIsHistoryOpen(true);
 	});
 
 	if (isLoading) {
@@ -208,6 +215,7 @@ export default function App() {
 					workspaceName={activeWorkspace?.name || ""}
 					onOpenSearch={() => setIsSearchOpen(true)}
 					onOpenShortcuts={() => setIsShortcutsOpen(true)}
+					onOpenHistory={() => setIsHistoryOpen(true)}
 					workspaceTabsCount={workspaceTabsCount}
 					workspaceCollectionsCount={workspaceCollections.length}
 					getWorkspaceUrlsInDisplayOrder={getWorkspaceUrlsInDisplayOrder}
@@ -256,6 +264,10 @@ export default function App() {
 			<KeyboardShortcutsDialog
 				isOpen={isShortcutsOpen}
 				onClose={() => setIsShortcutsOpen(false)}
+			/>
+			<HistoryDrawer
+				isOpen={isHistoryOpen}
+				onClose={() => setIsHistoryOpen(false)}
 			/>
 			<OfflineIndicator />
 		</div>

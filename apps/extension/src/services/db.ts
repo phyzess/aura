@@ -1,7 +1,8 @@
 import type { Collection, TabItem, Workspace } from "@/types";
+import type { StateCommit } from "@/types/history";
 
 const DB_NAME = "AuraDB";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 export const initDB = (): Promise<IDBDatabase> => {
 	return new Promise((resolve, reject) => {
@@ -24,6 +25,14 @@ export const initDB = (): Promise<IDBDatabase> => {
 			}
 			if (!db.objectStoreNames.contains("meta")) {
 				db.createObjectStore("meta", { keyPath: "key" });
+			}
+			if (!db.objectStoreNames.contains("commits")) {
+				const commitStore = db.createObjectStore("commits", {
+					keyPath: "hash",
+				});
+				commitStore.createIndex("timestamp", "timestamp", { unique: false });
+				commitStore.createIndex("entityType", "entityType", { unique: false });
+				commitStore.createIndex("entityId", "entityId", { unique: false });
 			}
 		};
 	});
@@ -169,4 +178,22 @@ export const LocalDB = {
 			clearStore("tabs"),
 			clearStore("meta"),
 		]).then(() => undefined),
+
+	getCommits: () => getAll<StateCommit>("commits"),
+	getCommit: (hash: string) =>
+		new Promise<StateCommit | null>((resolve, reject) => {
+			initDB()
+				.then((db) => {
+					const transaction = db.transaction("commits", "readonly");
+					const store = transaction.objectStore("commits");
+					const request = store.get(hash);
+
+					request.onerror = () => reject(request.error);
+					request.onsuccess = () => resolve(request.result || null);
+				})
+				.catch(reject);
+		}),
+	saveCommit: (commit: StateCommit) => put("commits", commit),
+	deleteCommit: (hash: string) => remove("commits", hash),
+	clearCommits: () => clearStore("commits"),
 };

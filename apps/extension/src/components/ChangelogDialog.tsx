@@ -35,7 +35,7 @@ export function ChangelogDialog({ isOpen, onClose }: ChangelogDialogProps) {
 	const otherEntries = changelog.filter((e) => e.version !== currentVersion);
 
 	return (
-		<Dialog isOpen={isOpen} onClose={onClose} size="lg">
+		<Dialog isOpen={isOpen} onClose={onClose} size="lg" variant="elevated">
 			<div className="flex flex-col max-h-[80vh]">
 				{/* Header */}
 				<div className="flex items-center justify-between px-6 py-4 border-b border-surface-border">

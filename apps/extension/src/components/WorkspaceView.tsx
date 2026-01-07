@@ -413,6 +413,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 				targetCollectionId: overContainer,
 				targetIndex: newIndex,
 				shouldPin: overTab?.isPinned ?? false,
+				skipHistory: true, // Skip history during drag
 			});
 		} else {
 			// Moving within the same container
@@ -430,6 +431,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 					targetCollectionId: activeContainer,
 					targetIndex: newIndex,
 					shouldPin: overTab?.isPinned,
+					skipHistory: true, // Skip history during drag
 				});
 			}
 		}
@@ -446,7 +448,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 		setOverId(null);
 	};
 
-	const handleDragEnd = (event: DragEndEvent) => {
+	const handleDragEnd = async (event: DragEndEvent) => {
 		const { active, over } = event;
 
 		// Handle collection reordering
@@ -468,8 +470,10 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 			}
 		}
 
+		// History is now created in moveTabAtom when drag ends
+		// (skipHistory is only true during drag, false on dragEnd)
+
 		// Clean up state
-		// Note: Tab positions have already been updated in handleDragOver
 		setActiveId(null);
 		setOverId(null);
 		setClonedTabs(null);

@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
 import { Select, type SelectOption } from "@/components/ui/Select";
@@ -171,38 +170,30 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 		workspacesWithCollections.length > 0;
 
 	return (
-		<Dialog
-			isOpen={isOpen}
-			onClose={onClose}
-			size="md"
-			className="bg-transparent shadow-none border-none p-0 animate-in fade-in zoom-in-95 duration-200"
-		>
-			<Card
-				variant="elevated"
-				radius="3xl"
-				className="shadow-2xl border border-surface flex flex-col max-h-[90vh]"
-			>
-				<CardHeader className="p-6 border-b border-surface bg-surface-elevated z-10 rounded-t-3xl">
+		<Dialog isOpen={isOpen} onClose={onClose} size="md" variant="elevated">
+			<div className="flex flex-col max-h-[90vh]">
+				{/* Header */}
+				<div className="flex items-center justify-between px-6 py-4 border-b border-surface-border">
 					<div>
 						<h3 className="text-xl font-bold text-primary">
 							{m.import_modal_title()}
 						</h3>
-						<p className="text-body text-secondary">
+						<p className="text-sm text-secondary mt-0.5">
 							{m.import_modal_subtitle()}
 						</p>
 					</div>
 					<IconButton
-						type="button"
 						variant="subtle"
 						size="sm"
 						aria-label={m.import_modal_close_aria()}
 						onClick={onClose}
 					>
-						<X size={20} />
+						<X size={18} />
 					</IconButton>
-				</CardHeader>
+				</div>
 
-				<CardBody className="p-6 overflow-y-auto custom-scrollbar">
+				{/* Content */}
+				<div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
 					{error && (
 						<div className="mb-4 flex items-center gap-2 text-xs text-danger bg-danger-soft/70 border border-danger/20 rounded-xl px-3 py-2 animate-in slide-in-from-top-2">
 							<AlertCircle size={16} />
@@ -534,8 +525,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 							</div>
 						</div>
 					)}
-				</CardBody>
-			</Card>
+				</div>
+			</div>
 		</Dialog>
 	);
 };

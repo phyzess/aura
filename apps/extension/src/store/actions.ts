@@ -760,6 +760,7 @@ export const moveTabAtom = atom(
 			targetCollectionId: string;
 			targetIndex: number;
 			shouldPin?: boolean;
+			skipHistory?: boolean;
 		},
 	) => {
 		const tabs = get(tabsAtom);
@@ -839,6 +840,18 @@ export const moveTabAtom = atom(
 		set(syncDirtyAtom, true);
 		set(lastLocalChangeAtAtom, Date.now());
 		set(scheduleAutoSyncAtom);
+
+		// Create history commit (unless skipped)
+		if (!args.skipHistory) {
+			const { createCommitAtom } = await import("./history");
+			await set(createCommitAtom, {
+				message: `Move tab: ${tab.title}`,
+				type: "UPDATE",
+				entityType: "tab",
+				entityId: tab.id,
+				changes: { tabs: [tab] }, // Save old state
+			});
+		}
 	},
 );
 
@@ -909,27 +922,19 @@ export const syncWithServerAtom = atom(
 			}
 		} else {
 			set(syncStatusAtom, "error");
+			set(syncErrorAtom, "Sync failed, please try again.");
 
 			// Check if offline
 			if (!offlineDetector.getStatus()) {
 				set(
 					syncErrorAtom,
-					"💾 Offline - Changes saved locally and will sync when you're back online",
+					"You are offline. Changes will sync when you're back online.",
 				);
-				if (source === "manual") {
-					await notificationService.info(
-						"Offline Mode",
-						"Your changes are saved locally and will sync when you're back online",
-					);
-				}
-			} else {
-				set(syncErrorAtom, "Sync failed, please try again.");
-				if (source === "manual") {
-					await notificationService.error(
-						"Sync Failed",
-						"Please try again later",
-					);
-				}
+			} else if (source === "manual") {
+				await notificationService.error(
+					"Sync Failed",
+					"Please try again later",
+				);
 			}
 		}
 

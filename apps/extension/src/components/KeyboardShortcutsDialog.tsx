@@ -1,7 +1,5 @@
 import { Command, Keyboard, X } from "lucide-react";
 import type React from "react";
-import { Button } from "@/components/ui/Button";
-import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
 import { ShortcutHint } from "@/components/ui/ShortcutHint";
@@ -21,6 +19,11 @@ const shortcuts: ShortcutItem[] = [
 	{
 		keys: ["⌘", "K"],
 		description: "Open global search",
+		category: "Navigation",
+	},
+	{
+		keys: ["⌘", "H"],
+		description: "Open operation history",
 		category: "Navigation",
 	},
 	{
@@ -51,45 +54,35 @@ export const KeyboardShortcutsDialog: React.FC<
 	const categories = Array.from(new Set(shortcuts.map((s) => s.category)));
 
 	return (
-		<Dialog
-			isOpen={isOpen}
-			onClose={onClose}
-			size="lg"
-			className="bg-transparent shadow-none border-none p-0"
-		>
-			<Card
-				variant="elevated"
-				radius="2xl"
-				className="relative w-full border border-surface shadow-soft"
-			>
-				<CardHeader className="border-b border-surface bg-surface-elevated/80 backdrop-blur-sm">
-					<div className="flex items-center justify-between w-full">
-						<div className="flex items-center gap-3">
-							<div className="w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center text-accent">
-								<Keyboard size={20} />
-							</div>
-							<div>
-								<h2 className="text-lg font-bold text-primary">
-									Keyboard Shortcuts
-								</h2>
-								<p className="text-xs text-secondary">
-									Quick reference for all available shortcuts
-								</p>
-							</div>
+		<Dialog isOpen={isOpen} onClose={onClose} size="lg" variant="elevated">
+			<div className="flex flex-col max-h-[80vh]">
+				{/* Header */}
+				<div className="flex items-center justify-between px-6 py-4 border-b border-surface-border">
+					<div className="flex items-center gap-3">
+						<div className="w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center text-accent">
+							<Keyboard size={20} />
 						</div>
-						<IconButton
-							type="button"
-							variant="subtle"
-							size="md"
-							onClick={onClose}
-							aria-label="Close"
-						>
-							<X size={18} />
-						</IconButton>
+						<div>
+							<h2 className="text-xl font-bold text-primary">
+								Keyboard Shortcuts
+							</h2>
+							<p className="text-sm text-secondary mt-0.5">
+								Quick reference for all available shortcuts
+							</p>
+						</div>
 					</div>
-				</CardHeader>
+					<IconButton
+						variant="subtle"
+						size="sm"
+						onClick={onClose}
+						aria-label="Close"
+					>
+						<X size={18} />
+					</IconButton>
+				</div>
 
-				<CardBody className="p-6">
+				{/* Content */}
+				<div className="flex-1 overflow-y-auto px-6 py-6">
 					<div className="space-y-6">
 						{categories.map((category) => (
 							<div key={category}>
@@ -119,7 +112,8 @@ export const KeyboardShortcutsDialog: React.FC<
 						))}
 					</div>
 
-					<div className="mt-6 pt-4 border-t border-surface">
+					{/* Tip */}
+					<div className="mt-6 pt-4 border-t border-surface-border">
 						<div className="flex items-start gap-2 p-3 rounded-xl bg-accent-soft/10 border border-accent/20">
 							<span className="text-accent mt-0.5">💡</span>
 							<div className="flex-1">
@@ -131,15 +125,8 @@ export const KeyboardShortcutsDialog: React.FC<
 							</div>
 						</div>
 					</div>
-
-					<div className="mt-4 flex justify-end">
-						<Button onClick={onClose} variant="secondary" size="sm">
-							Got it
-						</Button>
-					</div>
-				</CardBody>
-			</Card>
+				</div>
+			</div>
 		</Dialog>
 	);
 };
-
