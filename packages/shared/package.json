@@ -1,0 +1,24 @@
+{
+	"name": "@aura/shared",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"main": "src/index.ts",
+	"types": "src/index.ts",
+	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest --coverage"
+	},
+	"exports": {
+		".": "./src/index.ts",
+		"./fp": "./src/fp/index.ts",
+		"./result": "./src/fp/result.ts",
+		"./pipe": "./src/fp/pipe.ts",
+		"./array": "./src/fp/array.ts"
+	},
+	"devDependencies": {
+		"vitest": "^4.0.16"
+	}
+}

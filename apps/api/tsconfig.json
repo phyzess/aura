@@ -4,7 +4,13 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"types": ["@cloudflare/workers-types", "node"],
+		"paths": {
+			"@/*": ["./src/*"],
+			"@aura/domain": ["../../packages/domain/src"],
+			"@aura/shared": ["../../packages/shared/src"]
+		},
 		"strict": true,
+		"skipLibCheck": true,
 		"noEmit": true
 	},
 	"include": ["src"]

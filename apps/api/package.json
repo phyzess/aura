@@ -10,20 +10,28 @@
 		"deploy": "wrangler deploy --env production",
 		"db:generate": "drizzle-kit generate --config=drizzle.config.ts",
 		"db:migrate:local": "wrangler d1 migrations apply aura-db --env production --local",
-		"db:migrate:remote": "wrangler d1 migrations apply aura-db --env production --remote"
+		"db:migrate:remote": "wrangler d1 migrations apply aura-db --env production --remote",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest --coverage"
 	},
 	"dependencies": {
 		"@aura/config": "workspace:*",
 		"@aura/domain": "workspace:*",
+		"@aura/shared": "workspace:*",
 		"better-auth": "^1.4.7",
 		"better-auth-cloudflare": "^0.2.9",
 		"drizzle-orm": "^0.45.1",
 		"hono": "^4.11.1"
 	},
 	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.11.1",
 		"@cloudflare/workers-types": "^4.20251217.0",
 		"@types/node": "^25.0.2",
 		"drizzle-kit": "^0.31.8",
+		"vitest": "^4.0.16",
 		"wrangler": "^4.55.0"
 	}
 }

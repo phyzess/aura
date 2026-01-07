@@ -1,7 +1,4 @@
-import type {
-	D1Database,
-	IncomingRequestCfProperties,
-} from "@cloudflare/workers-types";
+import type { D1Database } from "@cloudflare/workers-types";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { withCloudflare } from "better-auth-cloudflare";
@@ -10,8 +7,8 @@ import type { Env } from "../index";
 import { getAuthConfig } from "./config";
 import { hashPassword, verifyPassword } from "./password";
 
-export function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
-	const db = env ? createDb(env.DB) : ({} as unknown);
+export function createAuth(env?: Env, cf?: unknown) {
+	const db = env ? createDb(env.DB) : ({} as any);
 
 	let secret: string | undefined;
 	let baseURL: string | undefined;

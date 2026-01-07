@@ -23,7 +23,7 @@ function constantTimeEqual(a: Uint8Array, b: Uint8Array): boolean {
 }
 
 async function sha256(data: Uint8Array): Promise<Uint8Array> {
-	const buf = await crypto.subtle.digest("SHA-256", data);
+	const buf = await crypto.subtle.digest("SHA-256", data as BufferSource);
 	return new Uint8Array(buf);
 }
 

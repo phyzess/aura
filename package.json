@@ -19,13 +19,22 @@
 		"db:migrate:remote": "pnpm --filter @aura/api db:migrate:remote",
 		"db:clear:local": "sh ./scripts/clear-db-local.sh",
 		"db:clear:remote": "sh ./scripts/clear-db-remote.sh",
+		"test": "vitest",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest --coverage",
+		"test:shared": "pnpm --filter @aura/shared test",
+		"test:domain": "pnpm --filter @aura/domain test",
+		"test:api": "pnpm --filter @aura/api test",
+		"test:extension": "pnpm --filter @aura/extension test",
 		"lint": "biome check",
 		"format": "biome fmt",
 		"check": "pnpm lint && pnpm format"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.9",
-		"@changesets/cli": "^2.29.8"
-	},
-	"dependencies": {}
+		"@changesets/cli": "^2.29.8",
+		"@vitest/coverage-v8": "^4.0.16",
+		"@vitest/ui": "^4.0.16",
+		"vitest": "^4.0.16"
+	}
 }

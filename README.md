@@ -76,7 +76,7 @@ The Worker binds these variables (see `apps/api/src/index.ts`):
 
 Defaults for local development live in `apps/api/wrangler.toml` under `[vars]`. Production values belong in `[env.production.vars]` and in the Cloudflare dashboard / `wrangler secret`.
 
-For detailed authentication setup, see `docs/auth-setup.md`.
+For detailed authentication setup, see [Authentication Setup Guide](docs/guides/auth-setup.md).
 
 ### Extension (Vite + CRXJS)
 
@@ -88,9 +88,9 @@ The runtime API base URL is centralized in `apps/extension/src/config/env.ts`, w
 
 `apps/extension/vite.config.ts` uses Valibot to validate `process.env.VITE_API_BASE_URL` before Vite processes the config. If it is missing or empty, `vite dev` / `vite build` will fail with a clear error.
 
-For detailed environment docs and examples, see `docs/env.md` and `.env.example`.
+For detailed environment docs and examples, see [Environment Setup](docs/development/env.md) and `.env.example`.
 
-For a step-by-step setup guide, see `docs/quickstart.md`.
+For a step-by-step setup guide, see [Quick Start Guide](docs/getting-started/quickstart.md).
 
 ---
 
@@ -251,7 +251,40 @@ For a typical release of the extension + API:
 4. Deploy API (if needed):
    - `pnpm deploy:api`
 
-For the full release guide and detailed checklist, see `docs/release.md` and `docs/release.zh-CN.md`.
+For the full release guide and detailed checklist, see [Release Process](docs/development/release.md).
+
+---
+
+## 📚 Documentation
+
+- **[Documentation Index](docs/README.md)** - Complete documentation overview
+- **[Quick Start Guide](docs/getting-started/quickstart.md)** - Get started in 5 minutes
+- **[Authentication Setup](docs/guides/auth-setup.md)** - Configure auth providers
+- **[API Documentation](apps/api/README.md)** - API architecture and development
+- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute
+
+### Language Support
+
+Most guides are available in both English and Chinese (中文):
+- English: `*.md`
+- 中文: `*.zh-CN.md`
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Setting up your development environment
+- Code style and conventions
+- Testing requirements
+- Pull request process
+
+---
+
+## 📄 License
+
+[MIT License](LICENSE) - see LICENSE file for details
 
 ---
 

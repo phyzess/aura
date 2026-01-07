@@ -1,5 +1,41 @@
 import { atom } from "jotai";
 import { API_BASE_URL } from "@/config/env";
+import type { CaptureSessionPayload } from "@/domain/import/session";
+import {
+	extractValidTabs,
+	shouldCreateCollection,
+	shouldCreateWorkspace,
+} from "@/domain/import/session";
+import type { ImportTobyPayload } from "@/domain/import/toby";
+import {
+	flattenTobyDataToTabs,
+	parseTobyData,
+	shouldCreateMultipleCollections,
+	shouldCreateSingleCollection,
+	validateTobyData,
+} from "@/domain/import/toby";
+import {
+	calculateLinkCheckStats,
+	createEmptyStats,
+	createLinkCheckProgress,
+	filterTabsByIds,
+	findTabById,
+	setMultipleTabsCheckingStatus,
+	setTabCheckingStatus,
+	updateMultipleTabsLinkStatus,
+	updateTabLinkStatus,
+} from "@/domain/link-check/operations";
+import {
+	calculateRetryDelay,
+	createSyncPayload,
+	filterDeleted,
+	type MergeStats,
+	mergeWithTombstones,
+	pullFromServer,
+	pushToServer,
+	type SyncResult,
+	shouldResetDirtyFlag,
+} from "@/domain/sync/client";
 import { createAlert, sendAlerts, shouldSendAlert } from "@/services/alerts";
 import { authClient } from "@/services/authClient";
 import { initDB, LocalDB } from "@/services/db";
@@ -10,7 +46,7 @@ import {
 } from "@/services/export";
 import { linkCheckService } from "@/services/linkCheck";
 import { notificationService } from "@/services/notifications";
-import { offlineDetector } from "@/services/offlineDetector";
+import { offlineDetector } from "@/services/offline/detector";
 import type {
 	Collection,
 	LinkStatus,
@@ -36,80 +72,9 @@ import {
 	workspacesAtom,
 } from "./atoms";
 
-export interface CaptureSessionPayload {
-	tabs: Partial<TabItem>[];
-	targetWorkspaceId: string | "new";
-	newWorkspaceName?: string;
-	targetCollectionId: string | "new";
-	newCollectionName?: string;
-}
-
-export interface ImportTobyPayload {
-	data: any;
-	targetWorkspaceId: string | "new";
-	newWorkspaceName?: string;
-	targetCollectionId: string | "new";
-	newCollectionName?: string;
-}
+export type { CaptureSessionPayload, ImportTobyPayload };
 
 const FAVICON_PATH = "/favicon.svg";
-
-interface MergeStats {
-	localWins: number;
-	serverWins: number;
-}
-
-/**
- * Merge local and incoming data using Last-Write-Wins (LWW) strategy.
- * The item with the latest updatedAt/deletedAt timestamp wins.
- * This prevents old data from overwriting newer data during sync.
- */
-const mergeWithTombstones = <
-	T extends { id: string; updatedAt: number; deletedAt?: number },
->(
-	local: T[],
-	incoming: T[],
-	stats?: MergeStats,
-): T[] => {
-	const byId = new Map<string, T>();
-
-	// First, add all local items
-	for (const item of local) {
-		byId.set(item.id, item);
-	}
-
-	// Then, merge incoming items using LWW strategy
-	for (const item of incoming) {
-		const existing = byId.get(item.id);
-
-		if (!existing) {
-			// No local version, use incoming
-			byId.set(item.id, item);
-		} else {
-			// Compare timestamps: use the most recent operation
-			const localTime = existing.deletedAt || existing.updatedAt;
-			const incomingTime = item.deletedAt || item.updatedAt;
-
-			if (incomingTime > localTime) {
-				// Incoming is newer, replace local
-				byId.set(item.id, item);
-				if (stats) stats.serverWins++;
-				console.log(
-					`[sync] Resolved conflict for ${item.id}: incoming (${incomingTime}) > local (${localTime})`,
-				);
-			} else if (incomingTime < localTime) {
-				// Local is newer, keep local
-				if (stats) stats.localWins++;
-				console.log(
-					`[sync] Resolved conflict for ${item.id}: local (${localTime}) > incoming (${incomingTime})`,
-				);
-			}
-			// If equal, keep existing (local) - no log needed
-		}
-	}
-
-	return Array.from(byId.values());
-};
 
 const updateFavicon = () => {
 	const head = document.head;
@@ -127,8 +92,6 @@ const updateFavicon = () => {
 
 	head.appendChild(newLink);
 };
-
-type SyncResult = "success" | "unauthorized" | "error";
 
 // Sync timing configuration - optimized for offline-first architecture
 const AUTO_SYNC_DEBOUNCE_MS = 1000; // Reduced from 2000ms - faster initial sync
