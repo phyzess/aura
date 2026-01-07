@@ -193,3 +193,31 @@ export const overlayAnimation = {
 	animate: "visible" as const,
 	exit: "exit" as const,
 };
+
+/**
+ * Menu 摆动下落动画 (从上往下，以顶部为轴心摆动)
+ */
+export const menuSwingDropVariants: Variants = {
+	hidden: { opacity: 0, y: -20, rotateZ: -12 },
+	visible: { opacity: 1, y: 0, rotateZ: 0 },
+	exit: { opacity: 0, y: -10, rotateZ: -6 },
+};
+
+/**
+ * Menu 摆动弹起动画 (从下往上，以底部为轴心摆动)
+ */
+export const menuSwingUpVariants: Variants = {
+	hidden: { opacity: 0, y: 20, rotateZ: 12 },
+	visible: { opacity: 1, y: 0, rotateZ: 0 },
+	exit: { opacity: 0, y: 10, rotateZ: 6 },
+};
+
+/**
+ * Menu 弹簧配置 (低阻尼，产生摆动效果)
+ */
+export const menuSwingTransition: Transition = {
+	type: "spring",
+	damping: 10,
+	stiffness: 180,
+	mass: 0.9,
+};

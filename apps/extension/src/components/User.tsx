@@ -1,8 +1,7 @@
 import { LogIn, Settings, User as UserIcon } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Popover } from "@/components/ui/Popover";
+import { Menu } from "@/components/ui/Menu";
 import * as m from "@/paraglide/messages";
 
 interface UserProps {
@@ -39,7 +38,6 @@ export const User: React.FC<UserProps> = ({
 	onSync,
 }) => {
 	const isLoggedIn = Boolean(currentUserEmail);
-	const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
 	if (!isLoggedIn) {
 		return (
@@ -75,57 +73,9 @@ export const User: React.FC<UserProps> = ({
 
 	return (
 		<div className="flex-1 flex flex-col gap-2">
-			<Popover
-				isOpen={isAccountMenuOpen}
-				positions={["top"]}
-				align="start"
-				onClickOutside={() => setIsAccountMenuOpen(false)}
-				content={
-					<div className="min-w-50">
-						{currentUserEmail && (
-							<div className="px-4 py-2.5 border-b border-surface-border/50">
-								<div className="text-[10px] text-muted uppercase tracking-wider mb-0.5">
-									Account
-								</div>
-								<div className="text-xs text-secondary font-medium truncate">
-									{currentUserEmail}
-								</div>
-							</div>
-						)}
-						<div className="p-1">
-							<Button
-								type="button"
-								onClick={() => {
-									setIsAccountMenuOpen(false);
-									chrome.runtime.openOptionsPage();
-								}}
-								variant="ghost"
-								size="sm"
-								className="w-full justify-start gap-3"
-							>
-								<Settings size={16} />
-								<span>{m.user_menu_settings()}</span>
-							</Button>
-							<Button
-								type="button"
-								onClick={() => {
-									setIsAccountMenuOpen(false);
-									onSignOut?.();
-								}}
-								variant="ghost"
-								size="sm"
-								className="w-full justify-start text-danger hover:bg-danger/10 hover:text-danger gap-3"
-							>
-								<LogIn size={16} className="rotate-180" />
-								<span>{m.user_menu_logout()}</span>
-							</Button>
-						</div>
-					</div>
-				}
-			>
+			<Menu positions={["top"]} align="start">
 				<button
 					type="button"
-					onClick={() => setIsAccountMenuOpen((open) => !open)}
 					aria-label={m.user_menu_open_account_menu_aria()}
 					className="w-full inline-flex items-center justify-center gap-2 px-3 py-3 bg-surface-muted hover:bg-surface-elevated hover:shadow-[0_0_16px_-2px_var(--color-accent-soft)] hover:scale-[1.02] rounded-xl transition-all duration-200 cursor-pointer border-0 font-medium text-xs"
 				>
@@ -134,7 +84,38 @@ export const User: React.FC<UserProps> = ({
 						<span className="truncate text-secondary">{currentUserEmail}</span>
 					)}
 				</button>
-			</Popover>
+
+				{currentUserEmail && (
+					<>
+						<Menu.Header>
+							<div className="text-[10px] text-muted uppercase tracking-wider mb-0.5">
+								Account
+							</div>
+							<div className="text-xs text-secondary font-medium truncate">
+								{currentUserEmail}
+							</div>
+						</Menu.Header>
+						<Menu.Separator />
+					</>
+				)}
+
+				<Menu.Content>
+					<Menu.Item
+						icon={<Settings size={14} />}
+						onClick={() => chrome.runtime.openOptionsPage()}
+					>
+						{m.user_menu_settings()}
+					</Menu.Item>
+
+					<Menu.Item
+						icon={<LogIn size={14} className="rotate-180" />}
+						onClick={() => onSignOut?.()}
+						variant="danger"
+					>
+						{m.user_menu_logout()}
+					</Menu.Item>
+				</Menu.Content>
+			</Menu>
 
 			<div className="flex flex-col gap-0.5">
 				<Button
