@@ -1,5 +1,5 @@
-import type { Result } from "@/utils/fp/result";
-import { ok, tryCatchAsync } from "@/utils/fp/result";
+import type { Result } from "@aura/shared";
+import { ok, tryCatchAsync } from "@aura/shared";
 
 export type OnlineStatusCallback = (isOnline: boolean) => void;
 
@@ -77,21 +77,27 @@ export const waitForOnline = async (
 	});
 };
 
-export const getStatus = (state: OfflineDetectorState): boolean => state.isOnline;
+export const getStatus = (state: OfflineDetectorState): boolean =>
+	state.isOnline;
 
-export const setOnline = (state: OfflineDetectorState): OfflineDetectorState => ({
+export const setOnline = (
+	state: OfflineDetectorState,
+): OfflineDetectorState => ({
 	...state,
 	isOnline: true,
 	hasShownOfflineToast: false,
 });
 
-export const setOffline = (state: OfflineDetectorState): OfflineDetectorState => ({
+export const setOffline = (
+	state: OfflineDetectorState,
+): OfflineDetectorState => ({
 	...state,
 	isOnline: false,
 });
 
-export const markToastShown = (state: OfflineDetectorState): OfflineDetectorState => ({
+export const markToastShown = (
+	state: OfflineDetectorState,
+): OfflineDetectorState => ({
 	...state,
 	hasShownOfflineToast: true,
 });
-
