@@ -6,12 +6,11 @@
 		"lib": ["ES2020", "DOM", "DOM.Iterable"],
 		"moduleDetection": "force",
 		"useDefineForClassFields": true,
-		"baseUrl": ".",
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"allowJs": true,
 		"paths": {
-			"@/*": ["src/*"],
+			"@/*": ["./src/*"],
 			"@aura/domain": ["../../packages/domain/src"]
 		},
 		"types": ["vite/client", "chrome"],
