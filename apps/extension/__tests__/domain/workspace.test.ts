@@ -6,7 +6,7 @@ import {
 	reorderWorkspace,
 	sortWorkspacesByOrder,
 	updateWorkspace,
-} from "../../src/domain/workspace/operations";
+} from "../../src/features/workspace/domain";
 import type { Workspace } from "../../src/types";
 
 describe("Workspace Operations", () => {

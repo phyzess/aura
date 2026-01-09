@@ -27,6 +27,10 @@ Learn how to use and configure Aura:
 ### 🛠️ Development
 For contributors and developers:
 
+- **Architecture**
+  - [Architecture Guide](./development/architecture.md) - Feature-based architecture explained
+  - [架构指南](./development/architecture.zh-CN.md) - 基于功能的架构说明
+
 - **Setup**
   - [Environment Variables](./development/env.md) - Configure environment variables
   - [环境变量配置](./development/env.zh-CN.md) - 配置环境变量
@@ -92,5 +96,4 @@ Found an error or want to improve the docs? Please:
 
 ---
 
-**Last Updated**: 2026-01-07
-
+**Last Updated**: 2026-01-09

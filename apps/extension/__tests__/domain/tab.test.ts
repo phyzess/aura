@@ -10,7 +10,7 @@ import {
 	sortTabsByOrder,
 	toggleTabPin,
 	updateTab,
-} from "../../src/domain/tab/operations";
+} from "../../src/features/tab/domain";
 import type { TabItem } from "../../src/types";
 
 describe("Tab Operations", () => {

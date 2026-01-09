@@ -1,7 +1,7 @@
 import { ExternalLink, Globe } from "lucide-react";
 import type React from "react";
-import { OpenTabsButton } from "@/components/OpenTabsButton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { OpenTabsButton } from "@/features/tab/components";
 import * as m from "@/paraglide/messages";
 import { ChromeService } from "../../services/chrome";
 import type { TabItem } from "../../types";

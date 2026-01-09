@@ -1,9 +1,9 @@
 import { DoorOpen, LogIn, Save } from "lucide-react";
 import type React from "react";
+import { AuraLogo } from "@/components/shared";
 import { Button } from "@/components/ui/Button";
 import { SearchInput } from "@/components/ui/SearchInput";
 import * as m from "@/paraglide/messages";
-import { AuraLogo } from "../../components/AuraLogo";
 
 interface ExtensionPopupHeaderProps {
 	searchQuery: string;

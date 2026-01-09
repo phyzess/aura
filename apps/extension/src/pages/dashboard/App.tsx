@@ -1,39 +1,35 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
-import { AuthDialog } from "@/components/AuthDialog";
-import { Header } from "@/components/Header";
-import { HistoryDrawer } from "@/components/HistoryDrawer";
-import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
-import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
-import { OfflineIndicator } from "@/components/OfflineIndicator";
-import { Sidebar } from "@/components/Sidebar";
-import { GlobalTabSearchModal } from "@/components/tab-search";
-import { WorkspaceView } from "@/components/WorkspaceView";
 import { changeLocale } from "@/config/locale";
-import { useHotkey } from "@/hooks/useHotkey";
-import * as m from "@/paraglide/messages";
-import { offlineDetector } from "@/services/offline";
 import {
-	clearLocalDataAtom,
-	initDataAtom,
-	initThemeAtom,
-	loadCurrentUserAtom,
-	signOutAtom,
-	syncWithServerAtom,
-} from "@/store/actions";
-import {
+	activeWorkspaceAtom,
 	activeWorkspaceIdAtom,
+	clearLocalDataAtom,
 	collectionsAtom,
 	currentUserAtom,
+	initDataAtom,
+	initThemeAtom,
 	isLoadingAtom,
+	loadCurrentUserAtom,
 	loadingMessageAtom,
 	loadingStageAtom,
 	localeAtom,
+	signOutAtom,
+	syncWithServerAtom,
 	tabsAtom,
 	themeModeAtom,
 	workspacesAtom,
-} from "@/store/atoms";
-import { activeWorkspaceAtom } from "@/store/selectors";
+} from "@/features";
+import { Header, KeyboardShortcutsDialog } from "@/features/app/components";
+import { AuthDialog, LogoutConfirmDialog } from "@/features/auth/components";
+import { HistoryDrawer } from "@/features/history/components";
+import { initHistoryAtom } from "@/features/history/store";
+import { OfflineIndicator } from "@/features/sync/components";
+import { GlobalTabSearchModal } from "@/features/tab/components";
+import { Sidebar, WorkspaceView } from "@/features/workspace/components";
+import { useHotkey } from "@/hooks/useHotkey";
+import * as m from "@/paraglide/messages";
+import { offlineDetector } from "@/services/offline";
 
 const WORKSPACE_RESTORE_CONFIRM_THRESHOLD = 25;
 
@@ -53,6 +49,7 @@ export default function App() {
 
 	const initData = useSetAtom(initDataAtom);
 	const initTheme = useSetAtom(initThemeAtom);
+	const initHistory = useSetAtom(initHistoryAtom);
 	const loadCurrentUser = useSetAtom(loadCurrentUserAtom);
 	const syncWithServer = useSetAtom(syncWithServerAtom);
 	const signOut = useSetAtom(signOutAtom);
@@ -70,11 +67,12 @@ export default function App() {
 	useEffect(() => {
 		initData();
 		initTheme();
+		initHistory();
 		loadCurrentUser();
 
 		// Initialize offline detector
 		offlineDetector.getStatus();
-	}, [initData, initTheme, loadCurrentUser]);
+	}, [initData, initTheme, initHistory, loadCurrentUser]);
 
 	// 监听设置变化
 	useEffect(() => {

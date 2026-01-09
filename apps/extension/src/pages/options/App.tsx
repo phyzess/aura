@@ -2,24 +2,22 @@ import { STORAGE_KEYS } from "@aura/config";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { AuraLogo } from "@/components/AuraLogo";
+import { AuraLogo } from "@/components/shared";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Select } from "@/components/ui/Select";
 import { Toggle } from "@/components/ui/Toggle";
 import { changeLocale } from "@/config/locale";
-import * as m from "@/paraglide/messages";
-import { locales } from "@/paraglide/runtime";
-import {
-	initDataAtom,
-	initThemeAtom,
-	loadCurrentUserAtom,
-} from "@/store/actions";
 import {
 	currentUserAtom,
+	initDataAtom,
+	initThemeAtom,
 	isLoadingAtom,
+	loadCurrentUserAtom,
 	localeAtom,
 	themeModeAtom,
-} from "@/store/atoms";
+} from "@/features";
+import * as m from "@/paraglide/messages";
+import { locales } from "@/paraglide/runtime";
 
 export default function App() {
 	const currentLocale = useAtomValue(localeAtom);

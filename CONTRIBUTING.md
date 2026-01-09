@@ -126,6 +126,25 @@ Types:
 
 ### Code Organization
 
+Follow the feature-based architecture:
+
+```typescript
+// ✅ Good: Import from features
+import { TabCard } from '@/features/tab/components';
+import { createTab } from '@/features/tab/domain';
+import { tabsAtom, addTabAtom } from '@/features/tab/store';
+
+// ✅ Alternative: Import from unified entry
+import { TabCard, createTab, tabsAtom } from '@/features';
+
+// ❌ Avoid: Old import paths (will cause linter errors)
+import { TabCard } from '@/components/TabCard';
+import { createTab } from '@/domain/tab/operations';
+import { tabsAtom } from '@/store/atoms';
+```
+
+Keep domain logic pure:
+
 ```typescript
 // ✅ Good: Pure function
 export function mergeWorkspaces(
@@ -202,12 +221,50 @@ aura/
 ├── apps/
 │   ├── api/              # Cloudflare Workers API
 │   └── extension/        # Chrome Extension
+│       └── src/
+│           ├── features/     # Feature modules (business logic)
+│           ├── components/   # Shared UI components
+│           ├── hooks/        # Shared hooks
+│           ├── pages/        # Application pages
+│           ├── services/     # External services
+│           └── types/        # Shared TypeScript types
 ├── packages/
 │   ├── domain/           # Shared types
-│   ├── config/           # Configuration
-│   └── shared/           # Shared utilities
+│   └── config/           # Configuration
 └── docs/                 # Documentation
 ```
+
+### Feature-Based Architecture
+
+Aura uses a feature-based architecture. Each feature is self-contained with its own:
+
+- **Components**: UI components specific to the feature
+- **Domain**: Business logic and pure functions
+- **Store**: State management (Jotai atoms and actions)
+- **Hooks**: Feature-specific React hooks
+
+Example feature structure:
+
+```
+features/tab/
+├── components/
+│   ├── TabCard.tsx
+│   ├── AddTabModal.tsx
+│   └── index.ts
+├── domain/
+│   ├── operations.ts
+│   └── index.ts
+├── store/
+│   ├── atoms.ts
+│   ├── actions.ts
+│   └── index.ts
+├── hooks/
+│   ├── useTabSearch.ts
+│   └── index.ts
+└── index.ts
+```
+
+For detailed architecture documentation, see [Architecture Guide](./docs/development/architecture.md).
 
 ## Need Help?
 

@@ -1,6 +1,6 @@
 import type React from "react";
-import { AuthForm } from "@/components/AuthDialog";
 import { Drawer } from "@/components/ui/Drawer";
+import { AuthForm } from "@/features/auth/components/AuthDialog";
 
 interface ExtensionPopupAuthDrawerProps {
 	isOpen: boolean;

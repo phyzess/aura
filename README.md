@@ -259,6 +259,7 @@ For the full release guide and detailed checklist, see [Release Process](docs/de
 
 - **[Documentation Index](docs/README.md)** - Complete documentation overview
 - **[Quick Start Guide](docs/getting-started/quickstart.md)** - Get started in 5 minutes
+- **[Architecture Guide](docs/development/architecture.md)** - Feature-based architecture explained
 - **[Authentication Setup](docs/guides/auth-setup.md)** - Configure auth providers
 - **[API Documentation](apps/api/README.md)** - API architecture and development
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute

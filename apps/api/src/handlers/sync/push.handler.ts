@@ -100,11 +100,11 @@ export const handlePush = async (c: Context<{ Bindings: Env }>) => {
 			tabsCount: tabs.length,
 		});
 
-		await Promise.all([
-			workspaceData.batchUpsert(workspacesWithUser),
-			collectionData.batchUpsert(collectionsWithUser),
-			tabData.batchUpsert(tabsWithUser),
-		]);
+		// Execute in order to respect foreign key constraints:
+		// workspaces -> collections -> tabs
+		await workspaceData.batchUpsert(workspacesWithUser);
+		await collectionData.batchUpsert(collectionsWithUser);
+		await tabData.batchUpsert(tabsWithUser);
 
 		return c.json({ success: true });
 	} catch (error) {

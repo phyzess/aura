@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 import type React from "react";
-import { TabSearchResultList } from "@/components/tab-search";
+import { TabSearchResultList } from "@/features/tab/components";
 import * as m from "@/paraglide/messages";
 import { ChromeService } from "../../services/chrome";
 import type { Collection, TabItem, Workspace } from "../../types";

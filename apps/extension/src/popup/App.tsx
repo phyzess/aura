@@ -1,28 +1,26 @@
 import { STORAGE_KEYS } from "@aura/config";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
-import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { changeLocale } from "@/config/locale";
-import * as m from "@/paraglide/messages";
-import { ChromeService } from "@/services/chrome";
-import { offlineDetector } from "@/services/offline";
 import {
 	captureSessionAtom,
-	initDataAtom,
-	initThemeAtom,
-	loadCurrentUserAtom,
-} from "@/store/actions";
-import {
 	collectionsAtom,
 	currentUserAtom,
+	initDataAtom,
+	initThemeAtom,
 	isLoadingAtom,
+	loadCurrentUserAtom,
 	loadingMessageAtom,
 	loadingStageAtom,
 	localeAtom,
 	tabsAtom,
 	themeModeAtom,
 	workspacesAtom,
-} from "@/store/atoms";
+} from "@/features";
+import { OfflineIndicator } from "@/features/sync/components";
+import * as m from "@/paraglide/messages";
+import { ChromeService } from "@/services/chrome";
+import { offlineDetector } from "@/services/offline";
 import { ExtensionPopup } from "./components/ExtensionPopup";
 
 interface SaveRequest {

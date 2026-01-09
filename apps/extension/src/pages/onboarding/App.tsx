@@ -10,16 +10,15 @@ import {
 	Sun,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { AuraLogo } from "@/components/AuraLogo";
+import { AuraLogo } from "@/components/shared";
 import { BottomShadow } from "@/components/ui/BottomShadow";
 import { Button } from "@/components/ui/Button/Button";
 import { Card } from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/IconButton";
 import { GITHUB_REPO_URL } from "@/config/constants";
 import { changeLocale } from "@/config/locale";
+import { initThemeAtom, localeAtom, themeModeAtom } from "@/features";
 import * as m from "@/paraglide/messages";
-import { initThemeAtom } from "@/store/actions";
-import { localeAtom, themeModeAtom } from "@/store/atoms";
 import type { Locale } from "@/types/paraglide";
 
 type OnboardingStep = "welcome" | "newtab" | "pin" | "finish";

@@ -18,6 +18,57 @@
 			"recommended": true,
 			"a11y": {
 				"recommended": true
+			},
+			"style": {
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"paths": {
+							"@/store/atoms": {
+								"message": "Import from '@/features/[feature]/store' or '@/features' instead. The old store structure has been removed."
+							},
+							"@/store/actions": {
+								"message": "Import from '@/features/[feature]/store' or '@/features' instead. The old store structure has been removed."
+							},
+							"@/store/selectors": {
+								"message": "Import from '@/features/[feature]/store' or '@/features' instead. The old store structure has been removed."
+							},
+							"@/store/history": {
+								"message": "Import from '@/features/history/store' or '@/features' instead. The old store structure has been removed."
+							},
+							"@/domain/collection/operations": {
+								"message": "Import from '@/features/collection/domain' or '@/features' instead. The old domain structure has been removed."
+							},
+							"@/domain/tab/operations": {
+								"message": "Import from '@/features/tab/domain' or '@/features' instead. The old domain structure has been removed."
+							},
+							"@/domain/workspace/operations": {
+								"message": "Import from '@/features/workspace/domain' or '@/features' instead. The old domain structure has been removed."
+							},
+							"@/hooks/useTabSearch": {
+								"message": "Import from '@/features/tab/hooks' or '@/features' instead."
+							}
+						},
+						"patterns": [
+							{
+								"group": ["@/store/actions/*"],
+								"message": "Import from '@/features/[feature]/store' or '@/features' instead. The old store structure has been removed."
+							},
+							{
+								"group": ["@/domain/*"],
+								"message": "Import from '@/features/[feature]/domain' or '@/features' instead. The old domain structure has been removed."
+							},
+							{
+								"group": [
+									"@/components/*",
+									"!@/components/ui/*",
+									"!@/components/shared/*"
+								],
+								"message": "Import from '@/features/[feature]/components' or '@/features' instead. Component re-exports have been removed."
+							}
+						]
+					}
+				}
 			}
 		}
 	},

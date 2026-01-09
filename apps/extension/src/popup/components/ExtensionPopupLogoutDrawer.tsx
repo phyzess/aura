@@ -5,8 +5,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
 import { IconButton } from "@/components/ui/IconButton";
+import { authErrorAtom, authStatusAtom } from "@/features";
 import * as m from "@/paraglide/messages";
-import { authErrorAtom, authStatusAtom } from "@/store/atoms";
 
 interface ExtensionPopupLogoutDrawerProps {
 	isOpen: boolean;

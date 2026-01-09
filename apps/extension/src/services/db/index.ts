@@ -1,6 +1,14 @@
 import type { Collection, TabItem, Workspace } from "@/types";
 import type { StateCommit } from "@/types/history";
-import { clearAndBulkPut, clearStore, getAll, getMeta, put, putMeta, remove } from "./core";
+import {
+	clearAndBulkPut,
+	clearStore,
+	getAll,
+	getMeta,
+	put,
+	putMeta,
+	remove,
+} from "./core";
 
 export { initDB } from "./core";
 
@@ -22,7 +30,8 @@ export const LocalDB = {
 	saveAllTabs: clearAndBulkPut<TabItem>("tabs"),
 
 	getLastSyncTimestamp: getMeta<number>("lastSyncTimestamp"),
-	saveLastSyncTimestamp: (value: number) => putMeta("lastSyncTimestamp", value)(),
+	saveLastSyncTimestamp: (value: number) =>
+		putMeta("lastSyncTimestamp", value)(),
 
 	clearAll: async () => {
 		await Promise.all([
@@ -35,6 +44,6 @@ export const LocalDB = {
 
 	getCommits: getAll<StateCommit>("commits"),
 	saveCommit: put<StateCommit>("commits"),
+	deleteCommit: remove("commits"),
 	clearCommits: clearStore("commits"),
 };
-

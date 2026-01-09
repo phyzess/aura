@@ -5,7 +5,7 @@ import {
 	markCollectionAsDeleted,
 	reorderCollection,
 	updateCollection,
-} from "../../src/domain/collection/operations";
+} from "../../src/features/collection/domain";
 import type { Collection } from "../../src/types";
 
 describe("Collection Operations", () => {

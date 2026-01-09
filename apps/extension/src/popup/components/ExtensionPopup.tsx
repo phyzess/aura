@@ -4,13 +4,13 @@ import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/Button";
-import { useTabSearch } from "@/hooks/useTabSearch";
-import * as m from "@/paraglide/messages";
 import {
 	type CaptureSessionPayload,
 	clearLocalDataAtom,
 	signOutAtom,
-} from "@/store/actions";
+} from "@/features";
+import { useTabSearch } from "@/features/tab/hooks";
+import * as m from "@/paraglide/messages";
 import { ChromeService } from "../../services/chrome";
 import type {
 	Collection,
