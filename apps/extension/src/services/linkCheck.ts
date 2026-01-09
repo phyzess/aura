@@ -1,3 +1,8 @@
+import {
+	CACHE_DURATIONS,
+	LINK_CHECK_CONFIG,
+	TIMEOUT_DURATIONS,
+} from "@aura/config";
 import type { LinkStatus } from "@/types";
 
 interface CheckResult {
@@ -16,9 +21,9 @@ type ProgressCallback = (progress: CheckProgress) => void;
 
 class LinkCheckService {
 	private cache = new Map<string, CheckResult>();
-	private readonly CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-	private readonly REQUEST_TIMEOUT = 10000; // 10 seconds
-	private readonly MAX_CONCURRENT = 5; // Max 5 concurrent requests
+	private readonly CACHE_DURATION = CACHE_DURATIONS.LINK_CHECK;
+	private readonly REQUEST_TIMEOUT = TIMEOUT_DURATIONS.LINK_CHECK_REQUEST;
+	private readonly MAX_CONCURRENT = LINK_CHECK_CONFIG.MAX_CONCURRENT;
 
 	/**
 	 * Check if a URL is valid/accessible

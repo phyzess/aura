@@ -1,9 +1,7 @@
-import { Command, X } from "lucide-react";
+import { Command } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useRef } from "react";
-import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Dialog } from "@/components/ui/Dialog";
-import { IconButton } from "@/components/ui/IconButton";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { useTabSearch } from "@/hooks/useTabSearch";
 import * as m from "@/paraglide/messages";
@@ -61,51 +59,35 @@ export const GlobalTabSearchModal: React.FC<GlobalTabSearchModalProps> = ({
 			onClose={handleClose}
 			size="xl"
 			position="top"
-			className="bg-transparent shadow-none border-none p-0"
-			overlayClassName="bg-surface-overlay/80"
+			variant="elevated"
+			className="rounded-2xl"
 		>
-			<Card
-				border={false}
-				variant="elevated"
-				radius="2xl"
-				className="relative w-full max-w-2xl shadow-soft flex flex-col overflow-hidden"
-			>
-				<CardHeader className="bg-surface-elevated/80 backdrop-blur-sm flex-col items-stretch justify-start gap-0 px-0 py-0">
-					<div className="flex items-center justify-between px-4 pt-3 pb-2">
-						<div className="flex items-center gap-2">
-							<div className="w-6 h-6 rounded-full bg-accent-soft flex items-center justify-center text-accent">
-								<Command size={14} />
-							</div>
-							<div className="flex flex-col">
-								<span className="text-xs font-semibold text-primary">
-									{m.global_search_title()}
-								</span>
-								<span className="text-[11px] text-secondary">
-									{m.global_search_subtitle()}
-								</span>
-							</div>
-						</div>
-						<IconButton
-							type="button"
-							variant="subtle"
-							size="sm"
-							aria-label={m.global_search_close_aria()}
-							onClick={handleClose}
-							className="mr-2 h-7 w-7 text-muted hover:text-secondary hover:bg-surface-muted"
-						>
-							<X size={14} />
-						</IconButton>
+			<div className="flex flex-col">
+				{/* Header */}
+				<div className="flex items-center gap-2 px-4 pt-3 pb-2">
+					<div className="w-6 h-6 rounded-full bg-accent-soft flex items-center justify-center text-accent">
+						<Command size={14} />
 					</div>
-					<div className="px-4 pb-3 pt-1">
-						<SearchInput
-							value={query}
-							onChange={setQuery}
-							inputRef={inputRef}
-							placeholder={m.global_search_input_placeholder()}
-						/>
+					<div className="flex flex-col">
+						<span className="text-xs font-semibold text-primary">
+							{m.global_search_title()}
+						</span>
+						<span className="text-[11px] text-secondary">
+							{m.global_search_subtitle()}
+						</span>
 					</div>
-				</CardHeader>
-				<CardBody className="max-h-105 overflow-y-auto bg-surface px-4 pb-4 pt-3">
+				</div>
+				<div className="px-4 pb-3 pt-1">
+					<SearchInput
+						value={query}
+						onChange={setQuery}
+						inputRef={inputRef}
+						placeholder={m.global_search_input_placeholder()}
+					/>
+				</div>
+
+				{/* Body */}
+				<div className="max-h-105 overflow-y-auto px-4 pb-4 pt-3">
 					{showIntro && (
 						<div className="py-10 text-center text-xs text-muted">
 							<div className="mb-2 font-semibold text-secondary">
@@ -148,8 +130,8 @@ export const GlobalTabSearchModal: React.FC<GlobalTabSearchModalProps> = ({
 							}}
 						/>
 					)}
-				</CardBody>
-			</Card>
+				</div>
+			</div>
 		</Dialog>
 	);
 };

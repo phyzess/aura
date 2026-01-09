@@ -1,5 +1,5 @@
-import type { MergeStats } from "@aura/domain/sync";
-import { filterDeleted, mergeWithTombstones } from "@aura/domain/sync";
+import type { MergeStats } from "@aura/domain";
+import { filterDeleted, mergeWithTombstones } from "@aura/domain";
 import type { Result } from "@aura/shared";
 import { err, ok } from "@aura/shared";
 import type { Collection, SyncPayload, TabItem, Workspace } from "@/types";

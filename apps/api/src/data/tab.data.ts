@@ -1,10 +1,9 @@
+import { DATA_LAYER_CONSTANTS } from "@aura/config";
 import type { TabItem } from "@aura/domain";
 import { chunk } from "@aura/shared";
 import { and, eq, gt, inArray, or } from "drizzle-orm";
 import type { Db } from "@/db";
 import { tabs } from "@/db/app.schema";
-
-const BATCH_SIZE = 8;
 
 export const findByUserId =
 	(db: Db) =>
@@ -28,7 +27,7 @@ export const batchUpsert =
 	async (items: TabItem[]): Promise<void> => {
 		if (items.length === 0) return;
 
-		const chunks = chunk(items, BATCH_SIZE);
+		const chunks = chunk(items, DATA_LAYER_CONSTANTS.BATCH_SIZE.TAB);
 
 		await Promise.all(
 			chunks.map(async (chunkItems) => {
@@ -71,7 +70,7 @@ export const batchDelete =
 	async (ids: string[]): Promise<void> => {
 		if (ids.length === 0) return;
 
-		const chunks = chunk(ids, 80);
+		const chunks = chunk(ids, DATA_LAYER_CONSTANTS.BATCH_SIZE.DELETE);
 
 		await Promise.all(
 			chunks.map((chunkIds) =>

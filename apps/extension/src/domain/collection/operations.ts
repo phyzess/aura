@@ -8,11 +8,13 @@ export const createCollection = (params: {
 }): Collection => ({
 	id: crypto.randomUUID(),
 	workspaceId: params.workspaceId,
+	userId: null,
 	name: params.name,
-	description: params.description,
+	description: params.description ?? null,
 	order: params.order,
 	createdAt: Date.now(),
 	updatedAt: Date.now(),
+	deletedAt: null,
 });
 
 export const updateCollection = (
@@ -54,4 +56,3 @@ export const getActiveCollections = (collections: Collection[]): Collection[] =>
 export const sortCollectionsByOrder = (
 	collections: Collection[],
 ): Collection[] => [...collections].sort((a, b) => a.order - b.order);
-

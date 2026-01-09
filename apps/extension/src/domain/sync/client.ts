@@ -1,5 +1,7 @@
+import { API_ENDPOINTS } from "@aura/config";
+import type { Collection, TabItem, Workspace } from "@aura/domain";
 import type { Result } from "@aura/shared";
-import { err, ok, tryCatchAsync } from "@aura/shared";
+import { err, tryCatchAsync } from "@aura/shared";
 import type { SyncPayload } from "@/types";
 
 export type SyncResult = "success" | "unauthorized" | "error";
@@ -18,12 +20,15 @@ export const pushToServer = async (
 	}
 
 	return tryCatchAsync(async () => {
-		const response = await fetch(`${context.apiBaseUrl}/api/app/sync/push`, {
-			method: "POST",
-			credentials: "include",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(payload),
-		});
+		const response = await fetch(
+			`${context.apiBaseUrl}${API_ENDPOINTS.SYNC.PUSH}`,
+			{
+				method: "POST",
+				credentials: "include",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			},
+		);
 
 		if (response.status === 401) {
 			throw "unauthorized";
@@ -44,12 +49,15 @@ export const pullFromServer = async (
 	}
 
 	return tryCatchAsync(async () => {
-		const response = await fetch(`${context.apiBaseUrl}/api/app/sync/pull`, {
-			method: "POST",
-			credentials: "include",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ lastSyncTimestamp }),
-		});
+		const response = await fetch(
+			`${context.apiBaseUrl}${API_ENDPOINTS.SYNC.PULL}`,
+			{
+				method: "POST",
+				credentials: "include",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ lastSyncTimestamp }),
+			},
+		);
 
 		if (response.status === 401) {
 			throw "unauthorized";
@@ -65,9 +73,9 @@ export const pullFromServer = async (
 };
 
 export const createSyncPayload = (
-	workspaces: any[],
-	collections: any[],
-	tabs: any[],
+	workspaces: Workspace[],
+	collections: Collection[],
+	tabs: TabItem[],
 	lastSyncTimestamp: number,
 ): SyncPayload => ({
 	workspaces,

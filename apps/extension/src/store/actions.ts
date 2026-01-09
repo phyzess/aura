@@ -1,41 +1,11 @@
+import { API_ENDPOINTS } from "@aura/config";
+import type { MergeStats } from "@aura/domain";
+import { mergeWithTombstones } from "@aura/domain";
 import { atom } from "jotai";
 import { API_BASE_URL } from "@/config/env";
 import type { CaptureSessionPayload } from "@/domain/import/session";
-import {
-	extractValidTabs,
-	shouldCreateCollection,
-	shouldCreateWorkspace,
-} from "@/domain/import/session";
 import type { ImportTobyPayload } from "@/domain/import/toby";
-import {
-	flattenTobyDataToTabs,
-	parseTobyData,
-	shouldCreateMultipleCollections,
-	shouldCreateSingleCollection,
-	validateTobyData,
-} from "@/domain/import/toby";
-import {
-	calculateLinkCheckStats,
-	createEmptyStats,
-	createLinkCheckProgress,
-	filterTabsByIds,
-	findTabById,
-	setMultipleTabsCheckingStatus,
-	setTabCheckingStatus,
-	updateMultipleTabsLinkStatus,
-	updateTabLinkStatus,
-} from "@/domain/link-check/operations";
-import {
-	calculateRetryDelay,
-	createSyncPayload,
-	filterDeleted,
-	type MergeStats,
-	mergeWithTombstones,
-	pullFromServer,
-	pushToServer,
-	type SyncResult,
-	shouldResetDirtyFlag,
-} from "@/domain/sync/client";
+import type { SyncResult } from "@/domain/sync/client";
 import { createAlert, sendAlerts, shouldSendAlert } from "@/services/alerts";
 import { authClient } from "@/services/authClient";
 import { initDB, LocalDB } from "@/services/db";
@@ -194,15 +164,41 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 
 	let pullPayload: SyncPayload | null = null;
 	try {
-		pullPayload = (await pullRes.json()) as SyncPayload;
+		const rawPayload = await pullRes.json();
+		console.log("[sync] raw pull payload", rawPayload);
+		pullPayload = rawPayload as SyncPayload;
 	} catch (error) {
 		console.error("[sync] failed to parse pull payload", error);
 		return "error";
 	}
 
 	if (!pullPayload) {
+		console.log("[sync] pull payload is null, nothing to sync");
 		return "success";
 	}
+
+	// Validate payload structure
+	if (
+		!Array.isArray(pullPayload.workspaces) ||
+		!Array.isArray(pullPayload.collections) ||
+		!Array.isArray(pullPayload.tabs)
+	) {
+		console.error("[sync] invalid pull payload structure", {
+			workspaces: pullPayload.workspaces,
+			collections: pullPayload.collections,
+			tabs: pullPayload.tabs,
+			workspacesType: typeof pullPayload.workspaces,
+			collectionsType: typeof pullPayload.collections,
+			tabsType: typeof pullPayload.tabs,
+		});
+		return "error";
+	}
+
+	console.log("[sync] pull payload validated", {
+		workspacesCount: pullPayload.workspaces.length,
+		collectionsCount: pullPayload.collections.length,
+		tabsCount: pullPayload.tabs.length,
+	});
 
 	try {
 		// Track merge conflicts
@@ -311,7 +307,7 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 
 		// Send alerts if any
 		if (alerts.length > 0) {
-			sendAlerts(alerts).catch((error) => {
+			sendAlerts(alerts, API_BASE_URL).catch((error) => {
 				console.error("[sync] Failed to send alerts:", error);
 			});
 		}
@@ -331,7 +327,7 @@ export const initThemeAtom = atom(null, (get) => {
 
 export const loadCurrentUserAtom = atom(null, async (_get, set) => {
 	try {
-		const res = await fetch(`${API_BASE_URL}/api/app/me`, {
+		const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.USER.ME}`, {
 			method: "GET",
 			credentials: "include",
 		});
@@ -389,10 +385,13 @@ export const createWorkspaceAtom = atom(
 		const workspaces = get(workspacesAtom);
 		const newWorkspace: Workspace = {
 			id: crypto.randomUUID(),
+			userId: null,
 			name,
+			description: null,
 			order: workspaces.length,
 			createdAt: Date.now(),
 			updatedAt: Date.now(),
+			deletedAt: null,
 		};
 
 		await LocalDB.saveWorkspace(newWorkspace);
@@ -530,10 +529,13 @@ export const addCollectionAtom = atom(
 		const newCollection: Collection = {
 			id: crypto.randomUUID(),
 			workspaceId: args.workspaceId,
+			userId: null,
 			name: args.name,
+			description: null,
 			order: workspaceCollections.length,
 			createdAt: Date.now(),
 			updatedAt: Date.now(),
+			deletedAt: null,
 		};
 
 		await LocalDB.saveCollection(newCollection);
@@ -611,12 +613,15 @@ export const addTabAtom = atom(
 		const newTab: TabItem = {
 			id: crypto.randomUUID(),
 			collectionId: args.collectionId,
+			userId: null,
 			url: args.url,
 			title: args.title,
 			faviconUrl: `https://www.google.com/s2/favicons?domain=${new URL(args.url).hostname}&sz=64`,
+			isPinned: false,
 			order: collectionTabs.length,
 			createdAt: Date.now(),
 			updatedAt: Date.now(),
+			deletedAt: null,
 		};
 
 		await LocalDB.saveTab(newTab);
@@ -652,12 +657,15 @@ export const batchAddTabsAtom = atom(
 		const newTabs: TabItem[] = args.tabs.map((tab, index) => ({
 			id: crypto.randomUUID(),
 			collectionId: args.collectionId,
+			userId: null,
 			url: tab.url,
 			title: tab.title,
 			faviconUrl: `https://www.google.com/s2/favicons?domain=${new URL(tab.url).hostname}&sz=64`,
+			isPinned: false,
 			order: collectionTabs.length + index,
 			createdAt: now,
 			updatedAt: now,
+			deletedAt: null,
 		}));
 
 		// Save all tabs to local DB
@@ -746,7 +754,10 @@ export const moveTabAtom = atom(
 		);
 
 		const shouldUpdatePin = args.shouldPin !== undefined;
-		const newPinState = shouldUpdatePin ? args.shouldPin : tab.isPinned;
+		const newPinState =
+			shouldUpdatePin && args.shouldPin !== undefined
+				? args.shouldPin
+				: tab.isPinned;
 
 		const movedTab: TabItem = {
 			...tab,

@@ -6,7 +6,7 @@ export interface MergeStats {
 export interface Timestamped {
 	id: string;
 	updatedAt: number;
-	deletedAt?: number;
+	deletedAt: number | null;
 }
 
 export const mergeWithTombstones = <T extends Timestamped>(
@@ -52,7 +52,9 @@ export const filterDeleted = <T extends Timestamped>(items: T[]): T[] =>
 
 export const filterNotDeleted = filterDeleted;
 
-export const getLatestTimestamp = <T extends Timestamped>(items: T[]): number => {
+export const getLatestTimestamp = <T extends Timestamped>(
+	items: T[],
+): number => {
 	let latest = 0;
 	for (const item of items) {
 		const time = item.deletedAt || item.updatedAt;
@@ -93,4 +95,3 @@ export const sortByUpdatedAt = <T extends { updatedAt: number }>(
 export const sortByCreatedAt = <T extends { createdAt: number }>(
 	items: T[],
 ): T[] => [...items].sort((a, b) => b.createdAt - a.createdAt);
-

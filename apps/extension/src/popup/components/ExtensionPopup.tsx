@@ -6,7 +6,11 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/Button";
 import { useTabSearch } from "@/hooks/useTabSearch";
 import * as m from "@/paraglide/messages";
-import { clearLocalDataAtom, signOutAtom } from "@/store/actions";
+import {
+	type CaptureSessionPayload,
+	clearLocalDataAtom,
+	signOutAtom,
+} from "@/store/actions";
 import { ChromeService } from "../../services/chrome";
 import type {
 	Collection,
@@ -36,7 +40,7 @@ interface ExtensionPopupProps {
 	collections: Collection[];
 	tabs: TabItem[];
 	currentUser: User | null;
-	onCapture: (payload: any) => void;
+	onCapture: (payload: CaptureSessionPayload) => void;
 	onClose: () => void;
 	saveRequest?: SaveRequest | null;
 }
@@ -143,7 +147,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 		const tabs = await ChromeService.getCurrentTabs();
 		setSessionTabs(tabs);
 
-		const allIndexes = new Set(tabs.map((_, i) => i));
+		const allIndexes = new Set(tabs.map((_tab: unknown, i: number) => i));
 		setCheckedTabs(allIndexes);
 
 		if (selectedWorkspaceId) {
@@ -234,7 +238,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 			// Save all tabs
 			const allTabs = await ChromeService.getCurrentTabs();
 			setSessionTabs(allTabs);
-			setCheckedTabs(new Set(allTabs.map((_, i) => i)));
+			setCheckedTabs(new Set(allTabs.map((_tab: unknown, i: number) => i)));
 		}
 
 		// Set default workspace and collection

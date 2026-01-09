@@ -12,7 +12,7 @@ import { WorkspaceView } from "@/components/WorkspaceView";
 import { changeLocale } from "@/config/locale";
 import { useHotkey } from "@/hooks/useHotkey";
 import * as m from "@/paraglide/messages";
-import { offlineDetector } from "@/services/offlineDetector";
+import { offlineDetector } from "@/services/offline";
 import {
 	clearLocalDataAtom,
 	initDataAtom,

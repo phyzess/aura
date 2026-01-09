@@ -171,10 +171,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose} size="md" variant="elevated">
-			<div className="flex flex-col max-h-[90vh]">
+			<div className="flex flex-col max-h-[80vh]">
 				{/* Header */}
-				<div className="flex items-center justify-between px-6 py-4 border-b border-surface-border">
-					<div>
+				<div className="flex items-start justify-between px-6 py-4 border-b border-surface-border">
+					<div className="flex-1">
 						<h3 className="text-xl font-bold text-primary">
 							{m.import_modal_title()}
 						</h3>
@@ -183,16 +183,17 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 						</p>
 					</div>
 					<IconButton
+						type="button"
 						variant="subtle"
 						size="sm"
 						aria-label={m.import_modal_close_aria()}
 						onClick={onClose}
 					>
-						<X size={18} />
+						<X size={20} />
 					</IconButton>
 				</div>
 
-				{/* Content */}
+				{/* Body */}
 				<div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
 					{error && (
 						<div className="mb-4 flex items-center gap-2 text-xs text-danger bg-danger-soft/70 border border-danger/20 rounded-xl px-3 py-2 animate-in slide-in-from-top-2">

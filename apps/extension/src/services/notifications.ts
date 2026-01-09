@@ -1,5 +1,3 @@
-declare const chrome: any;
-
 export type NotificationType = "success" | "error" | "info" | "warning";
 
 export interface NotificationOptions {
@@ -21,7 +19,10 @@ class NotificationService {
 	private async loadSettings(): Promise<void> {
 		try {
 			const result = await chrome.storage.local.get(["notificationsEnabled"]);
-			this.isEnabled = result.notificationsEnabled ?? true;
+			this.isEnabled =
+				typeof result.notificationsEnabled === "boolean"
+					? result.notificationsEnabled
+					: true;
 		} catch (error) {
 			console.error("[Notifications] Failed to load settings:", error);
 		}

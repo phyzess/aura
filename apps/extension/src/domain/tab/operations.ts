@@ -8,12 +8,15 @@ export const createTab = (params: {
 }): TabItem => ({
 	id: crypto.randomUUID(),
 	collectionId: params.collectionId,
+	userId: null,
 	url: params.url,
 	title: params.title,
 	faviconUrl: `https://www.google.com/s2/favicons?domain=${new URL(params.url).hostname}&sz=64`,
+	isPinned: false,
 	order: params.order,
 	createdAt: Date.now(),
 	updatedAt: Date.now(),
+	deletedAt: null,
 });
 
 export const createTabs = (params: {
@@ -25,12 +28,15 @@ export const createTabs = (params: {
 	return params.tabs.map((tab, index) => ({
 		id: crypto.randomUUID(),
 		collectionId: params.collectionId,
+		userId: null,
 		url: tab.url,
 		title: tab.title,
 		faviconUrl: `https://www.google.com/s2/favicons?domain=${new URL(tab.url).hostname}&sz=64`,
+		isPinned: false,
 		order: params.startOrder + index,
 		createdAt: now,
 		updatedAt: now,
+		deletedAt: null,
 	}));
 };
 
@@ -49,7 +55,10 @@ export const toggleTabPin = (tab: TabItem): TabItem => ({
 	updatedAt: Date.now(),
 });
 
-export const updateTab = (tab: TabItem, updates: Partial<TabItem>): TabItem => ({
+export const updateTab = (
+	tab: TabItem,
+	updates: Partial<TabItem>,
+): TabItem => ({
 	...tab,
 	...updates,
 	updatedAt: Date.now(),
@@ -64,7 +73,8 @@ export const reorderTab = (tab: TabItem, newOrder: number): TabItem => ({
 export const getTabsByCollection = (
 	tabs: TabItem[],
 	collectionId: string,
-): TabItem[] => tabs.filter((t) => t.collectionId === collectionId && !t.deletedAt);
+): TabItem[] =>
+	tabs.filter((t) => t.collectionId === collectionId && !t.deletedAt);
 
 export const getActiveTabs = (tabs: TabItem[]): TabItem[] =>
 	tabs.filter((t) => !t.deletedAt);
@@ -74,4 +84,3 @@ export const getPinnedTabs = (tabs: TabItem[]): TabItem[] =>
 
 export const sortTabsByOrder = (tabs: TabItem[]): TabItem[] =>
 	[...tabs].sort((a, b) => a.order - b.order);
-

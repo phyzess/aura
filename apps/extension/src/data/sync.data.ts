@@ -1,5 +1,7 @@
+import { API_ENDPOINTS } from "@aura/config";
+import type { User } from "@aura/domain";
 import type { Result } from "@aura/shared";
-import { err, ok, tryCatchAsync } from "@aura/shared";
+import { tryCatchAsync } from "@aura/shared";
 import { API_BASE_URL } from "@/config/env";
 import type { SyncPayload } from "@/types";
 
@@ -88,11 +90,11 @@ export const pullFromServer = async (
 };
 
 export const fetchCurrentUser = async (): Promise<
-	Result<{ user: any | null }, SyncError>
+	Result<{ user: User | null }, SyncError>
 > => {
 	const result = await tryCatchAsync(
 		async () => {
-			const res = await fetch(`${API_BASE_URL}/api/app/me`, {
+			const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.USER.ME}`, {
 				method: "GET",
 				credentials: "include",
 			});
@@ -102,7 +104,7 @@ export const fetchCurrentUser = async (): Promise<
 			}
 
 			const data = await res.json();
-			return data as { user: any | null };
+			return data as { user: User | null };
 		},
 		() => "network" as SyncError,
 	);

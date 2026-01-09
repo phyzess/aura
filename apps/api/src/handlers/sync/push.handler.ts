@@ -1,4 +1,9 @@
 import {
+	COMMON_ERROR_RESPONSES,
+	ERROR_MESSAGES,
+	HTTP_STATUS,
+} from "@aura/config";
+import {
 	type Collection,
 	type TabItem,
 	validateCollections,
@@ -24,7 +29,10 @@ export const handlePush = async (c: Context<{ Bindings: Env }>) => {
 		});
 
 		if (!session?.user) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json(
+				COMMON_ERROR_RESPONSES.unauthorized(),
+				HTTP_STATUS.UNAUTHORIZED,
+			);
 		}
 
 		const payload = (await c.req.json().catch(() => null)) as {
@@ -35,7 +43,10 @@ export const handlePush = async (c: Context<{ Bindings: Env }>) => {
 		} | null;
 
 		if (!payload || typeof payload !== "object") {
-			return c.json({ error: "Invalid payload" }, 400);
+			return c.json(
+				COMMON_ERROR_RESPONSES.invalidPayload(),
+				HTTP_STATUS.BAD_REQUEST,
+			);
 		}
 
 		const workspacesArray = Array.isArray(payload.workspaces)
@@ -56,7 +67,13 @@ export const handlePush = async (c: Context<{ Bindings: Env }>) => {
 			tabs,
 		);
 		if (!relationshipsResult.valid) {
-			return c.json({ error: relationshipsResult.errors.join(", ") }, 400);
+			return c.json(
+				{
+					error: ERROR_MESSAGES.INVALID_PAYLOAD,
+					message: relationshipsResult.errors.join(", "),
+				},
+				HTTP_STATUS.BAD_REQUEST,
+			);
 		}
 
 		const userId = session.user.id;
@@ -92,6 +109,9 @@ export const handlePush = async (c: Context<{ Bindings: Env }>) => {
 		return c.json({ success: true });
 	} catch (error) {
 		console.error("[sync/push] error", error);
-		return c.json({ error: "Internal server error" }, 500);
+		return c.json(
+			COMMON_ERROR_RESPONSES.internalError(),
+			HTTP_STATUS.INTERNAL_SERVER_ERROR,
+		);
 	}
 };

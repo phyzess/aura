@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { OpenTabsButton } from "@/components/OpenTabsButton";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IconButton } from "@/components/ui/IconButton";

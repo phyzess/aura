@@ -1,8 +1,6 @@
 import type { Result } from "@aura/shared";
-import { err, ok, tryCatchAsync } from "@aura/shared";
+import { ok, tryCatchAsync } from "@aura/shared";
 import type { SessionTab } from "@/types";
-
-declare var chrome: any;
 
 export const isExtension = (): boolean =>
 	typeof chrome !== "undefined" && !!chrome.tabs && !!chrome.windows;
@@ -20,7 +18,7 @@ export const getCurrentTabs = async (): Promise<
 	});
 };
 
-const transformChromeTabs = (tabs: any[]): SessionTab[] => {
+const transformChromeTabs = (tabs: chrome.tabs.Tab[]): SessionTab[] => {
 	const result: SessionTab[] = [];
 
 	for (const tab of tabs) {
@@ -171,17 +169,22 @@ export const openTabsInNewWindow = async (
 		const total = list.length;
 		let opened = 1;
 
-		const createdWindow: any = await new Promise((resolve, reject) => {
-			chrome.windows.create({ url: first, focused: true }, (win: any) => {
-				const error = chrome.runtime?.lastError;
-				if (error) {
-					reject(new Error(error.message));
-				} else {
-					onProgress?.({ total, opened });
-					resolve(win);
-				}
-			});
-		});
+		const createdWindow = await new Promise<chrome.windows.Window | undefined>(
+			(resolve, reject) => {
+				chrome.windows.create(
+					{ url: first, focused: true },
+					(win: chrome.windows.Window | undefined) => {
+						const error = chrome.runtime?.lastError;
+						if (error) {
+							reject(new Error(error.message));
+						} else {
+							onProgress?.({ total, opened });
+							resolve(win);
+						}
+					},
+				);
+			},
+		);
 
 		const windowId = createdWindow?.id;
 		if (!windowId) return;

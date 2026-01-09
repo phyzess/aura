@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from "@aura/config";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -44,10 +45,12 @@ export default function App() {
 	useEffect(() => {
 		const loadSettings = async () => {
 			const result = await chrome.storage.local.get([
-				"aura-newtab-enabled",
+				STORAGE_KEYS.NEWTAB_ENABLED,
 				"notificationsEnabled",
 			]);
-			setNewTabEnabled((result["aura-newtab-enabled"] as boolean) ?? false);
+			setNewTabEnabled(
+				(result[STORAGE_KEYS.NEWTAB_ENABLED] as boolean) ?? false,
+			);
 			setNotificationsEnabled((result.notificationsEnabled as boolean) ?? true);
 		};
 		loadSettings();
@@ -56,11 +59,11 @@ export default function App() {
 	const handleThemeChange = (value: string) => {
 		const newTheme = value as "light" | "dark";
 		setThemeMode(newTheme);
-		localStorage.setItem("aura-theme", newTheme);
+		localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
 		document.documentElement.classList.toggle("dark", newTheme === "dark");
 
 		// 通知其他页面主题已更改
-		chrome.storage.local.set({ "aura-theme": newTheme });
+		chrome.storage.local.set({ [STORAGE_KEYS.THEME]: newTheme });
 
 		toast.success(m.options_theme_changed());
 	};
@@ -71,7 +74,7 @@ export default function App() {
 		setLocale(locale);
 
 		// 通知其他页面语言已更改
-		chrome.storage.local.set({ "aura-locale": locale });
+		chrome.storage.local.set({ [STORAGE_KEYS.LOCALE]: locale });
 
 		toast.success(m.options_language_changed());
 	};
@@ -79,7 +82,7 @@ export default function App() {
 	const handleNewTabToggle = async () => {
 		const newValue = !newTabEnabled;
 		setNewTabEnabled(newValue);
-		await chrome.storage.local.set({ "aura-newtab-enabled": newValue });
+		await chrome.storage.local.set({ [STORAGE_KEYS.NEWTAB_ENABLED]: newValue });
 		toast.success(
 			newValue ? m.options_newtab_enabled() : m.options_newtab_disabled(),
 		);

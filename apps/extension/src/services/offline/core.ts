@@ -1,5 +1,6 @@
+import { TIMEOUT_DURATIONS } from "@aura/config";
 import type { Result } from "@aura/shared";
-import { ok, tryCatchAsync } from "@aura/shared";
+import { tryCatchAsync } from "@aura/shared";
 
 export type OnlineStatusCallback = (isOnline: boolean) => void;
 
@@ -18,7 +19,10 @@ export const createInitialState = (): OfflineDetectorState => ({
 export const checkConnection = async (): Promise<Result<boolean, Error>> =>
 	tryCatchAsync(async () => {
 		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 5000);
+		const timeoutId = setTimeout(
+			() => controller.abort(),
+			TIMEOUT_DURATIONS.CONNECTION_CHECK,
+		);
 
 		await fetch("https://www.google.com/favicon.ico", {
 			method: "HEAD",
@@ -55,7 +59,7 @@ export const subscribe = (
 
 export const waitForOnline = async (
 	state: OfflineDetectorState,
-	timeoutMs: number = 30000,
+	timeoutMs: number = TIMEOUT_DURATIONS.WAIT_FOR_ONLINE,
 ): Promise<boolean> => {
 	if (state.isOnline) {
 		return true;

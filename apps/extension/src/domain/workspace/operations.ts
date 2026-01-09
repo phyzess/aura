@@ -6,11 +6,13 @@ export const createWorkspace = (params: {
 	order: number;
 }): Workspace => ({
 	id: crypto.randomUUID(),
+	userId: null,
 	name: params.name,
-	description: params.description,
+	description: params.description ?? null,
 	order: params.order,
 	createdAt: Date.now(),
 	updatedAt: Date.now(),
+	deletedAt: null,
 });
 
 export const updateWorkspace = (
@@ -45,4 +47,3 @@ export const getActiveWorkspaces = (workspaces: Workspace[]): Workspace[] =>
 
 export const sortWorkspacesByOrder = (workspaces: Workspace[]): Workspace[] =>
 	[...workspaces].sort((a, b) => a.order - b.order);
-

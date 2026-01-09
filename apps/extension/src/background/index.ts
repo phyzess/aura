@@ -1,3 +1,4 @@
+import { MESSAGE_TYPES } from "@aura/config";
 import {
 	handleContextMenuClick,
 	setupContextMenus,
@@ -21,7 +22,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-	if (message.type === "onboarding-complete") {
+	if (message.type === MESSAGE_TYPES.ONBOARDING_COMPLETE) {
 		handleOnboardingComplete(message.data);
 		sendResponse({ success: true });
 	}

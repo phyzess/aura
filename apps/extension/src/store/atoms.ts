@@ -1,10 +1,11 @@
+import { STORAGE_KEYS } from "@aura/config";
 import { atom } from "jotai";
 import type { Collection, TabItem, User, Workspace } from "@/types";
 import type { Locale } from "@/types/paraglide";
 
 const getInitialTheme = (): "light" | "dark" => {
 	if (typeof window === "undefined") return "light";
-	const saved = localStorage.getItem("aura-theme");
+	const saved = localStorage.getItem(STORAGE_KEYS.THEME);
 	if (saved === "light" || saved === "dark") return saved;
 	return window.matchMedia("(prefers-color-scheme: dark)").matches
 		? "dark"
@@ -16,7 +17,7 @@ const initialTheme = getInitialTheme();
 const getInitialLocale = (): Locale => {
 	if (typeof window === "undefined") return "en";
 
-	const stored = window.localStorage.getItem("aura-locale");
+	const stored = window.localStorage.getItem(STORAGE_KEYS.LOCALE);
 	if (stored === "en" || stored === "zh-CN") return stored;
 
 	const nav =

@@ -141,7 +141,7 @@ async function applyCommitReverse(
 		const tab = changes.tabs[0];
 
 		if (type === "DELETE") {
-			await LocalDB.saveTab({ ...tab, deletedAt: undefined });
+			await LocalDB.saveTab({ ...tab, deletedAt: null });
 			set(tabsAtom, [...get(tabsAtom), tab]);
 		} else if (type === "CREATE") {
 			const now = Date.now();
@@ -164,13 +164,13 @@ async function applyCommitReverse(
 		const collection = changes.collections[0];
 
 		if (type === "DELETE") {
-			await LocalDB.saveCollection({ ...collection, deletedAt: undefined });
+			await LocalDB.saveCollection({ ...collection, deletedAt: null });
 			set(collectionsAtom, [...get(collectionsAtom), collection]);
 
 			// Restore deleted tabs
 			if (changes.tabs) {
 				for (const tab of changes.tabs) {
-					await LocalDB.saveTab({ ...tab, deletedAt: undefined });
+					await LocalDB.saveTab({ ...tab, deletedAt: null });
 				}
 				set(tabsAtom, [...get(tabsAtom), ...changes.tabs]);
 			}
@@ -201,13 +201,13 @@ async function applyCommitReverse(
 		const workspace = changes.workspaces[0];
 
 		if (type === "DELETE") {
-			await LocalDB.saveWorkspace({ ...workspace, deletedAt: undefined });
+			await LocalDB.saveWorkspace({ ...workspace, deletedAt: null });
 			set(workspacesAtom, [...get(workspacesAtom), workspace]);
 
 			// Restore deleted collections
 			if (changes.collections) {
 				for (const collection of changes.collections) {
-					await LocalDB.saveCollection({ ...collection, deletedAt: undefined });
+					await LocalDB.saveCollection({ ...collection, deletedAt: null });
 				}
 				set(collectionsAtom, [...get(collectionsAtom), ...changes.collections]);
 			}
@@ -215,7 +215,7 @@ async function applyCommitReverse(
 			// Restore deleted tabs
 			if (changes.tabs) {
 				for (const tab of changes.tabs) {
-					await LocalDB.saveTab({ ...tab, deletedAt: undefined });
+					await LocalDB.saveTab({ ...tab, deletedAt: null });
 				}
 				set(tabsAtom, [...get(tabsAtom), ...changes.tabs]);
 			}

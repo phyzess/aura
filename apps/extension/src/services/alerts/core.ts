@@ -1,3 +1,4 @@
+import { ALERT_COOLDOWN } from "@aura/config";
 import type { Result } from "@aura/shared";
 import { ok, tryCatchAsync } from "@aura/shared";
 
@@ -37,9 +38,9 @@ export const createAlert = (
 });
 
 const COOLDOWN_MS = {
-	error: 3600000, // 1 hour
-	warning: 7200000, // 2 hours
-	info: 86400000, // 24 hours
+	error: ALERT_COOLDOWN.ERROR,
+	warning: ALERT_COOLDOWN.WARNING,
+	info: ALERT_COOLDOWN.INFO,
 };
 
 export const shouldSendAlert = (

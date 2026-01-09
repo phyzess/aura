@@ -1,8 +1,8 @@
 import { WifiOff } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { offlineDetector } from "@/services/offlineDetector";
 import { cn } from "@/lib/utils";
+import { offlineDetector } from "@/services/offline";
 
 export const OfflineIndicator: React.FC = () => {
 	const [isOnline, setIsOnline] = useState(offlineDetector.getStatus());
@@ -34,4 +34,3 @@ export const OfflineIndicator: React.FC = () => {
 		</div>
 	);
 };
-

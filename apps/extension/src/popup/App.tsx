@@ -1,10 +1,11 @@
+import { STORAGE_KEYS } from "@aura/config";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { changeLocale } from "@/config/locale";
 import * as m from "@/paraglide/messages";
 import { ChromeService } from "@/services/chrome";
-import { offlineDetector } from "@/services/offlineDetector";
+import { offlineDetector } from "@/services/offline";
 import {
 	captureSessionAtom,
 	initDataAtom,
@@ -73,14 +74,18 @@ export default function App() {
 		) => {
 			if (areaName !== "local") return;
 
-			if (changes["aura-theme"]) {
-				const newTheme = changes["aura-theme"].newValue as "light" | "dark";
+			if (changes[STORAGE_KEYS.THEME]) {
+				const newTheme = changes[STORAGE_KEYS.THEME].newValue as
+					| "light"
+					| "dark";
 				setThemeMode(newTheme);
 				document.documentElement.classList.toggle("dark", newTheme === "dark");
 			}
 
-			if (changes["aura-locale"]) {
-				const newLocale = changes["aura-locale"].newValue as "en" | "zh-CN";
+			if (changes[STORAGE_KEYS.LOCALE]) {
+				const newLocale = changes[STORAGE_KEYS.LOCALE].newValue as
+					| "en"
+					| "zh-CN";
 				setLocale(newLocale);
 				changeLocale(newLocale);
 			}
@@ -113,14 +118,16 @@ export default function App() {
 	};
 
 	const checkSaveRequest = async () => {
-		const result = await chrome.storage.local.get("aura-save-request");
-		const request = result["aura-save-request"] as SaveRequest | undefined;
+		const result = await chrome.storage.local.get(STORAGE_KEYS.SAVE_REQUEST);
+		const request = result[STORAGE_KEYS.SAVE_REQUEST] as
+			| SaveRequest
+			| undefined;
 
 		if (request && Date.now() - request.timestamp < 5000) {
 			// Request is fresh (within 5 seconds)
 			setSaveRequest(request);
 			// Clear the request
-			await chrome.storage.local.remove("aura-save-request");
+			await chrome.storage.local.remove(STORAGE_KEYS.SAVE_REQUEST);
 		}
 	};
 

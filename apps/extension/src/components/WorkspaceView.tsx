@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/Badge";
 import { BottomShadow } from "@/components/ui/BottomShadow";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader } from "@/components/ui/Card";
+import { Dialog } from "@/components/ui/Dialog";
 import { TextField } from "@/components/ui/TextField";
 import * as m from "@/paraglide/messages";
 import {
@@ -111,7 +112,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 		requestAnimationFrame(() => {
 			recentlyMovedToNewContainer.current = false;
 		});
-	}, [tabs]);
+	});
 
 	// Custom drop animation configuration
 	const dropAnimation: DropAnimation = {
@@ -292,47 +293,44 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 					</Button>
 				</div>
 
-				{isCreatingCollection && (
-					<div
-						className="fixed inset-0 z-50 flex items-center justify-center bg-surface-overlay backdrop-blur-sm"
-						onClick={() => setIsCreatingCollection(false)}
-					>
-						<div
-							className="bg-surface-elevated p-6 rounded-3xl shadow-2xl w-96 animate-in fade-in zoom-in-95"
-							onClick={(e) => e.stopPropagation()}
+				<Dialog
+					isOpen={isCreatingCollection}
+					onClose={() => setIsCreatingCollection(false)}
+					size="sm"
+					variant="elevated"
+				>
+					<div className="px-6 py-6">
+						<h3 className="text-heading text-primary mb-4">
+							{m.workspace_new_collection_modal_title()}
+						</h3>
+						<form
+							onSubmit={(e) => {
+								e.preventDefault();
+								if (!newColName.trim()) return;
+								addCollection({
+									workspaceId: workspace.id,
+									name: newColName,
+								});
+								setNewColName("");
+								setIsCreatingCollection(false);
+							}}
 						>
-							<h3 className="text-heading text-primary mb-4">
-								{m.workspace_new_collection_modal_title()}
-							</h3>
-							<form
-								onSubmit={(e) => {
-									e.preventDefault();
-									if (!newColName.trim()) return;
-									addCollection({
-										workspaceId: workspace.id,
-										name: newColName,
-									});
-									setNewColName("");
-									setIsCreatingCollection(false);
-								}}
-							>
-								<div className="mb-4">
-									<TextField
-										autoFocus
-										type="text"
-										placeholder={m.workspace_new_collection_modal_placeholder()}
-										value={newColName}
-										onChange={(e) => setNewColName(e.target.value)}
-										containerClassName="w-full"
-									/>
-								</div>
-								<Button type="submit" fullWidth>
-									{m.workspace_create_collection_cta()}
-								</Button>
-							</form>
-						</div>
+							<div className="mb-4">
+								<TextField
+									autoFocus
+									type="text"
+									placeholder={m.workspace_new_collection_modal_placeholder()}
+									value={newColName}
+									onChange={(e) => setNewColName(e.target.value)}
+									containerClassName="w-full"
+								/>
+							</div>
+							<Button type="submit" fullWidth>
+								{m.workspace_create_collection_cta()}
+							</Button>
+						</form>
 					</div>
-				)}
+				</Dialog>
 			</div>
 		);
 	}
@@ -564,6 +562,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 								<form onSubmit={handleCreateCollection} className="space-y-4">
 									<BottomShadow size="lg" focusWithin className="rounded-2xl">
 										<input
+											// biome-ignore lint/a11y/noAutofocus: <explanation>
 											autoFocus
 											type="text"
 											placeholder={m.workspace_new_group_placeholder()}

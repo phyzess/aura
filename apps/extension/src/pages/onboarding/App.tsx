@@ -1,3 +1,4 @@
+import { MESSAGE_TYPES, STORAGE_KEYS } from "@aura/config";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
 	CheckCircle2,
@@ -44,14 +45,18 @@ export default function App() {
 		) => {
 			if (areaName !== "local") return;
 
-			if (changes["aura-theme"]) {
-				const newTheme = changes["aura-theme"].newValue as "light" | "dark";
+			if (changes[STORAGE_KEYS.THEME]) {
+				const newTheme = changes[STORAGE_KEYS.THEME].newValue as
+					| "light"
+					| "dark";
 				setThemeMode(newTheme);
 				document.documentElement.classList.toggle("dark", newTheme === "dark");
 			}
 
-			if (changes["aura-locale"]) {
-				const newLocale = changes["aura-locale"].newValue as "en" | "zh-CN";
+			if (changes[STORAGE_KEYS.LOCALE]) {
+				const newLocale = changes[STORAGE_KEYS.LOCALE].newValue as
+					| "en"
+					| "zh-CN";
 				setLocale(newLocale);
 				changeLocale(newLocale);
 				// Update HTML lang attribute
@@ -80,22 +85,22 @@ export default function App() {
 	const handleThemeToggle = () => {
 		const newTheme = theme === "light" ? "dark" : "light";
 		setThemeMode(newTheme);
-		localStorage.setItem("aura-theme", newTheme);
+		localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
 		document.documentElement.classList.toggle("dark", newTheme === "dark");
-		chrome.storage.local.set({ "aura-theme": newTheme });
+		chrome.storage.local.set({ [STORAGE_KEYS.THEME]: newTheme });
 	};
 
 	const handleLocaleChange = () => {
 		const newLocale: Locale = locale === "en" ? "zh-CN" : "en";
 		setLocale(newLocale);
 		changeLocale(newLocale);
-		localStorage.setItem("aura-locale", newLocale);
-		chrome.storage.local.set({ "aura-locale": newLocale });
+		localStorage.setItem(STORAGE_KEYS.LOCALE, newLocale);
+		chrome.storage.local.set({ [STORAGE_KEYS.LOCALE]: newLocale });
 	};
 
 	const handleFinish = async () => {
 		await chrome.runtime.sendMessage({
-			type: "onboarding-complete",
+			type: MESSAGE_TYPES.ONBOARDING_COMPLETE,
 			data: { newTabEnabled },
 		});
 

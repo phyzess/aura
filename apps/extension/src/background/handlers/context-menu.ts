@@ -1,3 +1,5 @@
+import { CONTEXT_MENU_IDS, DEFAULT_VALUES } from "@aura/config";
+
 export type SaveMode = "current-tab" | "link" | "all-tabs";
 
 export interface SaveRequest {
@@ -13,42 +15,42 @@ export interface SaveRequest {
 export const setupContextMenus = (): void => {
 	chrome.contextMenus.removeAll(() => {
 		chrome.contextMenus.create({
-			id: "aura-main",
+			id: CONTEXT_MENU_IDS.MAIN,
 			title: "Aura",
 			contexts: ["page", "link", "selection"],
 		});
 
 		chrome.contextMenus.create({
-			id: "save-current-tab",
-			parentId: "aura-main",
+			id: CONTEXT_MENU_IDS.SAVE_CURRENT_TAB,
+			parentId: CONTEXT_MENU_IDS.MAIN,
 			title: "Save current tab",
 			contexts: ["page"],
 		});
 
 		chrome.contextMenus.create({
-			id: "save-link",
-			parentId: "aura-main",
+			id: CONTEXT_MENU_IDS.SAVE_LINK,
+			parentId: CONTEXT_MENU_IDS.MAIN,
 			title: "Save this link",
 			contexts: ["link"],
 		});
 
 		chrome.contextMenus.create({
-			id: "save-all-tabs",
-			parentId: "aura-main",
+			id: CONTEXT_MENU_IDS.SAVE_ALL_TABS,
+			parentId: CONTEXT_MENU_IDS.MAIN,
 			title: "Save all tabs in window",
 			contexts: ["page"],
 		});
 
 		chrome.contextMenus.create({
-			id: "separator-1",
-			parentId: "aura-main",
+			id: CONTEXT_MENU_IDS.SEPARATOR_1,
+			parentId: CONTEXT_MENU_IDS.MAIN,
 			type: "separator",
 			contexts: ["page", "link"],
 		});
 
 		chrome.contextMenus.create({
-			id: "open-dashboard",
-			parentId: "aura-main",
+			id: CONTEXT_MENU_IDS.OPEN_DASHBOARD,
+			parentId: CONTEXT_MENU_IDS.MAIN,
 			title: "Open Dashboard",
 			contexts: ["page", "link"],
 		});
@@ -60,9 +62,11 @@ export const extractTitleFromUrl = (url: string): string => {
 		const domain = new URL(url).hostname.replace("www.", "");
 		return domain;
 	} catch {
-		return "Saved Link";
+		return DEFAULT_VALUES.SAVED_LINK_TITLE;
 	}
 };
+
+import { STORAGE_KEYS } from "@aura/config";
 
 export const createSaveRequest = (
 	mode: SaveMode,
@@ -74,7 +78,7 @@ export const createSaveRequest = (
 	if (mode === "current-tab" && tab) {
 		data = {
 			url: tab.url || "",
-			title: tab.title || "Untitled",
+			title: tab.title || DEFAULT_VALUES.UNTITLED_TAB,
 			favicon: tab.favIconUrl,
 		};
 	} else if (mode === "link" && linkUrl) {
@@ -98,7 +102,7 @@ export const openPopupWithSaveMode = async (
 	linkUrl?: string,
 ): Promise<void> => {
 	const saveRequest = createSaveRequest(mode, tab, linkUrl);
-	await chrome.storage.local.set({ "aura-save-request": saveRequest });
+	await chrome.storage.local.set({ [STORAGE_KEYS.SAVE_REQUEST]: saveRequest });
 	await chrome.action.openPopup();
 };
 
@@ -121,25 +125,24 @@ export const handleContextMenuClick = async (
 	tab?: chrome.tabs.Tab,
 ): Promise<void> => {
 	switch (info.menuItemId) {
-		case "save-current-tab":
+		case CONTEXT_MENU_IDS.SAVE_CURRENT_TAB:
 			if (tab) {
 				await openPopupWithSaveMode("current-tab", tab);
 			}
 			break;
 
-		case "save-link":
+		case CONTEXT_MENU_IDS.SAVE_LINK:
 			if (info.linkUrl && tab) {
 				await openPopupWithSaveMode("link", tab, info.linkUrl);
 			}
 			break;
 
-		case "save-all-tabs":
+		case CONTEXT_MENU_IDS.SAVE_ALL_TABS:
 			await openPopupWithSaveMode("all-tabs");
 			break;
 
-		case "open-dashboard":
+		case CONTEXT_MENU_IDS.OPEN_DASHBOARD:
 			await openDashboard();
 			break;
 	}
 };
-

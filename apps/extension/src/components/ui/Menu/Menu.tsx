@@ -63,7 +63,8 @@ const MenuRoot: React.FC<MenuProps> = ({
 				contentParts.push(child);
 			} else if (child.type === React.Fragment) {
 				// Handle fragments (e.g., <><Menu.Header /><Menu.Separator /></>)
-				Children.forEach(child.props.children, (fragmentChild) => {
+				const props = child.props as { children?: React.ReactNode };
+				Children.forEach(props.children, (fragmentChild) => {
 					if (isValidElement(fragmentChild)) {
 						if (
 							fragmentChild.type === MenuContent ||
@@ -81,16 +82,26 @@ const MenuRoot: React.FC<MenuProps> = ({
 	});
 
 	const handleTriggerClick = (e: React.MouseEvent) => {
-		if (isValidElement(trigger) && trigger.props.onClick) {
-			trigger.props.onClick(e);
+		if (isValidElement(trigger)) {
+			const props = trigger.props as {
+				onClick?: (e: React.MouseEvent) => void;
+			};
+			if (props.onClick) {
+				props.onClick(e);
+			}
 		}
 		setIsOpen(!isOpen);
 	};
 
 	const triggerElement = isValidElement(trigger)
-		? cloneElement(trigger as React.ReactElement, {
-				onClick: handleTriggerClick,
-			})
+		? cloneElement(
+				trigger as React.ReactElement<{
+					onClick?: (e: React.MouseEvent) => void;
+				}>,
+				{
+					onClick: handleTriggerClick,
+				},
+			)
 		: trigger;
 
 	// 根据 Menu 位置选择动画变体和变换原点

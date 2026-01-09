@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from "@aura/config";
 import { createRoot } from "react-dom/client";
 import { AuraToast } from "@/components/ui/AuraToast";
 import { initLocale } from "@/config/locale";
@@ -9,8 +10,8 @@ initLocale();
 
 // Check if new tab override is enabled
 async function checkNewTabEnabled() {
-	const result = await chrome.storage.local.get(["aura-newtab-enabled"]);
-	return result["aura-newtab-enabled"] === true;
+	const result = await chrome.storage.local.get([STORAGE_KEYS.NEWTAB_ENABLED]);
+	return result[STORAGE_KEYS.NEWTAB_ENABLED] === true;
 }
 
 async function init() {

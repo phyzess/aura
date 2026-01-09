@@ -9,6 +9,10 @@ import {
 	transform,
 } from "valibot";
 
+// Export constants
+export * from "./constants";
+export * from "./errors";
+
 const trustedOriginsSchema = pipe(
 	string("BETTER_AUTH_TRUSTED_ORIGINS is required"),
 	minLength(1, "BETTER_AUTH_TRUSTED_ORIGINS is required"),
