@@ -1,4 +1,5 @@
 import { MESSAGE_TYPES } from "@aura/config";
+import { initializeLogger } from "@/config/logger";
 import {
 	handleContextMenuClick,
 	setupContextMenus,
@@ -8,6 +9,11 @@ import {
 	handleOnboardingComplete,
 	handleUpdate,
 } from "./handlers/install";
+
+// Initialize logger
+initializeLogger().catch((error) => {
+	console.error("[Background] Failed to initialize logger:", error);
+});
 
 chrome.runtime.onInstalled.addListener(async (details) => {
 	if (details.reason === "install") {

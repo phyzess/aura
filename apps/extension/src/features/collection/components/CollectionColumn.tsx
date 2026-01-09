@@ -25,6 +25,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { Menu } from "@/components/ui/Menu";
 import { HStack } from "@/components/ui/Stack";
 import { TextField } from "@/components/ui/TextField";
+import { collectionLogger, errorLogger } from "@/config/logger";
 import { checkMultipleLinksAtom, exportCollectionAtom } from "@/features";
 import { OpenTabsButton, TabCard } from "@/features/tab/components";
 import { cn } from "@/lib/utils";
@@ -190,7 +191,7 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 				toast.success(`All ${stats.total} links are valid! ✓`);
 			}
 		} catch (error) {
-			console.error("Failed to check links:", error);
+			collectionLogger.error("Failed to check links", { error });
 			if (progressToastId) {
 				toast.dismiss(progressToastId);
 			}
@@ -358,7 +359,7 @@ export const CollectionColumn: React.FC<CollectionColumnProps> = ({
 											exportCollection(collection.id);
 											toast.success(`Collection "${collection.name}" exported`);
 										} catch (error) {
-											console.error("Export collection failed:", error);
+											errorLogger.error("Export collection failed", { error });
 											if (
 												error instanceof Error &&
 												error.message === "NO_DATA_TO_EXPORT"

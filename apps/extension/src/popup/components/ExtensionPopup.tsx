@@ -4,6 +4,7 @@ import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/Button";
+import { errorLogger } from "@/config/logger";
 import {
 	type CaptureSessionPayload,
 	clearLocalDataAtom,
@@ -186,7 +187,7 @@ export const ExtensionPopup: React.FC<ExtensionPopupProps> = ({
 
 		if (closeTabsAfterSave && tabIdsToClose.length > 0) {
 			void ChromeService.closeTabsById(tabIdsToClose).catch((error: any) => {
-				console.error("Failed to close some tabs after saving:", error);
+				errorLogger.error("Failed to close tabs after saving", { error });
 				toast.error(m.popup_close_tabs_error());
 			});
 		}

@@ -2,6 +2,7 @@ import { STORAGE_KEYS } from "@aura/config";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { LogManager } from "@/components/LogManager";
 import { AuraLogo } from "@/components/shared";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Select } from "@/components/ui/Select";
@@ -251,6 +252,17 @@ export default function App() {
 							</CardBody>
 						</Card>
 					)}
+
+					<Card padding="lg" border={false}>
+						<CardHeader className="mb-4">
+							<h2 className="text-xl font-semibold text-primary">
+								Developer Tools
+							</h2>
+						</CardHeader>
+						<CardBody>
+							<LogManager />
+						</CardBody>
+					</Card>
 				</div>
 			</div>
 		</div>

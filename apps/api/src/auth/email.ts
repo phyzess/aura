@@ -1,3 +1,5 @@
+import { authLogger } from "@/logger";
+
 interface EmailOptions {
 	to: string;
 	subject: string;
@@ -42,7 +44,7 @@ export async function sendEmail(
 
 		if (!response.ok) {
 			const errorText = await response.text();
-			console.error("[email] Failed to send email:", errorText);
+			authLogger.error("Failed to send email", { errorText });
 			return {
 				success: false,
 				error: `Failed to send email: ${response.status}`,
@@ -51,7 +53,7 @@ export async function sendEmail(
 
 		return { success: true };
 	} catch (error) {
-		console.error("[email] Error sending email:", error);
+		authLogger.error("Error sending email", { error });
 		return {
 			success: false,
 			error: "Failed to send email",

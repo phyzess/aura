@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
+import { errorLogger } from "@/config/logger";
 import * as m from "@/paraglide/messages";
 import { type ChangelogEntry, parseChangelog } from "@/utils/changelogParser";
 
@@ -27,7 +28,7 @@ export function ChangelogDialog({ isOpen, onClose }: ChangelogDialogProps) {
 			const parsed = parseChangelog(text);
 			setChangelog(parsed);
 		} catch (error) {
-			console.error("Failed to load changelog:", error);
+			errorLogger.error("Failed to load changelog", { error });
 		}
 	};
 

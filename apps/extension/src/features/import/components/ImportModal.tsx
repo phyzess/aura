@@ -14,6 +14,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
 import { Select, type SelectOption } from "@/components/ui/Select";
 import { TextField } from "@/components/ui/TextField";
+import { importLogger } from "@/config/logger";
 import * as m from "@/paraglide/messages";
 import type { Collection, Workspace } from "@/types";
 
@@ -140,7 +141,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 				targetCollectionId === "new" ? newCollectionName : undefined,
 			);
 		} catch (e) {
-			console.error(e);
+			importLogger.error("Import failed", { error: e });
 			// Note: Error handling is tricky here since dialog is already closed
 			// Consider using toast notifications for errors instead
 		}

@@ -2,6 +2,7 @@ import type { MergeStats } from "@aura/domain";
 import { mergeWithTombstones } from "@aura/domain";
 import { atom } from "jotai";
 import { API_BASE_URL } from "@/config/env";
+import { syncLogger } from "@/config/logger";
 import { currentUserAtom } from "@/features/auth/store/atoms";
 import { collectionsAtom } from "@/features/collection/store/atoms";
 import type { SyncResult } from "@/features/sync/domain";
@@ -67,8 +68,8 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 		allTabs.length === 0;
 
 	if (isFirstSync) {
-		console.log(
-			"[sync] First sync detected - skipping push, will only pull from server",
+		syncLogger.info(
+			"First sync detected - skipping push, will only pull from server",
 		);
 	} else {
 		// Normal sync: push local changes to server first
@@ -88,7 +89,7 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 				body: JSON.stringify(payload),
 			});
 		} catch (error) {
-			console.error("[sync] push request failed", error);
+			syncLogger.error("Push request failed", { error });
 			return "error";
 		}
 
@@ -96,7 +97,7 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 			return "unauthorized";
 		}
 		if (!pushRes.ok) {
-			console.error("[sync] push request not ok", pushRes.status);
+			syncLogger.error("Push request not ok", { status: pushRes.status });
 			return "error";
 		}
 	}
@@ -110,7 +111,7 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 			body: JSON.stringify({ lastSyncTimestamp: lastSync }),
 		});
 	} catch (error) {
-		console.error("[sync] pull request failed", error);
+		syncLogger.error("Pull request failed", { error });
 		return "error";
 	}
 
@@ -118,22 +119,22 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 		return "unauthorized";
 	}
 	if (!pullRes.ok) {
-		console.error("[sync] pull request not ok", pullRes.status);
+		syncLogger.error("Pull request not ok", { status: pullRes.status });
 		return "error";
 	}
 
 	let pullPayload: SyncPayload | null = null;
 	try {
 		const rawPayload = await pullRes.json();
-		console.log("[sync] raw pull payload", rawPayload);
+		syncLogger.debug("Raw pull payload received", { rawPayload });
 		pullPayload = rawPayload as SyncPayload;
 	} catch (error) {
-		console.error("[sync] failed to parse pull payload", error);
+		syncLogger.error("Failed to parse pull payload", { error });
 		return "error";
 	}
 
 	if (!pullPayload) {
-		console.log("[sync] pull payload is null, nothing to sync");
+		syncLogger.info("Pull payload is null, nothing to sync");
 		return "success";
 	}
 
@@ -143,7 +144,7 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 		!Array.isArray(pullPayload.collections) ||
 		!Array.isArray(pullPayload.tabs)
 	) {
-		console.error("[sync] invalid pull payload structure", {
+		syncLogger.error("Invalid pull payload structure", {
 			workspaces: pullPayload.workspaces,
 			collections: pullPayload.collections,
 			tabs: pullPayload.tabs,
@@ -151,7 +152,7 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 		return "error";
 	}
 
-	console.log("[sync] pull payload validated", {
+	syncLogger.info("Pull payload validated", {
 		workspacesCount: pullPayload.workspaces.length,
 		collectionsCount: pullPayload.collections.length,
 		tabsCount: pullPayload.tabs.length,
@@ -265,11 +266,11 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 		// Send alerts if any
 		if (alerts.length > 0) {
 			sendAlerts(alerts, API_BASE_URL).catch((error) => {
-				console.error("[sync] Failed to send alerts:", error);
+				syncLogger.error("Failed to send alerts", { error });
 			});
 		}
 	} catch (error) {
-		console.error("[sync] failed to update local state", error);
+		syncLogger.error("Failed to update local state", { error });
 		return "error";
 	}
 
@@ -288,7 +289,7 @@ const processNextInQueue = async (get: any, set: any) => {
 		try {
 			await nextTask();
 		} catch (error) {
-			console.error("[sync] queue task error", error);
+			syncLogger.error("Queue task error", { error });
 		}
 	}
 	isProcessingQueue = false;
@@ -330,7 +331,7 @@ export const syncWithServerAtom = atom(
 		try {
 			result = await runSyncOnce(get, set);
 		} catch (error) {
-			console.error("[sync] unexpected error", error);
+			syncLogger.error("Unexpected error", { error });
 			result = "error";
 		}
 
@@ -463,7 +464,7 @@ export const scheduleAutoSyncAtom = atom(null, (get, set) => {
 				const opsCount = pendingOperationsCount;
 				pendingOperationsCount = 0;
 
-				console.log(`[sync] Syncing ${opsCount} pending operations`);
+				syncLogger.info("Syncing pending operations", { count: opsCount });
 
 				await set(syncWithServerAtom, { source: "auto" });
 

@@ -6,6 +6,7 @@ import { createCollectionData } from "@/data/collection.data";
 import { createTabData } from "@/data/tab.data";
 import { createWorkspaceData } from "@/data/workspace.data";
 import { createDb } from "@/db";
+import { syncLogger } from "@/logger";
 import type { Env } from "@/types/env";
 
 const buildSyncResponse = (
@@ -69,7 +70,7 @@ export const handlePull = async (c: Context<{ Bindings: Env }>) => {
 
 	const response = buildSyncResponse(workspaces, collections, tabs);
 
-	console.log("[sync/pull] response summary", {
+	syncLogger.info("Pull response summary", {
 		userId,
 		workspacesCount: workspaces.length,
 		collectionsCount: collections.length,

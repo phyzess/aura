@@ -1,6 +1,9 @@
 import type { Result } from "@aura/shared";
 import { ok, tryCatchAsync } from "@aura/shared";
+import { getExtensionLogger } from "@/config/logger";
 import type { SessionTab } from "@/types";
+
+const logger = getExtensionLogger(["chrome"]);
 
 export const isExtension = (): boolean =>
 	typeof chrome !== "undefined" && !!chrome.tabs && !!chrome.windows;
@@ -76,7 +79,7 @@ export const closeTabsById = async (
 	if (ids.length === 0) return ok(undefined);
 
 	if (!isExtension()) {
-		console.log("Environment: Web (Mocking closeTabsById)", ids);
+		logger.debug("Environment: Web (Mocking closeTabsById)", { ids });
 		return ok(undefined);
 	}
 
@@ -87,7 +90,9 @@ export const closeTabsById = async (
 					const error = chrome.runtime?.lastError;
 					if (error) {
 						if (error.message && error.message.includes("No tab with id")) {
-							console.warn("Some tabs were already closed:", error.message);
+							logger.warning("Some tabs were already closed", {
+								message: error.message,
+							});
 							resolve();
 							return;
 						}

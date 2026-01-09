@@ -1,12 +1,13 @@
 import { API_ENDPOINTS } from "@aura/config";
 import { atom } from "jotai";
+import { API_BASE_URL } from "@/config/env";
+import { authLogger } from "@/config/logger";
 import { collectionsAtom } from "@/features/collection/store/atoms";
 import { tabsAtom } from "@/features/tab/store/atoms";
 import {
 	activeWorkspaceIdAtom,
 	workspacesAtom,
 } from "@/features/workspace/store/atoms";
-import { API_BASE_URL } from "@/config/env";
 import { authClient } from "@/services/authClient";
 import { LocalDB } from "@/services/db";
 import type { User } from "@/types";
@@ -83,7 +84,7 @@ export const signOutAtom = atom(null, async (get, set) => {
 		}
 		return ok;
 	} catch (err) {
-		console.error("Sign out failed", err);
+		authLogger.error("Sign out failed", { error: err });
 		set(
 			authErrorAtom,
 			"Failed to sign out. Please check your connection and try again.",
@@ -102,4 +103,3 @@ export const clearLocalDataAtom = atom(null, async (_get, set) => {
 
 	await LocalDB.clearAll();
 });
-

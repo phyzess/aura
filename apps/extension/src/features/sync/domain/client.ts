@@ -2,6 +2,7 @@ import { API_ENDPOINTS } from "@aura/config";
 import type { Collection, TabItem, Workspace } from "@aura/domain";
 import type { Result } from "@aura/shared";
 import { err, tryCatchAsync } from "@aura/shared";
+import { syncLogger } from "@/config/logger";
 import type { SyncPayload } from "@/types";
 
 export type SyncResult = "success" | "unauthorized" | "error";
@@ -114,14 +115,18 @@ export const mergeWithTombstones = <
 			if (incomingTime > localTime) {
 				byId.set(item.id, item);
 				if (stats) stats.serverWins++;
-				console.log(
-					`[sync] Resolved conflict for ${item.id}: incoming (${incomingTime}) > local (${localTime})`,
-				);
+				syncLogger.debug("Resolved conflict: server wins", {
+					itemId: item.id,
+					incomingTime,
+					localTime,
+				});
 			} else if (incomingTime < localTime) {
 				if (stats) stats.localWins++;
-				console.log(
-					`[sync] Resolved conflict for ${item.id}: local (${localTime}) > incoming (${incomingTime})`,
-				);
+				syncLogger.debug("Resolved conflict: local wins", {
+					itemId: item.id,
+					localTime,
+					incomingTime,
+				});
 			}
 		}
 	}

@@ -1,7 +1,10 @@
 import { STORAGE_KEYS } from "@aura/config";
+import { getExtensionLogger } from "@/config/logger";
+
+const logger = getExtensionLogger(["install"]);
 
 export const handleFirstInstall = async (): Promise<void> => {
-	console.log("Aura extension installed for the first time");
+	logger.info("Aura extension installed for the first time");
 
 	await chrome.storage.local.set({
 		[STORAGE_KEYS.ONBOARDING_COMPLETED]: false,
@@ -16,9 +19,10 @@ export const handleUpdate = async (
 	currentVersion: string,
 	previousVersion: string | undefined,
 ): Promise<void> => {
-	console.log(
-		`Aura extension updated from ${previousVersion} to ${currentVersion}`,
-	);
+	logger.info("Aura extension updated", {
+		from: previousVersion,
+		to: currentVersion,
+	});
 
 	await chrome.storage.local.set({
 		[STORAGE_KEYS.LAST_VERSION]: currentVersion,
@@ -34,5 +38,5 @@ export const handleOnboardingComplete = async (data: {
 		[STORAGE_KEYS.NEWTAB_ENABLED]: data.newTabEnabled,
 	});
 
-	console.log("Onboarding completed", data);
+	logger.info("Onboarding completed", data);
 };

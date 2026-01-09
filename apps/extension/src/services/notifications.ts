@@ -1,3 +1,7 @@
+import { getExtensionLogger } from "@/config/logger";
+
+const logger = getExtensionLogger(["notifications"]);
+
 export type NotificationType = "success" | "error" | "info" | "warning";
 
 export interface NotificationOptions {
@@ -24,7 +28,7 @@ class NotificationService {
 					? result.notificationsEnabled
 					: true;
 		} catch (error) {
-			console.error("[Notifications] Failed to load settings:", error);
+			logger.error("Failed to load settings", { error });
 		}
 	}
 
@@ -72,7 +76,7 @@ class NotificationService {
 
 			return notificationId;
 		} catch (error) {
-			console.error("[Notifications] Failed to show notification:", error);
+			logger.error("Failed to show notification", { error });
 			return null;
 		}
 	}
@@ -84,7 +88,7 @@ class NotificationService {
 		try {
 			await chrome.notifications.clear(notificationId);
 		} catch (error) {
-			console.error("[Notifications] Failed to clear notification:", error);
+			logger.error("Failed to clear notification", { error });
 		}
 	}
 

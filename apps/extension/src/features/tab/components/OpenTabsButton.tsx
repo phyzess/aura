@@ -4,6 +4,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { ConfirmModal } from "@/components/shared";
 import { Button } from "@/components/ui/Button";
+import { tabLogger } from "@/config/logger";
 import * as m from "@/paraglide/messages";
 import { ChromeService } from "@/services/chrome";
 
@@ -143,7 +144,7 @@ export const OpenTabsButton: React.FC<OpenTabsButtonProps> = ({
 				toast.success(`Opened ${urls.length} tabs`, { id: toastId });
 			}
 		} catch (error) {
-			console.error("Error opening tabs:", error);
+			tabLogger.error("Error opening tabs", { error });
 			if (toastId) {
 				toast.error(m.tabs_open_error_generic(), { id: toastId });
 			} else {

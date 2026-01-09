@@ -10,6 +10,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { Input } from "@/components/ui/Input";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { HStack } from "@/components/ui/Stack";
+import { errorLogger } from "@/config/logger";
 import {
 	activeWorkspaceIdAtom,
 	createWorkspaceAtom,
@@ -207,7 +208,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 																m.sidebar_workspace_export_success_toast(),
 															);
 														} catch (error) {
-															console.error("Export workspace failed:", error);
+															errorLogger.error("Export workspace failed", {
+																error,
+															});
 															if (
 																error instanceof Error &&
 																error.message === "NO_DATA_TO_EXPORT"
@@ -277,7 +280,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 										exportAllData();
 										toast.success("Data exported successfully");
 									} catch (error) {
-										console.error("Export failed:", error);
+										errorLogger.error("Export all data failed", { error });
 										if (
 											error instanceof Error &&
 											error.message === "NO_DATA_TO_EXPORT"
@@ -341,7 +344,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 						});
 						toast.success(m.sidebar_import_success_toast());
 					} catch (error) {
-						console.error("Import failed:", error);
+						errorLogger.error("Import failed", { error });
 						toast.error(m.sidebar_import_error_toast());
 					}
 				}}

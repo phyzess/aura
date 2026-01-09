@@ -1,6 +1,9 @@
 import { TIMEOUT_DURATIONS } from "@aura/config";
 import type { Result } from "@aura/shared";
 import { tryCatchAsync } from "@aura/shared";
+import { getExtensionLogger } from "@/config/logger";
+
+const logger = getExtensionLogger(["offline"]);
 
 export type OnlineStatusCallback = (isOnline: boolean) => void;
 
@@ -42,7 +45,7 @@ export const notifyCallbacks = (
 		try {
 			callback(isOnline);
 		} catch (error) {
-			console.error("[OfflineDetector] Callback error:", error);
+			logger.error("Callback error", { error });
 		}
 	});
 };

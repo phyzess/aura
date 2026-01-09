@@ -18,6 +18,7 @@ import { createCollectionData } from "@/data/collection.data";
 import { createTabData } from "@/data/tab.data";
 import { createWorkspaceData } from "@/data/workspace.data";
 import { createDb } from "@/db";
+import { errorLogger, syncLogger } from "@/logger";
 import type { Env } from "@/types/env";
 
 export const handlePush = async (c: Context<{ Bindings: Env }>) => {
@@ -93,7 +94,7 @@ export const handlePush = async (c: Context<{ Bindings: Env }>) => {
 		}));
 		const tabsWithUser = tabs.map((t: TabItem) => ({ ...t, userId }));
 
-		console.log("[sync/push] request summary", {
+		syncLogger.info("Push request summary", {
 			userId,
 			workspacesCount: workspaces.length,
 			collectionsCount: collections.length,
@@ -108,7 +109,7 @@ export const handlePush = async (c: Context<{ Bindings: Env }>) => {
 
 		return c.json({ success: true });
 	} catch (error) {
-		console.error("[sync/push] error", error);
+		errorLogger.error("Push error", { error });
 		return c.json(
 			COMMON_ERROR_RESPONSES.internalError(),
 			HTTP_STATUS.INTERNAL_SERVER_ERROR,

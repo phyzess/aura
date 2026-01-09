@@ -1,4 +1,7 @@
 import { RETRY_CONFIG } from "@aura/config";
+import { getExtensionLogger } from "@/config/logger";
+
+const logger = getExtensionLogger(["error"]);
 
 export type ErrorType = "network" | "auth" | "sync" | "storage" | "unknown";
 
@@ -136,9 +139,8 @@ export const isAuthError = (error: unknown): boolean => {
 };
 
 export const logError = (context: ErrorContext): void => {
-	console.error(
-		`[ErrorHandler] ${context.type}:`,
-		context.message,
-		context.originalError,
-	);
+	logger.error(context.message, {
+		type: context.type,
+		error: context.originalError,
+	});
 };

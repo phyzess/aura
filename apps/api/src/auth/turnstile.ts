@@ -1,3 +1,5 @@
+import { authLogger } from "@/logger";
+
 interface TurnstileResponse {
 	success: boolean;
 	"error-codes"?: string[];
@@ -11,9 +13,7 @@ export async function verifyTurnstile(
 	remoteIp?: string,
 ): Promise<{ success: boolean; error?: string }> {
 	if (!secretKey) {
-		console.warn(
-			"[turnstile] Secret key not configured, skipping verification",
-		);
+		authLogger.warning("Secret key not configured, skipping verification");
 		return { success: true };
 	}
 
@@ -37,7 +37,7 @@ export async function verifyTurnstile(
 
 		if (!data.success) {
 			const errorCodes = data["error-codes"]?.join(", ") || "unknown";
-			console.error("[turnstile] Verification failed:", errorCodes);
+			authLogger.error("Verification failed", { errorCodes });
 			return {
 				success: false,
 				error: `Turnstile verification failed: ${errorCodes}`,
@@ -46,7 +46,7 @@ export async function verifyTurnstile(
 
 		return { success: true };
 	} catch (error) {
-		console.error("[turnstile] Verification error:", error);
+		authLogger.error("Verification error", { error });
 		return {
 			success: false,
 			error: "Failed to verify Turnstile token",

@@ -1,4 +1,5 @@
 import { atom } from "jotai";
+import { historyLogger } from "@/config/logger";
 import { currentUserAtom } from "@/features/auth/store/atoms";
 import { collectionsAtom } from "@/features/collection/store/atoms";
 import { tabsAtom } from "@/features/tab/store/atoms";
@@ -45,7 +46,7 @@ export const createCommitAtom = atom(
 			changes: StateCommit["changes"];
 		},
 	) => {
-		console.log("[history] Creating commit:", params.message);
+		historyLogger.info("Creating commit", { message: params.message });
 		const parentHash = get(historyHeadAtom);
 		const timestamp = Date.now();
 		const user = get(currentUserAtom);
@@ -68,7 +69,7 @@ export const createCommitAtom = atom(
 			changes: params.changes,
 		};
 
-		console.log("[history] Commit created:", commit.hash);
+		historyLogger.info("Commit created", { hash: commit.hash });
 
 		const commits = new Map(get(historyCommitsAtom));
 		commits.set(hash, commit);
@@ -106,7 +107,7 @@ export const createCommitAtom = atom(
 		set(historyHeadAtom, hash);
 
 		await LocalDB.saveCommit(commit);
-		console.log("[history] Commit saved to DB");
+		historyLogger.debug("Commit saved to DB", { hash });
 
 		return commit;
 	},
@@ -279,9 +280,9 @@ export const redoAtom = atom(null, async (get, set) => {
 });
 
 export const initHistoryAtom = atom(null, async (_get, set) => {
-	console.log("[history] Initializing history...");
+	historyLogger.info("Initializing history");
 	const commits = await LocalDB.getCommits();
-	console.log("[history] Loaded commits from DB:", commits.length);
+	historyLogger.info("Loaded commits from DB", { count: commits.length });
 
 	const commitsMap = new Map<string, StateCommit>();
 	const childrenMap = new Map<string | null, string>();
@@ -299,8 +300,8 @@ export const initHistoryAtom = atom(null, async (_get, set) => {
 			current.timestamp > latest.timestamp ? current : latest,
 		);
 		set(historyHeadAtom, latestCommit.hash);
-		console.log("[history] Set head to:", latestCommit.hash);
+		historyLogger.info("Set head to commit", { hash: latestCommit.hash });
 	} else {
-		console.log("[history] No commits found");
+		historyLogger.info("No commits found");
 	}
 });

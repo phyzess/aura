@@ -1,3 +1,4 @@
+import { errorLogger } from "@/logger";
 import type { Env } from "./index";
 
 interface AlertPayload {
@@ -70,7 +71,7 @@ This is an automated alert from Aura sync monitoring.
 			});
 		}
 	} catch (error) {
-		console.error("[alerts] Failed to send email:", error);
+		errorLogger.error("Failed to send email", { error });
 	}
 }
 
@@ -94,7 +95,7 @@ export async function logToAnalytics(
 			});
 		}
 	} catch (error) {
-		console.error("[alerts] Failed to log to analytics:", error);
+		errorLogger.error("Failed to log to analytics", { error });
 	}
 }
 
@@ -126,7 +127,7 @@ export async function shouldNotify(
 
 		return true;
 	} catch (error) {
-		console.error("[alerts] Failed to check throttle:", error);
+		errorLogger.error("Failed to check throttle", { error });
 		return true; // 出错时允许发送
 	}
 }

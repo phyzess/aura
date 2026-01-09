@@ -33,6 +33,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Dialog } from "@/components/ui/Dialog";
 import { TextField } from "@/components/ui/TextField";
+import { workspaceLogger } from "@/config/logger";
 import {
 	activeWorkspaceAtom,
 	addCollectionAtom,
@@ -186,7 +187,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 					: rectIntersection(args);
 			let overId = getFirstCollision(intersections, "id");
 
-			console.log("[Collision]", {
+			workspaceLogger.debug("Collision detection", {
 				activeId,
 				overId,
 				droppableContainers: args.droppableContainers.map((c) => ({
@@ -199,7 +200,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 			if (overId != null) {
 				const overContainer = findContainer(overId as string);
 
-				console.log("[Collision] Found container:", {
+				workspaceLogger.debug("Found container", {
 					overId,
 					overContainer,
 				});
@@ -212,7 +213,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 						)
 						.map((t) => t.id);
 
-					console.log("[Collision] Container tabs:", {
+					workspaceLogger.debug("Container tabs", {
 						overContainer,
 						tabCount: containerTabs.length,
 						containerTabs,
@@ -235,14 +236,14 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 									containerTabs.includes(container.id as string),
 							),
 						})[0]?.id;
-						console.log("[Collision] Non-empty container, overId:", overId);
+						workspaceLogger.debug("Non-empty container", { overId });
 					} else {
 						// Empty container - use the droppable container id
 						const droppableId = `droppable-${overContainer}`;
 						const droppableContainer = args.droppableContainers.find(
 							(c) => c.id === droppableId,
 						);
-						console.log("[Collision] Empty container:", {
+						workspaceLogger.debug("Empty container", {
 							droppableId,
 							found: !!droppableContainer,
 						});
@@ -253,7 +254,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 				}
 
 				lastOverId.current = overId as string;
-				console.log("[Collision] Final overId:", overId);
+				workspaceLogger.debug("Final overId", { overId });
 				return [{ id: overId }];
 			}
 
@@ -427,7 +428,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 		const { active, over } = event;
 		const overId = over?.id;
 
-		console.log("[DragOver]", {
+		workspaceLogger.debug("DragOver", {
 			activeId: active.id,
 			overId,
 			overData: over?.data.current,
@@ -440,7 +441,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 			(typeof active.id === "string" && active.id.startsWith("sortable-"));
 
 		if (!overId || isDraggingCollection) {
-			console.log("[DragOver] Early return:", {
+			workspaceLogger.debug("DragOver early return", {
 				noOverId: !overId,
 				isDraggingCollection,
 			});
@@ -450,14 +451,14 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 		const overContainer = findContainer(overId as string);
 		const activeContainer = findContainer(active.id as string);
 
-		console.log("[DragOver] Containers:", {
+		workspaceLogger.debug("DragOver containers", {
 			overContainer,
 			activeContainer,
 			overId,
 		});
 
 		if (!overContainer || !activeContainer) {
-			console.log("[DragOver] Missing container, returning");
+			workspaceLogger.debug("Missing container, returning");
 			return;
 		}
 
@@ -475,7 +476,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 				collections.some((c) => c.id === overId) ||
 				(typeof overId === "string" && overId.startsWith("droppable-"));
 
-			console.log("[DragOver] Moving to different container:", {
+			workspaceLogger.debug("Moving to different container", {
 				overContainer,
 				overItems: overItems.length,
 				isOverContainer,
@@ -485,7 +486,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 			if (isOverContainer) {
 				// Dropping on a container - add to the end
 				newIndex = overItems.length;
-				console.log("[DragOver] Dropping on container, newIndex:", newIndex);
+				workspaceLogger.debug("Dropping on container", { newIndex });
 			} else {
 				// Dropping on an item - calculate position
 				const isBelowOverItem =
@@ -495,7 +496,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 
 				const modifier = isBelowOverItem ? 1 : 0;
 				newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length;
-				console.log("[DragOver] Dropping on item, newIndex:", newIndex);
+				workspaceLogger.debug("Dropping on item", { newIndex });
 			}
 
 			// Mark that we recently moved to a new container for collision detection
@@ -546,7 +547,7 @@ export const WorkspaceView: React.FC<WorkspaceViewProps> = ({
 	const handleDragEnd = async (event: DragEndEvent) => {
 		const { active, over } = event;
 
-		console.log("[DragEnd]", {
+		workspaceLogger.debug("DragEnd", {
 			activeId: active.id,
 			overId: over?.id,
 			activeData: active.data.current,

@@ -2,6 +2,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { withCloudflare } from "better-auth-cloudflare";
+import { authLogger } from "@/logger";
 import { createDb, schema } from "../db";
 import type { Env } from "../index";
 import { getAuthConfig } from "./config";
@@ -70,17 +71,19 @@ export function createAuth(env?: Env, cf?: unknown) {
 	);
 
 	if (!secret) {
-		console.error("[auth][config] Missing BETTER_AUTH_SECRET in env");
+		authLogger.error("Missing BETTER_AUTH_SECRET in env");
 	} else {
-		console.log("[auth][config] Using secret with length", secret.length);
+		authLogger.info("Using secret", { length: secret.length });
 	}
 
 	if (!trustedOrigins.length) {
-		console.error(
-			"[auth][config] BETTER_AUTH_TRUSTED_ORIGINS is empty; no explicit origins configured.",
+		authLogger.error(
+			"BETTER_AUTH_TRUSTED_ORIGINS is empty; no explicit origins configured",
 		);
 	} else {
-		console.log("[auth][config] trustedOrigins:", trustedOrigins.join(","));
+		authLogger.info("Trusted origins configured", {
+			origins: trustedOrigins.join(","),
+		});
 	}
 
 	return betterAuth({
