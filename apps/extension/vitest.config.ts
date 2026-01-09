@@ -1,4 +1,8 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
 	test: {
@@ -20,10 +24,9 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
-			"@": "/src",
-			"@aura/domain": "/../../packages/domain/src",
-			"@aura/shared": "/../../packages/shared/src",
+			"@": path.resolve(__dirname, "./src"),
+			"@aura/domain": path.resolve(__dirname, "../../packages/domain/src"),
+			"@aura/shared": path.resolve(__dirname, "../../packages/shared/src"),
 		},
 	},
 });
-

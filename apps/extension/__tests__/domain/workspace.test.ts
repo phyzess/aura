@@ -25,10 +25,10 @@ describe("Workspace Operations", () => {
 			expect(workspace.id).toBeDefined();
 			expect(workspace.name).toBe("My Workspace");
 			expect(workspace.order).toBe(0);
-			expect(workspace.description).toBeUndefined();
+			expect(workspace.description).toBeNull();
 			expect(workspace.createdAt).toBe(Date.now());
 			expect(workspace.updatedAt).toBe(Date.now());
-			expect(workspace.deletedAt).toBeUndefined();
+			expect(workspace.deletedAt).toBeNull();
 		});
 
 		it("should create workspace with description", () => {

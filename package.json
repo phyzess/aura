@@ -19,7 +19,7 @@
 		"db:migrate:remote": "pnpm --filter @aura/api db:migrate:remote",
 		"db:clear:local": "sh ./scripts/clear-db-local.sh",
 		"db:clear:remote": "sh ./scripts/clear-db-remote.sh",
-		"test": "vitest",
+		"test": "pnpm test:shared && pnpm test:domain && pnpm test:api && pnpm test:extension",
 		"test:ui": "vitest --ui",
 		"test:coverage": "vitest --coverage",
 		"test:shared": "pnpm --filter @aura/shared test",

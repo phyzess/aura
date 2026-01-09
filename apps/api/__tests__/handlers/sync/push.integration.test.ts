@@ -6,6 +6,7 @@ import { createTabData } from "@/data/tab.data";
 import { createWorkspaceData } from "@/data/workspace.data";
 import { createDb } from "@/db";
 import type { Env } from "@/types/env";
+import { expectOk } from "../../helpers/result-helpers";
 import { createMockUser } from "../../helpers/test-auth";
 import {
 	createTestCollection,
@@ -66,7 +67,7 @@ describe("Sync Push Data Layer Integration", () => {
 
 			await workspaceData.batchUpsert([newWorkspace]);
 
-			const workspaces = await workspaceData.findByUserId(user.id, 0);
+			const workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
 
 			expect(workspaces).toHaveLength(1);
 			expect(workspaces[0].id).toBe(newWorkspace.id);
@@ -95,7 +96,7 @@ describe("Sync Push Data Layer Integration", () => {
 
 			await workspaceData.batchUpsert([updatedWorkspace]);
 
-			const workspaces = await workspaceData.findByUserId(user.id, 0);
+			const workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
 
 			expect(workspaces).toHaveLength(1);
 			expect(workspaces[0].id).toBe(workspace.id);
@@ -124,7 +125,7 @@ describe("Sync Push Data Layer Integration", () => {
 
 			await workspaceData.batchUpsert([deletedWorkspace]);
 
-			const workspaces = await workspaceData.findByUserId(user.id, 0);
+			const workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
 
 			expect(workspaces).toHaveLength(1);
 			expect(workspaces[0].deletedAt).toBeDefined();
@@ -152,7 +153,7 @@ describe("Sync Push Data Layer Integration", () => {
 
 			await workspaceData.batchUpsert(workspaces);
 
-			const result = await workspaceData.findByUserId(user.id, 0);
+			const result = expectOk(await workspaceData.findByUserId(user.id, 0));
 
 			expect(result).toHaveLength(5);
 		});

@@ -9,9 +9,11 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"allowJs": true,
+		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
-			"@aura/domain": ["../../packages/domain/src"]
+			"@aura/domain": ["../../packages/domain/src"],
+			"@aura/shared": ["../../packages/shared/src"]
 		},
 		"types": ["vite/client", "chrome"],
 		"allowImportingTsExtensions": true,

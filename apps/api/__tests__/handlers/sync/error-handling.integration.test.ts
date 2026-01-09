@@ -5,6 +5,7 @@ import { createCollectionData } from "@/data/collection.data";
 import { createTabData } from "@/data/tab.data";
 import { createWorkspaceData } from "@/data/workspace.data";
 import { createDb } from "@/db";
+import { expectOk } from "../../helpers/result-helpers";
 import { createMockUser } from "../../helpers/test-auth";
 import {
 	createTestCollection,
@@ -181,7 +182,9 @@ describe("Sync Error Handling Integration", () => {
 
 			const nonExistentUserId = "non-existent-user-id";
 
-			const workspaces = await workspaceData.findByUserId(nonExistentUserId, 0);
+			const workspaces = expectOk(
+				await workspaceData.findByUserId(nonExistentUserId, 0),
+			);
 			const collections = await collectionData.findByUserId(
 				nonExistentUserId,
 				0,
@@ -228,7 +231,7 @@ describe("Sync Error Handling Integration", () => {
 
 			await workspaceData.batchUpsert([workspace2]);
 
-			const workspaces = await workspaceData.findByUserId(user.id, 0);
+			const workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
 
 			expect(workspaces).toHaveLength(1);
 			expect(workspaces[0].name).toBe("Updated Name");
@@ -258,7 +261,7 @@ describe("Sync Error Handling Integration", () => {
 
 			await workspaceData.batchUpsert(workspaces);
 
-			const result = await workspaceData.findByUserId(user.id, 0);
+			const result = expectOk(await workspaceData.findByUserId(user.id, 0));
 
 			expect(result).toHaveLength(50);
 		});
@@ -287,7 +290,7 @@ describe("Sync Error Handling Integration", () => {
 
 			await workspaceData.batchUpsert([workspace]);
 
-			const workspaces = await workspaceData.findByUserId(user.id, 0);
+			const workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
 
 			expect(workspaces).toHaveLength(1);
 			expect(workspaces[0].createdAt).toBe(oldTimestamp);
@@ -324,9 +327,8 @@ describe("Sync Error Handling Integration", () => {
 
 			await workspaceData.batchUpsert([workspace1, workspace2]);
 
-			const recentWorkspaces = await workspaceData.findByUserId(
-				user.id,
-				now - 5000,
+			const recentWorkspaces = expectOk(
+				await workspaceData.findByUserId(user.id, now - 5000),
 			);
 
 			expect(recentWorkspaces).toHaveLength(1);

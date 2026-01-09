@@ -54,11 +54,6 @@ describe("GET /me Handler", () => {
 
 		// Act: Call /me endpoint
 		const headers = createAuthHeaders(sessionToken);
-		console.log("[TEST] Request headers:", {
-			authorization: headers.get("Authorization"),
-			cookie: headers.get("Cookie"),
-		});
-
 		const request = new Request("http://localhost/me", {
 			method: "GET",
 			headers,
@@ -73,7 +68,6 @@ describe("GET /me Handler", () => {
 		const data = (await response.json()) as {
 			user: { email: string; id: string; name: string } | null;
 		};
-		console.log("[TEST] Response data:", JSON.stringify(data, null, 2));
 		expect(data.user).toBeDefined();
 		expect(data.user?.email).toBe(testEmail);
 		expect(data.user?.id).toBe(user.id);

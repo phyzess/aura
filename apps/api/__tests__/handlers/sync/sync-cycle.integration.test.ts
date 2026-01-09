@@ -5,6 +5,7 @@ import { createCollectionData } from "@/data/collection.data";
 import { createTabData } from "@/data/tab.data";
 import { createWorkspaceData } from "@/data/workspace.data";
 import { createDb } from "@/db";
+import { expectOk } from "../../helpers/result-helpers";
 import { createMockUser } from "../../helpers/test-auth";
 import { cleanupTestDb, initTestDb } from "../../helpers/test-db";
 import { generateTestEmail } from "../../helpers/test-env";
@@ -48,12 +49,11 @@ describe("Sync Cycle Integration", () => {
 		const tabData = createTabData(drizzleDb);
 
 		// Step 1: Initial pull (should be empty)
-		const [initialWorkspaces, initialCollections, initialTabs] =
-			await Promise.all([
-				workspaceData.findByUserId(user.id, 0),
-				collectionData.findByUserId(user.id, 0),
-				tabData.findByUserId(user.id, 0),
-			]);
+		const initialWorkspaces = expectOk(
+			await workspaceData.findByUserId(user.id, 0),
+		);
+		const initialCollections = await collectionData.findByUserId(user.id, 0);
+		const initialTabs = await tabData.findByUserId(user.id, 0);
 
 		expect(initialWorkspaces).toHaveLength(0);
 		expect(initialCollections).toHaveLength(0);
@@ -98,13 +98,11 @@ describe("Sync Cycle Integration", () => {
 		]);
 
 		// Step 3: Pull again (should get the pushed data)
-		const [pulledWorkspaces, pulledCollections, pulledTabs] = await Promise.all(
-			[
-				workspaceData.findByUserId(user.id, 0),
-				collectionData.findByUserId(user.id, 0),
-				tabData.findByUserId(user.id, 0),
-			],
+		const pulledWorkspaces = expectOk(
+			await workspaceData.findByUserId(user.id, 0),
 		);
+		const pulledCollections = await collectionData.findByUserId(user.id, 0);
+		const pulledTabs = await tabData.findByUserId(user.id, 0);
 
 		expect(pulledWorkspaces).toHaveLength(1);
 		expect(pulledWorkspaces[0].id).toBe(workspace.id);
@@ -160,9 +158,8 @@ describe("Sync Cycle Integration", () => {
 		await workspaceData.batchUpsert([workspace2]);
 
 		// Pull with firstSyncTime - should only get workspace2
-		const incrementalWorkspaces = await workspaceData.findByUserId(
-			user.id,
-			firstSyncTime,
+		const incrementalWorkspaces = expectOk(
+			await workspaceData.findByUserId(user.id, firstSyncTime),
 		);
 
 		expect(incrementalWorkspaces).toHaveLength(1);
@@ -203,7 +200,7 @@ describe("Sync Cycle Integration", () => {
 		await workspaceData.batchUpsert([workspace2]);
 
 		// Pull should get the latest version
-		const workspaces = await workspaceData.findByUserId(user.id, 0);
+		const workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
 
 		expect(workspaces).toHaveLength(1);
 		expect(workspaces[0].name).toBe("Updated Name");
@@ -262,13 +259,11 @@ describe("Sync Cycle Integration", () => {
 		]);
 
 		// Pull and verify relationships
-		const [pulledWorkspaces, pulledCollections, pulledTabs] = await Promise.all(
-			[
-				workspaceData.findByUserId(user.id, 0),
-				collectionData.findByUserId(user.id, 0),
-				tabData.findByUserId(user.id, 0),
-			],
+		const pulledWorkspaces = expectOk(
+			await workspaceData.findByUserId(user.id, 0),
 		);
+		const pulledCollections = await collectionData.findByUserId(user.id, 0);
+		const pulledTabs = await tabData.findByUserId(user.id, 0);
 
 		expect(pulledWorkspaces).toHaveLength(1);
 		expect(pulledCollections).toHaveLength(1);
@@ -304,7 +299,7 @@ describe("Sync Cycle Integration", () => {
 		await workspaceData.batchUpsert([workspace]);
 
 		// Verify it exists
-		let workspaces = await workspaceData.findByUserId(user.id, 0);
+		let workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
 		expect(workspaces).toHaveLength(1);
 		expect(workspaces[0].deletedAt).toBeNull();
 
@@ -318,7 +313,7 @@ describe("Sync Cycle Integration", () => {
 		await workspaceData.batchUpsert([deletedWorkspace]);
 
 		// Pull should still include deleted item
-		workspaces = await workspaceData.findByUserId(user.id, 0);
+		workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
 		expect(workspaces).toHaveLength(1);
 		expect(workspaces[0].deletedAt).toBeDefined();
 		expect(workspaces[0].deletedAt).toBeGreaterThan(0);

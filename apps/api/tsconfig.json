@@ -4,6 +4,7 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"types": ["@cloudflare/workers-types", "node"],
+		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
 			"@aura/domain": ["../../packages/domain/src"],

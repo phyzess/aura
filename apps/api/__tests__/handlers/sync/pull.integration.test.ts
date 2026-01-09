@@ -5,6 +5,7 @@ import { createTabData } from "@/data/tab.data";
 import { createWorkspaceData } from "@/data/workspace.data";
 import { createDb } from "@/db";
 import type { Env } from "@/types/env";
+import { expectOk } from "../../helpers/result-helpers";
 import { createMockUser } from "../../helpers/test-auth";
 import {
 	createTestCollection,
@@ -57,11 +58,9 @@ describe("Sync Pull Data Layer Integration", () => {
 		const tabData = createTabData(drizzleDb);
 
 		// Act
-		const [workspaces, collections, tabs] = await Promise.all([
-			workspaceData.findByUserId(user.id, 0),
-			collectionData.findByUserId(user.id, 0),
-			tabData.findByUserId(user.id, 0),
-		]);
+		const workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
+		const collections = await collectionData.findByUserId(user.id, 0);
+		const tabs = await tabData.findByUserId(user.id, 0);
 
 		// Assert
 		expect(workspaces).toEqual([]);
@@ -106,11 +105,9 @@ describe("Sync Pull Data Layer Integration", () => {
 		const tabData = createTabData(drizzleDb);
 
 		// Act
-		const [workspaces, collections, tabs] = await Promise.all([
-			workspaceData.findByUserId(user.id, 0),
-			collectionData.findByUserId(user.id, 0),
-			tabData.findByUserId(user.id, 0),
-		]);
+		const workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
+		const collections = await collectionData.findByUserId(user.id, 0);
+		const tabs = await tabData.findByUserId(user.id, 0);
 
 		// Assert
 		expect(workspaces).toHaveLength(1);
@@ -163,9 +160,8 @@ describe("Sync Pull Data Layer Integration", () => {
 		const workspaceData = createWorkspaceData(drizzleDb);
 
 		// Act: Query with lastSyncTimestamp set to old timestamp + 1
-		const workspaces = await workspaceData.findByUserId(
-			user.id,
-			oldTimestamp + 1,
+		const workspaces = expectOk(
+			await workspaceData.findByUserId(user.id, oldTimestamp + 1),
 		);
 
 		// Assert: Should only return new workspace
@@ -191,7 +187,7 @@ describe("Sync Pull Data Layer Integration", () => {
 		const workspaceData = createWorkspaceData(drizzleDb);
 
 		// Act
-		const workspaces = await workspaceData.findByUserId(user.id, 0);
+		const workspaces = expectOk(await workspaceData.findByUserId(user.id, 0));
 
 		// Assert: Should include deleted workspace
 		expect(workspaces).toHaveLength(1);
@@ -227,7 +223,9 @@ describe("Sync Pull Data Layer Integration", () => {
 		const workspaceData = createWorkspaceData(drizzleDb);
 
 		// Act: Query user1's data
-		const user1Workspaces = await workspaceData.findByUserId(user1.id, 0);
+		const user1Workspaces = expectOk(
+			await workspaceData.findByUserId(user1.id, 0),
+		);
 
 		// Assert: Should only return user1's workspace
 		expect(user1Workspaces).toHaveLength(1);

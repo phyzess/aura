@@ -26,10 +26,10 @@ describe("Collection Operations", () => {
 			expect(collection.workspaceId).toBe("w1");
 			expect(collection.name).toBe("My Collection");
 			expect(collection.order).toBe(0);
-			expect(collection.description).toBeUndefined();
+			expect(collection.description).toBeNull();
 			expect(collection.createdAt).toBe(Date.now());
 			expect(collection.updatedAt).toBe(Date.now());
-			expect(collection.deletedAt).toBeUndefined();
+			expect(collection.deletedAt).toBeNull();
 		});
 
 		it("should create collection with description", () => {

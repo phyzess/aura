@@ -38,8 +38,8 @@ describe("Tab Operations", () => {
 			);
 			expect(tab.createdAt).toBe(Date.now());
 			expect(tab.updatedAt).toBe(Date.now());
-			expect(tab.deletedAt).toBeUndefined();
-			expect(tab.isPinned).toBeUndefined();
+			expect(tab.deletedAt).toBeNull();
+			expect(tab.isPinned).toBe(false);
 		});
 
 		it("should generate favicon URL from domain", () => {
