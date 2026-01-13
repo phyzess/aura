@@ -20,7 +20,16 @@ export const APP_URLS = {
 
 // ========== Cache Durations (in milliseconds) ==========
 export const CACHE_DURATIONS = {
+	// API Response Caching
+	USER: 5 * 60 * 1000, // 5 minutes - user data changes infrequently
+	WORKSPACES: 2 * 60 * 1000, // 2 minutes - workspace list
+	COLLECTIONS: 2 * 60 * 1000, // 2 minutes - collection list
+	TABS: 30 * 1000, // 30 seconds - tabs change frequently
+
+	// Link Checking
 	LINK_CHECK: 24 * 60 * 60 * 1000, // 24 hours
+
+	// Session
 	SESSION: 7 * 24 * 60 * 60 * 1000, // 7 days
 } as const;
 

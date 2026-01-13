@@ -9,21 +9,31 @@ import {
 	handleOnboardingComplete,
 	handleUpdate,
 } from "./handlers/install";
+import { preloadAll } from "./handlers/preload";
 
 // Initialize logger
 initializeLogger().catch((error) => {
 	console.error("[Background] Failed to initialize logger:", error);
 });
 
+// Preload data on extension startup
+preloadAll().catch((error) => {
+	console.error("[Background] Failed to preload data:", error);
+});
+
 chrome.runtime.onInstalled.addListener(async (details) => {
 	if (details.reason === "install") {
 		await handleFirstInstall();
 		setupContextMenus();
+		// Preload data after installation
+		await preloadAll();
 	} else if (details.reason === "update") {
 		const currentVersion = chrome.runtime.getManifest().version;
 		const previousVersion = details.previousVersion;
 		await handleUpdate(currentVersion, previousVersion);
 		setupContextMenus();
+		// Preload data after update
+		await preloadAll();
 	}
 });
 

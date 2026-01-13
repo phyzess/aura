@@ -33,4 +33,8 @@ export default defineManifest({
 			matches: ["<all_urls>"],
 		},
 	],
+	content_security_policy: {
+		extension_pages:
+			"script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline';",
+	},
 });

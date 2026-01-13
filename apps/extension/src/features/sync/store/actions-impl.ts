@@ -13,6 +13,7 @@ import {
 } from "@/features/workspace/store/atoms";
 import { createAlert, sendAlerts, shouldSendAlert } from "@/services/alerts";
 import { initDB, LocalDB } from "@/services/db";
+import { apiClient } from "@/services/http-client";
 import { notificationService } from "@/services/notifications";
 import { offlineDetector } from "@/services/offline/detector";
 import type { Collection, SyncPayload, TabItem, Workspace } from "@/types";
@@ -82,7 +83,7 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 
 		let pushRes: Response;
 		try {
-			pushRes = await fetch(`${API_BASE_URL}/api/app/sync/push`, {
+			pushRes = await apiClient.fetch("/api/app/sync/push", {
 				method: "POST",
 				credentials: "include",
 				headers: { "Content-Type": "application/json" },
@@ -104,7 +105,7 @@ const runSyncOnce = async (get: any, set: any): Promise<SyncResult> => {
 
 	let pullRes: Response;
 	try {
-		pullRes = await fetch(`${API_BASE_URL}/api/app/sync/pull`, {
+		pullRes = await apiClient.fetch("/api/app/sync/pull", {
 			method: "POST",
 			credentials: "include",
 			headers: { "Content-Type": "application/json" },

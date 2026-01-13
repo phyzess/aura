@@ -1,6 +1,5 @@
 import { API_ENDPOINTS } from "@aura/config";
 import { atom } from "jotai";
-import { API_BASE_URL } from "@/config/env";
 import { authLogger } from "@/config/logger";
 import { collectionsAtom } from "@/features/collection/store/atoms";
 import { tabsAtom } from "@/features/tab/store/atoms";
@@ -9,13 +8,24 @@ import {
 	workspacesAtom,
 } from "@/features/workspace/store/atoms";
 import { authClient } from "@/services/authClient";
+import { cacheService } from "@/services/cache";
 import { LocalDB } from "@/services/db";
+import { apiClient } from "@/services/http-client";
 import type { User } from "@/types";
 import { authErrorAtom, authStatusAtom, currentUserAtom } from "./atoms";
 
 export const loadCurrentUserAtom = atom(null, async (_get, set) => {
 	try {
-		const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.USER.ME}`, {
+		// Try cache first
+		const cachedUser = await cacheService.get<User>("USER", "current-user");
+		if (cachedUser) {
+			authLogger.debug("Using cached user data");
+			set(currentUserAtom, cachedUser);
+			return;
+		}
+
+		// Fetch with deduplication
+		const res = await apiClient.fetch(API_ENDPOINTS.USER.ME, {
 			method: "GET",
 			credentials: "include",
 		});
@@ -26,8 +36,16 @@ export const loadCurrentUserAtom = atom(null, async (_get, set) => {
 		}
 
 		const data = (await res.json()) as { user: User | null };
-		set(currentUserAtom, data.user ?? null);
-	} catch {
+		const user = data.user ?? null;
+
+		// Cache user data
+		if (user) {
+			await cacheService.set("USER", "current-user", user);
+		}
+
+		set(currentUserAtom, user);
+	} catch (error) {
+		authLogger.error("Failed to load current user", { error });
 		set(currentUserAtom, null);
 	}
 });
@@ -75,6 +93,13 @@ export const signOutAtom = atom(null, async (get, set) => {
 
 	try {
 		await authClient.signOut();
+
+		// Clear user cache
+		await cacheService.clearAll("USER");
+		await cacheService.clearAll("WORKSPACES");
+		await cacheService.clearAll("COLLECTIONS");
+		await cacheService.clearAll("TABS");
+
 		await set(loadCurrentUserAtom);
 
 		const user = get(currentUserAtom);
