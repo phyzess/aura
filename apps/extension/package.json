@@ -7,6 +7,7 @@
 		"dev": "vite",
 		"i18n:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
 		"build": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide && tsc -b ../../tsconfig.json && vite build",
+		"build:check": "pnpm build && ./scripts/check-bundle-size.sh",
 		"analyze": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide && tsc -b ../../tsconfig.json && ANALYZE=true vite build",
 		"preview": "vite preview",
 		"test": "vitest run",
@@ -48,9 +49,13 @@
 		"@vitejs/plugin-react": "^5.1.2",
 		"happy-dom": "^20.0.11",
 		"rollup-plugin-visualizer": "^6.0.5",
+		"sharp": "^0.34.5",
+		"svgo": "^4.0.0",
 		"tailwindcss": "^4.1.18",
 		"typescript": "~5.9.3",
 		"valibot": "^1.2.0",
+		"vite-plugin-compression2": "^2.4.0",
+		"vite-plugin-image-optimizer": "^2.0.3",
 		"vite-plugin-zip-pack": "^1.2.4",
 		"vite-tsconfig-paths": "^6.0.3"
 	}

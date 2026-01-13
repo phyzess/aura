@@ -10,8 +10,19 @@ export * from "./collection/store";
 // Export
 export * from "./export/store";
 
-// History
-export * from "./history/store";
+// History - Export atoms and commonly used actions
+// Heavy actions (createCommitAtom) are lazy-loaded in feature modules
+export {
+	canRedoAtom,
+	canUndoAtom,
+	checkoutCommitAtom,
+	historyChildrenAtom,
+	historyCommitsAtom,
+	historyHeadAtom,
+	initHistoryAtom,
+	redoAtom,
+	undoAtom,
+} from "./history/store";
 
 // Import
 export * from "./import/store";
