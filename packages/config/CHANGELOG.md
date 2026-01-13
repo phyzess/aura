@@ -1,5 +1,18 @@
 # @aura/config
 
+## 1.1.1
+
+### Patch Changes
+
+- Add HTTP client with caching, performance optimizations, and CI workflows
+
+  - Implement new httpClient service with request caching and retry logic
+  - Add background preload handler for improved startup performance
+  - Optimize bundle size with code splitting and tree-shaking
+  - Add CI workflows for testing, linting, and bundle size monitoring
+  - Improve authentication and sync reliability
+  - Clean up outdated documentation
+
 ## 1.1.0
 
 ### Minor Changes
