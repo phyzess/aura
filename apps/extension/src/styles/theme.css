@@ -1,11 +1,11 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* 在此定义所有主题扩展 */
 @theme {
-  /* ========== 颜色系统 ========== */
-  /* Slate 色系 - 覆盖默认值 */
+	/* ========== 颜色系统 ========== */
+	/* Slate 色系 - 覆盖默认值 */
 	--color-slate-50: oklch(98.42% 0.0034 247.86);
 	--color-slate-100: oklch(96.83% 0.0069 247.9);
 	--color-slate-200: oklch(92.88% 0.0126 255.51);
@@ -18,7 +18,7 @@
 	--color-slate-900: oklch(14.08% 0.0044 285.82); /* 侧边栏/表面深色 */
 	--color-slate-950: oklch(0% 0 0); /* 主背景色 */
 
-  /* Lavender 色系 - 品牌色 */
+	/* Lavender 色系 - 品牌色 */
 	--color-lavender-50: oklch(96.91% 0.0161 293.76);
 	--color-lavender-100: oklch(94.33% 0.0284 294.59);
 	--color-lavender-200: oklch(89.43% 0.0549 293.28);
@@ -69,7 +69,7 @@
 	--color-outline-active: oklch(0% 0 0 / 0.06);
 	--color-on-outline: var(--color-text-primary);
 
-  /* Destructive - 危险操作 */
+	/* Destructive - 危险操作 */
 	--color-destructive: oklch(60% 0.22 25);
 	--color-destructive-hover: oklch(64% 0.22 25);
 	--color-destructive-active: oklch(56% 0.22 25);
@@ -92,7 +92,7 @@
 	--color-surface-border-strong: var(--color-black);
 	--color-surface-overlay: oklch(14.08% 0.0044 285.82 / 0.2);
 	--color-surface-glass: oklch(100% 0 89.88 / 0.6);
-	
+
 	/* 语义文本颜色 */
 	--color-text-primary: var(--color-black);
 	--color-text-secondary: var(--color-slate-600);
@@ -113,18 +113,26 @@
 	--color-warning-soft: oklch(75% 0.15 85 / 0.15);
 	--color-info: oklch(65% 0.12 240);
 	--color-info-soft: oklch(65% 0.12 240 / 0.15);
-		
+
 	/* Vibrant Accent Colors - 用于 Badge、状态点、特殊 CTA 等小面积高亮 */
 	--color-vibrant-orange: oklch(75% 0.18 40);
-	--color-vibrant-pink: oklch(70% 0.20 350);
+	--color-vibrant-pink: oklch(70% 0.2 350);
 	--color-vibrant-yellow: oklch(85% 0.15 95);
 	--color-vibrant-cyan: oklch(75% 0.12 200);
 	--color-vibrant-lime: oklch(80% 0.16 130);
 	--color-lime-soft: oklch(80% 0.16 130 / 0.2);
-		
+
 	/* 语义渐变 */
-	--gradient-accent: linear-gradient(135deg, var(--color-lavender-500), var(--color-lavender-600));
-	--gradient-accent-soft: linear-gradient(135deg, var(--color-lavender-400), var(--color-coral-400));
+	--gradient-accent: linear-gradient(
+		135deg,
+		var(--color-lavender-500),
+		var(--color-lavender-600)
+	);
+	--gradient-accent-soft: linear-gradient(
+		135deg,
+		var(--color-lavender-400),
+		var(--color-coral-400)
+	);
 
 	/* Logo 专用色（从现有色板中抽取/扩展） */
 	--color-logo-glass: var(--color-white);
@@ -136,11 +144,15 @@
 
 	/* ========== 阴影系统 ========== */
 	--shadow-soft: 0 4px 20px -2px oklch(65.41% 0.1678 287.14 / 0.1);
-	--shadow-soft-hover: 0 10px 25px -3px oklch(65.41% 0.1678 287.14 / 0.15), 0 4px 6px -2px oklch(65.41% 0.1678 287.14 / 0.05);
+	--shadow-soft-hover:
+		0 10px 25px -3px oklch(65.41% 0.1678 287.14 / 0.15), 0 4px 6px -2px
+		oklch(65.41% 0.1678 287.14 / 0.05);
 	--shadow-glow: 0 0 15px oklch(65.41% 0.1678 287.14 / 0.3);
 
 	/* ========== 字体系统 ========== */
-	--font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	--font-sans:
+		ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+		Roboto, "Helvetica Neue", Arial, sans-serif;
 	--font-size-heading: 1.125rem;
 	--font-line-height-heading: 1.4;
 	--font-weight-heading: 700;
@@ -182,15 +194,23 @@
 
 	--color-ghost: var(--color-surface-elevated);
 	--color-ghost-hover: oklch(100% 0 0 / 0.06);
-	--color-ghost-active: oklch(100% 0 0 / 0.10);
+	--color-ghost-active: oklch(100% 0 0 / 0.1);
 	--color-outline-hover: oklch(100% 0 0 / 0.05);
 	--color-outline-active: oklch(100% 0 0 / 0.08);
 
 	/* 深色模式下，Accent 与 Primary 一致使用荧光绿色系 */
 	--color-accent: var(--color-vibrant-lime);
 	--color-accent-soft: oklch(80% 0.16 130 / 0.26);
-	--gradient-accent: linear-gradient(135deg, oklch(84% 0.16 130), oklch(76% 0.16 130));
-	--gradient-accent-soft: linear-gradient(135deg, oklch(84% 0.16 130 / 0.35), oklch(76% 0.16 130 / 0.08));
+	--gradient-accent: linear-gradient(
+		135deg,
+		oklch(84% 0.16 130),
+		oklch(76% 0.16 130)
+	);
+	--gradient-accent-soft: linear-gradient(
+		135deg,
+		oklch(84% 0.16 130 / 0.35),
+		oklch(76% 0.16 130 / 0.08)
+	);
 	--shadow-soft: 0 4px 20px -2px oklch(0% 0 0 / 0.35);
 	--shadow-glow: 0 0 20px oklch(80% 0.18 120 / 0.55);
 }

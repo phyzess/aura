@@ -1,10 +1,12 @@
-@import './theme.css';
+@import "./theme.css";
 
 /* 全局基础样式：popup、dashboard 等页面共享 */
 body {
 	color: var(--color-text-primary);
 	background-color: var(--color-surface);
-	font-feature-settings: 'rlig' 1, 'calt' 1;
+	font-feature-settings:
+		"rlig" 1,
+		"calt" 1;
 }
 
 /* ========== 性能优化 ========== */
@@ -164,24 +166,24 @@ textarea[readonly] {
 	color: var(--color-primary);
 }
 
-	/* Typography utilities */
-	.text-heading {
-		font-size: var(--font-size-heading);
-		line-height: var(--font-line-height-heading);
-		font-weight: var(--font-weight-heading);
-	}
+/* Typography utilities */
+.text-heading {
+	font-size: var(--font-size-heading);
+	line-height: var(--font-line-height-heading);
+	font-weight: var(--font-weight-heading);
+}
 
-	.text-body {
-		font-size: var(--font-size-body);
-		line-height: var(--font-line-height-body);
-		font-weight: var(--font-weight-body);
-	}
+.text-body {
+	font-size: var(--font-size-body);
+	line-height: var(--font-line-height-body);
+	font-weight: var(--font-weight-body);
+}
 
-	.text-label {
-		font-size: var(--font-size-label);
-		line-height: var(--font-line-height-label);
-		font-weight: var(--font-weight-label);
-	}
+.text-label {
+	font-size: var(--font-size-label);
+	line-height: var(--font-line-height-label);
+	font-weight: var(--font-weight-label);
+}
 
 /* Accent & status utilities */
 .text-accent {
@@ -353,7 +355,6 @@ textarea[readonly] {
 	border-color: var(--color-vibrant-lime);
 }
 
-
 /* ========================================
    BOTTOM SHADOW EFFECT - 底部加粗描边效果
    ======================================== */
@@ -363,7 +364,7 @@ textarea[readonly] {
 }
 
 .bottom-shadow-wrapper::before {
-	content: '';
+	content: "";
 	@apply absolute bg-surface-border rounded-[inherit] pointer-events-none;
 	width: calc(100% - 12px);
 	left: 50%;

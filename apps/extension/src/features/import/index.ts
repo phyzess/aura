@@ -6,4 +6,3 @@ export * from "./domain";
 
 // Store
 export * from "./store";
-

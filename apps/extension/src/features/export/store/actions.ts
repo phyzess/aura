@@ -1,6 +1,6 @@
 import { atom } from "jotai";
-import { collectionsAtom } from "@/features/collection/store/atoms";
 import { currentUserAtom } from "@/features/auth/store/atoms";
+import { collectionsAtom } from "@/features/collection/store/atoms";
 import { tabsAtom } from "@/features/tab/store/atoms";
 import { workspacesAtom } from "@/features/workspace/store/atoms";
 import {
@@ -50,4 +50,3 @@ export const exportAllDataAtom = atom(null, (get, _set) => {
 
 	exportAllData(workspaces, collections, tabs, currentUser);
 });
-

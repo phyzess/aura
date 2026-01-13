@@ -22,9 +22,7 @@ export const validateTab = (tab: Partial<TabItem>): ValidTab | null => {
 };
 
 export const extractValidTabs = (tabs: Partial<TabItem>[]): ValidTab[] => {
-	return tabs
-		.map(validateTab)
-		.filter((tab): tab is ValidTab => tab !== null);
+	return tabs.map(validateTab).filter((tab): tab is ValidTab => tab !== null);
 };
 
 export const shouldCreateWorkspace = (
@@ -40,4 +38,3 @@ export const shouldCreateCollection = (
 ): boolean => {
 	return targetCollectionId === "new" && !!newCollectionName;
 };
-

@@ -1,3 +1,9 @@
+export type { LocalDataLayerDeps, ServerDataLayerDeps } from "./factory";
+export {
+	createLocalDataLayer,
+	createServerDataLayer,
+	wrapLocalDataLayerWithResult,
+} from "./factory";
 export type {
 	DataEntity,
 	DataLayer,
@@ -5,10 +11,3 @@ export type {
 	LocalDataLayer,
 } from "./types";
 export { DEFAULT_BATCH_SIZE } from "./types";
-export {
-	createServerDataLayer,
-	createLocalDataLayer,
-	wrapLocalDataLayerWithResult,
-} from "./factory";
-export type { ServerDataLayerDeps, LocalDataLayerDeps } from "./factory";
-

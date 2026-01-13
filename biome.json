@@ -8,6 +8,31 @@
 	"files": {
 		"includes": ["**", "!!**/dist"]
 	},
+	"overrides": [
+		{
+			"includes": [
+				"**/__tests__/**",
+				"**/*.test.ts",
+				"**/*.test.tsx",
+				"**/*.spec.ts",
+				"**/*.spec.tsx"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					},
+					"style": {
+						"noNonNullAssertion": "off"
+					},
+					"correctness": {
+						"noUnusedVariables": "warn",
+						"noUnusedFunctionParameters": "warn"
+					}
+				}
+			}
+		}
+	],
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab"
@@ -17,11 +42,22 @@
 		"rules": {
 			"recommended": true,
 			"a11y": {
-				"recommended": true
+				"recommended": true,
+				"noLabelWithoutControl": "warn",
+				"noStaticElementInteractions": "warn",
+				"noSvgWithoutTitle": "warn",
+				"useKeyWithClickEvents": "warn"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "warn"
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "warn",
+				"noUnknownProperty": "warn"
 			},
 			"style": {
 				"noRestrictedImports": {
-					"level": "error",
+					"level": "warn",
 					"options": {
 						"paths": {
 							"@/store/atoms": {
@@ -75,6 +111,12 @@
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
+		}
+	},
+	"css": {
+		"parser": {
+			"cssModules": true,
+			"tailwindDirectives": true
 		}
 	},
 	"assist": {

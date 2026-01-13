@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import * as m from "@/paraglide/messages";
-import type { OnlineStatusCallback, OfflineDetectorState } from "./core";
+import type { OfflineDetectorState, OnlineStatusCallback } from "./core";
 import {
 	checkConnection,
 	createInitialState,
@@ -97,4 +97,3 @@ class OfflineDetector {
 }
 
 export const offlineDetector = new OfflineDetector();
-

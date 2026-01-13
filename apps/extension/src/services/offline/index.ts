@@ -1,3 +1,2 @@
+export type { OfflineDetectorState, OnlineStatusCallback } from "./core";
 export { offlineDetector } from "./detector";
-export type { OnlineStatusCallback, OfflineDetectorState } from "./core";
-

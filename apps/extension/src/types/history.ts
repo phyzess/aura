@@ -25,4 +25,3 @@ export interface HistoryState {
 	commits: Map<string, StateCommit>;
 	head: string | null;
 }
-

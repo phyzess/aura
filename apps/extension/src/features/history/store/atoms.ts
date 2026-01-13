@@ -20,4 +20,3 @@ export const canRedoAtom = atom((get) => {
 
 	return !!children.get(head);
 });
-

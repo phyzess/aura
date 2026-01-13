@@ -4,6 +4,7 @@
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
+		"prepare": "husky",
 		"changeset": "changeset",
 		"changeset:version": "changeset version",
 		"dev": "pnpm --filter @aura/extension dev",
@@ -26,15 +27,24 @@
 		"test:domain": "pnpm --filter @aura/domain test",
 		"test:api": "pnpm --filter @aura/api test",
 		"test:extension": "pnpm --filter @aura/extension test",
-		"lint": "biome check",
-		"format": "biome fmt",
-		"check": "pnpm lint && pnpm format"
+		"analyze": "pnpm --filter @aura/extension analyze",
+		"lint": "biome check .",
+		"format": "biome format --write .",
+		"check": "biome check --write ."
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx,json,css,md}": [
+			"biome check --write --no-errors-on-unmatched"
+		]
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.9",
 		"@changesets/cli": "^2.29.8",
 		"@vitest/coverage-v8": "^4.0.16",
 		"@vitest/ui": "^4.0.16",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"vite": "^7.3.0",
 		"vitest": "^4.0.16"
 	}
 }

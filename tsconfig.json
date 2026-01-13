@@ -1,5 +1,8 @@
 {
 	"references": [
+		{ "path": "./packages/domain" },
+		{ "path": "./packages/shared" },
+		{ "path": "./packages/config" },
 		{ "path": "./apps/extension/tsconfig.app.json" },
 		{ "path": "./apps/extension/tsconfig.node.json" }
 	],

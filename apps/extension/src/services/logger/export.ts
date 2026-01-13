@@ -55,4 +55,3 @@ export function formatLogSize(bytes: number): string {
 export function formatTimestamp(timestamp: number): string {
 	return new Date(timestamp).toLocaleString();
 }
-

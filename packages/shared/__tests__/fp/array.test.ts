@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-	groupBy,
-	partition,
 	chunk,
 	flatMapArray,
-	unique,
+	groupBy,
+	partition,
 	take,
+	unique,
 } from "../../src/fp/array";
 
 describe("Array utilities", () => {
@@ -142,4 +142,3 @@ describe("Array utilities", () => {
 		});
 	});
 });
-

@@ -2,12 +2,8 @@
  * Logger system tests
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
-import {
-	clearAllLogs,
-	getAllLogs,
-	getLogStats,
-} from "../indexeddb";
+import { beforeEach, describe, expect, it } from "vitest";
+import { clearAllLogs, getAllLogs, getLogStats } from "../indexeddb";
 
 describe("Logger System", () => {
 	beforeEach(async () => {
@@ -30,4 +26,3 @@ describe("Logger System", () => {
 		expect(stats).toHaveProperty("sizeInBytes");
 	});
 });
-

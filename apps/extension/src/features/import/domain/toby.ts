@@ -43,7 +43,9 @@ export const extractValidCard = (card: TobyCard): ImportedTab | null => {
 };
 
 export const extractValidCards = (cards: TobyCard[]): ImportedTab[] => {
-	return cards.map(extractValidCard).filter((card): card is ImportedTab => card !== null);
+	return cards
+		.map(extractValidCard)
+		.filter((card): card is ImportedTab => card !== null);
 };
 
 export const parseTobyList = (list: TobyList): ImportedCollection | null => {
@@ -67,7 +69,9 @@ export const parseTobyData = (data: TobyData): ImportedCollection[] => {
 
 	return data.lists
 		.map(parseTobyList)
-		.filter((collection): collection is ImportedCollection => collection !== null);
+		.filter(
+			(collection): collection is ImportedCollection => collection !== null,
+		);
 };
 
 export const flattenTobyDataToTabs = (data: TobyData): ImportedTab[] => {
@@ -80,7 +84,7 @@ export const shouldCreateSingleCollection = (
 	newCollectionName?: string,
 ): boolean => {
 	return (
-		(targetCollectionId !== "new") ||
+		targetCollectionId !== "new" ||
 		(targetCollectionId === "new" && !!newCollectionName)
 	);
 };
@@ -91,4 +95,3 @@ export const shouldCreateMultipleCollections = (
 ): boolean => {
 	return !shouldCreateSingleCollection(targetCollectionId, newCollectionName);
 };
-

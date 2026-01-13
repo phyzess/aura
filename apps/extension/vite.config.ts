@@ -4,6 +4,7 @@ import { crx } from "@crxjs/vite-plugin";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
+import { visualizer } from "rollup-plugin-visualizer";
 import { minLength, object, parse, pipe, string } from "valibot";
 import { defineConfig, loadEnv } from "vite";
 import zip from "vite-plugin-zip-pack";
@@ -46,6 +47,7 @@ export default defineConfig(({ mode }) => {
 		root: __dirname,
 		envDir: repoRoot,
 		build: {
+			reportCompressedSize: true,
 			rollupOptions: {
 				input: {
 					// Ensure the dashboard, newtab, options, and onboarding HTML are processed by Vite/CRXJS in production builds
@@ -89,6 +91,17 @@ export default defineConfig(({ mode }) => {
 					}
 				},
 			},
+			// Bundle analyzer - only when ANALYZE=true
+			...(env.ANALYZE === "true"
+				? [
+						visualizer({
+							filename: "dist/stats.html",
+							open: true,
+							gzipSize: true,
+							brotliSize: true,
+						}),
+					]
+				: []),
 		],
 		server: {
 			cors: {

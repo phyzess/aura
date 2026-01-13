@@ -4,11 +4,11 @@ import {
 	getStatus,
 	markToastShown,
 	notifyCallbacks,
+	type OfflineDetectorState,
+	type OnlineStatusCallback,
 	setOffline,
 	setOnline,
 	subscribe,
-	type OfflineDetectorState,
-	type OnlineStatusCallback,
 } from "@/services/offline/core";
 
 describe("offline/core", () => {
@@ -157,4 +157,3 @@ describe("offline/core", () => {
 		});
 	});
 });
-

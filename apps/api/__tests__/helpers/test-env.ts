@@ -32,4 +32,3 @@ export function generateTestEmail(prefix = "test"): string {
 	const random = Math.random().toString(36).substring(7);
 	return `${prefix}-${timestamp}-${random}@test.com`;
 }
-

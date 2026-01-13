@@ -34,4 +34,3 @@ export const toggleThemeAtom = atom(null, (get, set) => {
 	document.documentElement.classList.toggle("dark", next === "dark");
 	updateFavicon();
 });
-

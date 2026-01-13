@@ -35,4 +35,3 @@ export async function loggerMiddleware(c: Context, next: Next): Promise<void> {
 		});
 	}
 }
-

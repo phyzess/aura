@@ -13,4 +13,3 @@ const getInitialTheme = (): "light" | "dark" => {
 const initialTheme = getInitialTheme();
 
 export const themeModeAtom = atom<"light" | "dark">(initialTheme);
-

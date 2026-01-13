@@ -8,4 +8,3 @@ export const syncDirtyAtom = atom<boolean>(false);
 export const lastLocalChangeAtAtom = atom<number | null>(null);
 export const syncLastSourceAtom = atom<"auto" | "manual" | null>(null);
 export const lastSyncTimestampAtom = atom<number | null>(null);
-

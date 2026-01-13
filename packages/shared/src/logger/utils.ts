@@ -59,4 +59,3 @@ export function filterByLevel(
 export function calculateLogSize(entries: StoredLogEntry[]): number {
 	return new Blob([JSON.stringify(entries)]).size;
 }
-

@@ -14,9 +14,7 @@ export const isValidWorkspace = (item: unknown): item is Workspace => {
 		isNumber(w.order) &&
 		isNumber(w.createdAt) &&
 		isNumber(w.updatedAt) &&
-		(w.deletedAt === undefined ||
-			w.deletedAt === null ||
-			isNumber(w.deletedAt))
+		(w.deletedAt === undefined || w.deletedAt === null || isNumber(w.deletedAt))
 	);
 };
 
@@ -30,9 +28,7 @@ export const isValidCollection = (item: unknown): item is Collection => {
 		isNumber(c.order) &&
 		isNumber(c.createdAt) &&
 		isNumber(c.updatedAt) &&
-		(c.deletedAt === undefined ||
-			c.deletedAt === null ||
-			isNumber(c.deletedAt))
+		(c.deletedAt === undefined || c.deletedAt === null || isNumber(c.deletedAt))
 	);
 };
 
@@ -47,9 +43,7 @@ export const isValidTabItem = (item: unknown): item is TabItem => {
 		isNumber(t.order) &&
 		isNumber(t.createdAt) &&
 		isNumber(t.updatedAt) &&
-		(t.deletedAt === undefined ||
-			t.deletedAt === null ||
-			isNumber(t.deletedAt))
+		(t.deletedAt === undefined || t.deletedAt === null || isNumber(t.deletedAt))
 	);
 };
 
@@ -94,4 +88,3 @@ export const validateRelationships = (
 		errors,
 	};
 };
-

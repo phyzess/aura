@@ -1,2 +1,1 @@
 export { CollectionColumn } from "./CollectionColumn";
-

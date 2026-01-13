@@ -104,4 +104,3 @@ export const combine = <T, E>(results: Result<T, E>[]): Result<T[], E> => {
 export const all = combine;
 
 export { ok as Ok, err as Err };
-

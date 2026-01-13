@@ -1,11 +1,4 @@
 // Atoms
-export {
-	canRedoAtom,
-	canUndoAtom,
-	historyChildrenAtom,
-	historyCommitsAtom,
-	historyHeadAtom,
-} from "./atoms";
 
 // Actions
 export {
@@ -16,4 +9,10 @@ export {
 	redoAtom,
 	undoAtom,
 } from "./actions";
-
+export {
+	canRedoAtom,
+	canUndoAtom,
+	historyChildrenAtom,
+	historyCommitsAtom,
+	historyHeadAtom,
+} from "./atoms";

@@ -17,9 +17,7 @@ export const setTabCheckingStatus = (
 	tabId: string,
 ): TabItem[] => {
 	return tabs.map((tab) =>
-		tab.id === tabId
-			? { ...tab, linkStatus: "checking" as LinkStatus }
-			: tab,
+		tab.id === tabId ? { ...tab, linkStatus: "checking" as LinkStatus } : tab,
 	);
 };
 
@@ -113,4 +111,3 @@ export const createEmptyStats = (): LinkCheckStats => ({
 	broken: 0,
 	uncertain: 0,
 });
-

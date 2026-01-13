@@ -1,9 +1,11 @@
 import { atom } from "jotai";
-import { initDB, LocalDB } from "@/services/db";
-import { activeWorkspaceIdAtom } from "@/features/workspace/store/atoms";
 import { collectionsAtom } from "@/features/collection/store/atoms";
 import { tabsAtom } from "@/features/tab/store/atoms";
-import { workspacesAtom } from "@/features/workspace/store/atoms";
+import {
+	activeWorkspaceIdAtom,
+	workspacesAtom,
+} from "@/features/workspace/store/atoms";
+import { initDB, LocalDB } from "@/services/db";
 import { isLoadingAtom } from "./atoms";
 
 export const initDataAtom = atom(null, async (get, set) => {
@@ -31,4 +33,3 @@ export const initDataAtom = atom(null, async (get, set) => {
 
 	set(isLoadingAtom, false);
 });
-

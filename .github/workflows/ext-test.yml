@@ -1,0 +1,64 @@
+name: Extension Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'apps/extension/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'apps/extension/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+
+jobs:
+  test:
+    name: Run Extension Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run TypeScript check
+        run: pnpm -F @aura/extension typecheck || tsc -b tsconfig.json
+
+      - name: Run tests
+        run: pnpm -F @aura/extension test
+
+      - name: Generate coverage report
+        run: pnpm -F @aura/extension test:coverage
+        continue-on-error: true
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./apps/extension/coverage/coverage-final.json
+          flags: extension
+          name: extension-coverage
+        continue-on-error: true
+

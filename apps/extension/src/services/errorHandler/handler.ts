@@ -88,4 +88,3 @@ class ErrorHandler {
 }
 
 export const errorHandler = new ErrorHandler();
-

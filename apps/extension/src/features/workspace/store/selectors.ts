@@ -6,4 +6,3 @@ export const activeWorkspaceAtom = atom((get) => {
 	const activeId = get(activeWorkspaceIdAtom);
 	return workspaces.find((w) => w.id === activeId) || null;
 });
-

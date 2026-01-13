@@ -1,4 +1,3 @@
-export { errorHandler } from "./handler";
 export type { ErrorContext, ErrorType } from "./core";
 export {
 	getUserFriendlyMessage,
@@ -6,4 +5,4 @@ export {
 	isNetworkError,
 	logError,
 } from "./core";
-
+export { errorHandler } from "./handler";

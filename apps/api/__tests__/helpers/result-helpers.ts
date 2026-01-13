@@ -32,4 +32,3 @@ export function expectErr<T>(result: Result<T, Error>): Error {
 	}
 	return result.error;
 }
-
