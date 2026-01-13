@@ -40,32 +40,20 @@ For contributors and developers:
   - [Release Process](./development/release.md) - How to release new versions
   - [发布流程](./development/release.zh-CN.md) - 如何发布新版本
 
-### 🎨 Design (Archive)
-Historical design documentation:
-
-- [Color System](./design/color-system.md) - Color palette and usage guidelines
-- [Design Updates](./design/design-updates.md) - Design evolution history
+- **Logging**
+  - [Logging System](./LOGGING.md) - Unified logging system guide
 
 ## 🏗️ Architecture Documentation
 
 ### API (Cloudflare Workers)
-Located in `apps/api/docs/`:
+Located in `apps/api/`:
 
-- [Architecture Overview](../apps/api/docs/architecture.md) - System architecture and design decisions
+- [API README](../apps/api/README.md) - API overview and quick start
 - [Data Layer API](../apps/api/docs/data-layer.md) - Database access layer documentation
 - [Testing Guide](../apps/api/docs/testing.md) - How to write and run tests
 
 ### Extension (Chrome Extension)
-Located in `apps/extension/`:
-
-- [Extension README](../apps/extension/README.md) - Extension overview and development guide
-
-### Packages
-Shared packages documentation:
-
-- [Domain Package](../packages/domain/README.md) - Shared domain types and models
-- [Config Package](../packages/config/README.md) - Environment configuration
-- [Shared Package](../packages/shared/README.md) - Shared utilities and helpers
+See the main [README](../README.md) for extension overview and development guide.
 
 ## 🔗 Quick Links
 
